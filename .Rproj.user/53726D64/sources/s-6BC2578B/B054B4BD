@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573138591917.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "B054B4BD",
+    "lastKnownWriteTime" : 1573157256,
+    "last_content_update" : 1573157256,
+    "path" : "~/Dropbox/HonestParallelTrends/HonestDiD/doc/HonestDiD_Example.Rmd",
+    "project_path" : "doc/HonestDiD_Example.Rmd",
+    "properties" : {
+        "cursorPosition" : "85,440",
+        "last_setup_crc32" : "",
+        "scrollLine" : "84"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

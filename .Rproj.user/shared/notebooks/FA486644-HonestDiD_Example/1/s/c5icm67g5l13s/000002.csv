@@ -1,0 +1,5 @@
+"0","data('LWdata_EventStudy', package = ""HonestDiD"")"
+"0",""
+"0","# Number of pre-periods"
+"0","numPrePeriods = length(LWdata_EventStudy$prePeriodIndices)"
+"0","numPostPeriods = length(LWdata_EventStudy$postPeriodIndices)"

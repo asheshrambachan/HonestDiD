@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1573150869898.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2743833242",
+    "id" : "8169338E",
+    "lastKnownWriteTime" : 1573151418,
+    "last_content_update" : 1573151418458,
+    "path" : "~/Dropbox/HonestParallelTrends/HonestDiD/man/computeConditionalCI_DeltaRMI.Rd",
+    "project_path" : "man/computeConditionalCI_DeltaRMI.Rd",
+    "properties" : {
+        "cursorPosition" : "22,48",
+        "scrollLine" : "13"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_doc"
+}

@@ -1,0 +1,23 @@
+Package: HonestDiD
+Type: Package
+Title: Robust inference in difference-in-differences and event study designs
+Version: 0.1.0
+Depends:
+    CVXR (>= 0.99-6),
+    doParallel (>= 1.0.15),
+    foreach (>= 1.4.7),
+    lpSolveAPI (>= 5.5.2.0-17),
+    Matrix (>= 1.2-17),
+    pracma (>= 2.2.5),
+    ROI (>= 0.3-2),
+    tidyverse (>= 1.2.1),
+    TruncatedNormal (>= 1.0),
+    R (>= 3.6.0)
+Imports:
+Author: Ashesh Rambachan
+Maintainer: Ashesh Rambachan <asheshr@g.harvard.edu>
+Description: 
+    This package provides functions to conduct robust inference in difference-in-differences and event study designs by implementing the methods developed in Rambachan & Roth (2019). Inference is conducted under a weaker version of the parallel trends assumption. Uniformly valid confidence sets are constructed based upon conditional confidence sets, fixed-length confidence sets and hybridized confidence sets. See Ashesh Rambachan & Jonathan Roth, "An Honest Approach to Parallel Trends", 2019 for details on the methods.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
