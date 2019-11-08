@@ -10,17 +10,17 @@ Creates a basis vector of length \code{size} with a 1 in the \code{index} positi
 }
 \usage{
 # Create the third basis vector in R^6
-basisVector(index = 3, size = 6)
+basisVector(index = 1, size = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 %%     ~~Describe \code{index} here~~
-  \item{index}{ The index at which there should be a 1.
+  \item{index}{ The index at which there should be a one. Default equals one.
 
 }
   \item{size}{
 %%     ~~Describe \code{size} here~~
-The length of the vector.
+The length of the vector. Default equals one.
 
 }
 }
