@@ -4,7 +4,7 @@ Robust inference in differences-in-differences and event study designs using met
 
 The vignette [HonestDiD](doc/HonestDiD_Example.pdf) provides a brief decsription of the package and 
 an illustration to show users how to use the package to conduct sensitivity analysis on the parallel trends assumption 
-in difference-in-differences and event study designs.
+in difference-in-differences and event study designs. The package [manual](doc/manual.pdf) provides detailed documentation of the package functions.
 
 This software package is based upon work supported by the National Science
 Foundation Graduate Research Fellowship under Grant DGE1745303 (Rambachan) and Grant DGE1144152 (Roth). 
@@ -12,6 +12,7 @@ Foundation Graduate Research Fellowship under Grant DGE1745303 (Rambachan) and G
 ## Installation
 
 The package may be installed by using the function `install_github()` from the `devtools` package:
+
 ```
 install.packages("devtools") ## if devtools package not installed
 devtools::install_github("asheshrambachan/HonestDiD")
