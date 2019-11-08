@@ -1944,7 +1944,7 @@ DeltaSD_upperBound_Mpre <- function(betahat, sigma, numPrePeriods, alpha = 0.05)
   return(maxUpperBound)
 }
 
-DeltaSD_lowerBound_M <- function(betahat, sigma, numPrePeriods, alpha = 0.05, grid.ub = NA, gridPoints = 1000) {
+DeltaSD_lowerBound_Mpre <- function(betahat, sigma, numPrePeriods, alpha = 0.05, grid.ub = NA, gridPoints = 1000) {
   # This function constructs a lower bound for M using the observed pre-period coefficients by
   # constructing a one-sided confidence interval on the maximal second difference of the observed
   # pre-period coefficients using the conditional test in Andrews, Roth, Pakes (2019)

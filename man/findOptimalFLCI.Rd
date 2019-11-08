@@ -8,7 +8,7 @@ Constructs optimal fixed length confidence interval for Delta = Delta^{SD}(M).
   Computes the optimal FLCI for the scalar parameter of interest under Delta = Delta^{SD}(M).
 }
 \usage{
-findOptimalFLCI(sigma, numPrePeriods, numPostPeriods, l_vec, M = 0 numPoints = 100, alpha = 0.05)
+findOptimalFLCI(betahat, sigma, numPrePeriods, numPostPeriods, l_vec, M = 0 numPoints = 100, alpha = 0.05)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

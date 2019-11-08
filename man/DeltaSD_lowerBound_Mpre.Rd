@@ -1,5 +1,5 @@
-\name{DeltaSD_lowerBound_M}
-\alias{DeltaSD_lowerBound_M}
+\name{DeltaSD_lowerBound_Mpre}
+\alias{DeltaSD_lowerBound_Mpre}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Construct lower bound for M for Delta = Delta^{SD}(M) based on observed pre-period coefficients.
@@ -8,7 +8,7 @@ Construct lower bound for M for Delta = Delta^{SD}(M) based on observed pre-peri
   Constructs a lower bound for M using the observed pre-period coefficients. It constructs a one-sided confidence interval for the maximal second difference of the observed pre-period using the conditional test developed in Andrews, Roth & Pakes (2019).
 }
 \usage{
-DeltaSD_lowerBound_M(betahat, sigma, numPrePeriods, alpha = 0.05, grid.ub = NA, gridPoints = 1000)
+DeltaSD_lowerBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05, grid.ub = NA, gridPoints = 1000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -52,16 +52,6 @@ Ashesh Rambachan
 
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (x)
-{
-  }
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
