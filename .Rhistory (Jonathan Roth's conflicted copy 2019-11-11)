@@ -1,3 +1,70 @@
+rtESV113 + rtESV114 + rtESV115 + rtESV116 + rtESV117 +
+rtESV118 + rtESV119 + rtESV120 + rtESV121 + rtESV122 +
+rtESV123 + rtESV124 + rtESV125 + rtESV126 + rtESV127 +
+rtESV128 + rtESV129 + rtESV130 + rtESV131 + rtESV132 +
+rtESV133 + rtESV134 + rtESV135 + # End post-periods
+yearsfcor + yearsflr + aveitc + fscontrol + asian + black + hispanic + other |
+factor(PUS_SURVEY_YEAR)*factor(BIRTHYEAR) + factor(PUS_SURVEY_YEAR) + factor(BIRTHSTATE) | 0 | BIRTHSTATE,
+data = LWfemales.dta,
+weights = LWfemales.dta$nobs)
+# Load in LWdata_RawData.dta
+LWdata_RawData = haven::read_dta(system.file("extdata", "LWdata_RawData.dta", package = "HonestDiD"))
+# Estimate event study using lfe package
+EmploymentFemale.EventStudy = lfe::felm(emp ~ rtESV13 + rtESV14 + rtESV15 + rtESV16 + rtESV17 +
+rtESV18 + rtESV19 + rtESV110 + rtESV111 + # End Pre-periods
+rtESV113 + rtESV114 + rtESV115 + rtESV116 + rtESV117 +
+rtESV118 + rtESV119 + rtESV120 + rtESV121 + rtESV122 +
+rtESV123 + rtESV124 + rtESV125 + rtESV126 + rtESV127 +
+rtESV128 + rtESV129 + rtESV130 + rtESV131 + rtESV132 +
+rtESV133 + rtESV134 + rtESV135 + # End post-periods
+yearsfcor + yearsflr + aveitc + fscontrol + asian + black + hispanic + other |
+factor(PUS_SURVEY_YEAR)*factor(BIRTHYEAR) + factor(PUS_SURVEY_YEAR) + factor(BIRTHSTATE) | 0 | BIRTHSTATE,
+data = LWdata_RawData,
+weights = LWdata_RawData$nobs)
+# Extract coefficients of regression associated with event study coefficients
+coefIndex = which(grepl(x = dimnames(EmploymentFemale.EventStudy$coefficients)[[1]],
+pattern = "rtESV"))
+betahat = EmploymentFemale.EventStudy$beta[coefIndex, ]
+# Extract estimated variance-covariance matrix of event study coefficients
+sigma = EmploymentFemale.EventStudy$clustervcv[coefIndex, coefIndex]
+# Construct vector of event times and the scalar reference period
+timeVec = c(seq(from = -11, to = -3, by = 1), seq(from = -1, to = 21, by = 1))
+referencePeriod = -2
+postPeriodIndices = which(timeVec > -2)
+prePeriodIndices = which(timeVec < -2)
+# Construct standard errors associated with event study coefficients
+stdErrors = summary(EmploymentFemale.EventStudy)$coefficients[coefIndex,2]
+# Create list containing objects produced by the event study
+LWdata_EventStudy = list(
+betahat = betahat,
+sigma = sigma,
+timeVec = timeVec,
+referencePeriod = referencePeriod,
+prePeriodIndices = prePeriodIndices,
+postPeriodIndices = postPeriodIndices,
+stdErrors = stdErrors
+)
+# Load in LWdata_RawData.dta
+LWdata_RawData = haven::read_dta(system.file("extdata", "LWdata_RawData.dta", package = "HonestDiD"))
+# Estimate event study using lfe package
+EmploymentFemale.EventStudy = lfe::felm(emp ~ rtESV13 + rtESV14 + rtESV15 + rtESV16 + rtESV17 +
+rtESV18 + rtESV19 + rtESV110 + rtESV111 + # End Pre-periods
+rtESV113 + rtESV114 + rtESV115 + rtESV116 + rtESV117 +
+rtESV118 + rtESV119 + rtESV120 + rtESV121 + rtESV122 +
+rtESV123 + rtESV124 + rtESV125 + rtESV126 + rtESV127 +
+rtESV128 + rtESV129 + rtESV130 + rtESV131 + rtESV132 +
+rtESV133 + rtESV134 + rtESV135 + # End post-periods
+yearsfcor + yearsflr + aveitc + fscontrol + asian + black + hispanic + other |
+factor(PUS_SURVEY_YEAR)*factor(BIRTHYEAR) + factor(PUS_SURVEY_YEAR) + factor(BIRTHSTATE) | 0 | BIRTHSTATE,
+data = LWdata_RawData,
+weights = LWdata_RawData$nobs)
+# Extract coefficients of regression associated with event study coefficients
+coefIndex = which(grepl(x = dimnames(EmploymentFemale.EventStudy$coefficients)[[1]],
+pattern = "rtESV"))
+betahat = EmploymentFemale.EventStudy$beta[coefIndex, ]
+# Extract estimated variance-covariance matrix of event study coefficients
+sigma = EmploymentFemale.EventStudy$clustervcv[coefIndex, coefIndex]
+# Construct vector of event times and the scalar reference period
 timeVec = c(seq(from = -11, to = -3, by = 1), seq(from = -1, to = 21, by = 1))
 referencePeriod = -2
 postPeriodIndices = which(timeVec > -2)
@@ -212,29 +279,7 @@ knitr::opts_chunk$set(tidy = TRUE, collapse=TRUE, comment = "#>",
 tidy.opts=list(blank=FALSE, width.cutoff=60))
 # Load in HonestDiD package after installation
 library(HonestDiD)
-library(HonestDiD)
-library('knitr')
-knitr::opts_knit$set(self.contained = FALSE)
-knitr::opts_chunk$set(tidy = TRUE, collapse=TRUE, comment = "#>",
-tidy.opts=list(blank=FALSE, width.cutoff=60))
-# Construct robust confidence intervals for Delta^{SD}(M)
-DeltaSD_RobustResults = constructRobustCI(betahat = LWdata_EventStudy$betahat,
-sigma = LWdata_EventStudy$sigma,
-Delta = "DeltaSD",
-numPrePeriods = numPrePeriods,
-numPostPeriods = numPostPeriods)
-data('LWdata_EventStudy', package = "HonestDiD")
-# Number of pre-periods
-numPrePeriods = length(LWdata_EventStudy$prePeriodIndices)
-numPostPeriods = length(LWdata_EventStudy$postPeriodIndices)
-# Construct robust confidence intervals for Delta^{SD}(M)
-DeltaSD_RobustResults = constructRobustCI(betahat = LWdata_EventStudy$betahat,
-sigma = LWdata_EventStudy$sigma,
-Delta = "DeltaSD",
-numPrePeriods = numPrePeriods,
-numPostPeriods = numPostPeriods)
-head(DeltaSD_RobustResults)
-library(HonestDiD)
+install.packages("foreach")
 library(HonestDiD)
 library('knitr')
 knitr::opts_knit$set(self.contained = FALSE)
@@ -245,127 +290,136 @@ data('LWdata_EventStudy', package = "HonestDiD")
 # Number of pre-periods
 numPrePeriods = length(LWdata_EventStudy$prePeriodIndices)
 numPostPeriods = length(LWdata_EventStudy$postPeriodIndices)
-#Create l_vec corresponding with 15 years of exposure
-#Reference is -2 years of exposure, so want effect 17 pds later
-l_vec = basisVector(15 - (-2), numPostPeriods)
-# Construct robust confidence intervals for Delta^{SD}(M) for 15 years of exposure
-DeltaSD_RobustResults = createSensitivityResults(betahat = LWdata_EventStudy$betahat,
+basisVector <- function(index = 1, size = 1){
+v <- matrix(0, nrow = size, ncol = 1)
+v[index] = 1
+return(v)
+}
+# Construct robust confidence intervals for Delta^{SD}(M)
+DeltaSD_RobustResults = constructRobustCI(betahat = LWdata_EventStudy$betahat,
 sigma = LWdata_EventStudy$sigma,
+Delta = "DeltaSD",
 numPrePeriods = numPrePeriods,
 numPostPeriods = numPostPeriods,
-l_vec = l_vec,
+l_vec = basisVector(15, numPostPeriods),
+M_vec = seq(from = 0, to = 0.04, by = 0.005))
+# Construct robust confidence intervals for Delta^{SD}(M)
+DeltaSD_RobustResults = constructRobustCI(betahat = LWdata_EventStudy$betahat,
+sigma = LWdata_EventStudy$sigma,
+Delta = "DeltaSD",
+numPrePeriods = numPrePeriods,
+numPostPeriods = numPostPeriods,
+l_vec = basisVector(15, numPostPeriods),
 Mvec = seq(from = 0, to = 0.04, by = 0.005))
 head(DeltaSD_RobustResults)
-# Construct dataframe with OLS confidence interval for theta
-OriginalResults = constructOriginalCS(betahat = LWdata_EventStudy$betahat,
+# Load in LWdata_RawData.dta
+LWdata_RawData = haven::read_dta(system.file("extdata", "LWdata_RawData.dta",
+package = "HonestDiD"))
+# Estimate event study using lfe package
+EmpFemale.EventStudy = lfe::felm(emp ~ rtESV13 + rtESV14 + rtESV15 +
+rtESV16 + rtESV17 + rtESV18 +
+rtESV19 + rtESV110 + rtESV111 + # End Pre-periods
+rtESV113 + rtESV114 + rtESV115 +
+rtESV116 + rtESV117 + rtESV118 +
+rtESV119 + rtESV120 + rtESV121 +
+rtESV122 + rtESV123 + rtESV124 +
+rtESV125 + rtESV126 + rtESV127 +
+rtESV128 + rtESV129 + rtESV130 +
+rtESV131 + rtESV132 + rtESV133 +
+rtESV134 + rtESV135 + # End post-periods
+yearsfcor + yearsflr + aveitc + fscontrol +
+asian + black + hispanic + other |
+factor(PUS_SURVEY_YEAR)*factor(BIRTHYEAR) +
+factor(PUS_SURVEY_YEAR) + factor(BIRTHSTATE) |
+0 | BIRTHSTATE,
+data = LWdata_RawData,
+weights = LWdata_RawData$nobs)
+# Extract coefficients of regression associated with event study coefficients
+coefIndex = which(grepl(x = dimnames(EmpFemale.EventStudy$coefficients)[[1]],
+pattern = "rtESV"))
+betahat = EmpFemale.EventStudy$beta[coefIndex, ]
+# Extract estimated variance-covariance matrix of event study coefficients
+sigma = EmpFemale.EventStudy$clustervcv[coefIndex, coefIndex]
+#Rescale by 100 so that results will be in units of percentage points
+betahat = 100 * betahat
+sigma = 100^2 * sigma
+# Construct vector of event times and the scalar reference period
+timeVec = c(seq(from = -11, to = -3, by = 1), seq(from = -1, to = 21, by = 1))
+referencePeriod = -2
+postPeriodIndices = which(timeVec > -2)
+prePeriodIndices = which(timeVec < -2)
+# Construct standard errors associated with event study coefficients
+stdErrors = summary(EmpFemale.EventStudy)$coefficients[coefIndex,2]
+# Create list containing objects produced by the event study
+LWdata_EventStudy = list(
+betahat = betahat,
+sigma = sigma,
+timeVec = timeVec,
+referencePeriod = referencePeriod,
+prePeriodIndices = prePeriodIndices,
+postPeriodIndices = postPeriodIndices,
+stdErrors = stdErrors
+)
+# Construct robust confidence intervals for Delta^{SD}(M)
+DeltaSD_RobustResults = constructRobustCI(betahat = LWdata_EventStudy$betahat,
 sigma = LWdata_EventStudy$sigma,
+Delta = "DeltaSD",
 numPrePeriods = numPrePeriods,
 numPostPeriods = numPostPeriods,
-l_vec = l_vec )
-library(HonestDiD)
-library(HonestDiD)
+l_vec = basisVector(15, numPostPeriods),
+Mvec = seq(from = 0, to = 0.04, by = 0.005))
+head(DeltaSD_RobustResults)
 library('knitr')
 knitr::opts_knit$set(self.contained = FALSE)
 knitr::opts_chunk$set(tidy = TRUE, collapse=TRUE, comment = "#>",
 tidy.opts=list(blank=FALSE, width.cutoff=60))
+library('HonestDiD')
 data('LWdata_EventStudy', package = "HonestDiD")
 # Number of pre-periods
 numPrePeriods = length(LWdata_EventStudy$prePeriodIndices)
 numPostPeriods = length(LWdata_EventStudy$postPeriodIndices)
-#Create l_vec corresponding with 15 years of exposure
-#Reference is -2 years of exposure, so want effect 17 pds later
-l_vec = basisVector(15 - (-2), numPostPeriods)
-# Construct robust confidence intervals for Delta^{SD}(M) for 15 years of exposure
-DeltaSD_RobustResults = createSensitivityResults(betahat = LWdata_EventStudy$betahat,
-sigma = LWdata_EventStudy$sigma,
-numPrePeriods = numPrePeriods,
-numPostPeriods = numPostPeriods,
-l_vec = l_vec,
-Mvec = seq(from = 0, to = 0.04, by = 0.005))
-head(DeltaSD_RobustResults)
-# Construct dataframe with OLS confidence interval for theta
-OriginalResults = constructOriginalCS(betahat = LWdata_EventStudy$betahat,
-sigma = LWdata_EventStudy$sigma,
-numPrePeriods = numPrePeriods,
-numPostPeriods = numPostPeriods,
-l_vec = l_vec )
-# Construct sensitivity plot
-DeltaSD_SensitivityPlot = createSensitivityPlot(robustResults = DeltaSD_RobustResults,
-OriginalResults = OriginalResults)
-# Construct dataframe with OLS confidence interval for theta
-OriginalResults = constructOriginalCS(betahat = LWdata_EventStudy$betahat,
-sigma = LWdata_EventStudy$sigma,
-numPrePeriods = numPrePeriods,
-numPostPeriods = numPostPeriods,
-l_vec = l_vec )
-# Construct sensitivity plot
-DeltaSD_SensitivityPlot = createSensitivityPlot(robustResults = DeltaSD_RobustResults,
-originalResults = OriginalResults)
-DeltaSD_SensitivityPlot
 # Construct robust confidence intervals for Delta^{SD}(M)
-DeltaSDD_RobustResults = createSensitivityResults(betahat = LWdata_EventStudy$betahat,
+DeltaSD_RobustResults = constructRobustCI(betahat = LWdata_EventStudy$betahat,
 sigma = LWdata_EventStudy$sigma,
-monotonicityDirection = "decreasing",
+Delta = "DeltaSD",
 numPrePeriods = numPrePeriods,
 numPostPeriods = numPostPeriods,
-l_vec = l_vec,
+l_vec = basisVector(15, numPostPeriods),
 Mvec = seq(from = 0, to = 0.04, by = 0.005))
+# Construct dataframe with OLS confidence interval for theta
+OLSresults = constructOLSCI(betahat = LWdata_EventStudy$betahat,
+sigma = LWdata_EventStudy$sigma,
+Delta = "DeltaSD",
+numPrePeriods = numPrePeriods,
+numPostPeriods = numPostPeriods,
+l_vec = basisVector(15, numPostPeriods) )
 # Construct sensitivity plot
-DeltaSDD_SensitivityPlot = createSensitivityPlot(robustResults = DeltaSDD_RobustResults,
+DeltaSD_SensitivityPlot = createSensitivityPlot(robustResults = DeltaSD_RobustResults,
 OLSresults = OLSresults)
-# Construct robust confidence intervals for Delta^{SD}(M)
-DeltaSDD_RobustResults = createSensitivityResults(betahat = LWdata_EventStudy$betahat,
+DeltaSD_SensitivityPlot
+# Construct dataframe with OLS confidence interval for theta
+OLSresults = constructOLSCI(betahat = LWdata_EventStudy$betahat,
 sigma = LWdata_EventStudy$sigma,
-monotonicityDirection = "decreasing",
+Delta = "DeltaSD",
 numPrePeriods = numPrePeriods,
 numPostPeriods = numPostPeriods,
-l_vec = l_vec,
-Mvec = seq(from = 0, to = 0.04, by = 0.005))
+l_vec = basisVector(15, numPostPeriods) )
 # Construct sensitivity plot
-DeltaSDD_SensitivityPlot = createSensitivityPlot(robustResults = DeltaSDD_RobustResults,
-originalResults = OriginalResults)
-DeltaSDD_SensitivityPlot
-vignette('HonestDiD')
-vignette('HonestDiD_Example')
-?vignette
-vignette('HonestDiD_Example', package = "HonestDiD")
-devtools::build_manual()
-lowerBound_M = DeltaSD_lowerBound_Mpre(betahat = LWdata_EventStudy$betahat,
-sigma = LWdata_EventStudy$sigma,
-numPrePeriods = numPrePeriods)
-library('HonestDiD')
-lowerBound_M = DeltaSD_lowerBound_Mpre(betahat = LWdata_EventStudy$betahat,
-sigma = LWdata_EventStudy$sigma,
-numPrePeriods = numPrePeriods)
-library(HonestDiD)
-devtools::build_manual()
-install.packages("lfe")
-install.packages("carat")
-install.packages("caret")
-library(caret)
-library(gbm)
-install.packages("gbm")
-library('knitr')
-knitr::opts_knit$set(self.contained = FALSE)
-knitr::opts_chunk$set(tidy = TRUE, collapse=TRUE, comment = "#>",
-tidy.opts=list(blank=FALSE, width.cutoff=60))
-library('HonestDiD')
-data('LWdata_EventStudy', package = "HonestDiD")
-# Number of pre-periods
-numPrePeriods = length(LWdata_EventStudy$prePeriodIndices)
-numPostPeriods = length(LWdata_EventStudy$postPeriodIndices)
-#Create l_vec corresponding with 15 years of exposure
-#Reference is -2 years of exposure, so want effect 17 pds later
-l_vec = basisVector(15 - (-2), numPostPeriods)
-# Construct robust confidence intervals for Delta^{SD}(M) for 15 years of exposure
-DeltaSD_RobustResults = createSensitivityResults(betahat = LWdata_EventStudy$betahat,
-sigma = LWdata_EventStudy$sigma,
-numPrePeriods = numPrePeriods,
-numPostPeriods = numPostPeriods,
-l_vec = l_vec,
-Mvec = seq(from = 0, to = 0.04, by = 0.005))
-head(DeltaSD_RobustResults)
-saveLW = LWdata_EventStudy
+DeltaSD_SensitivityPlot = createSensitivityPlot(robustResults = DeltaSD_RobustResults,
+OLSresults = OLSresults)
+DeltaSD_SensitivityPlot
+DeltaSD_RobustResults
+OLSresults
+createSensitivityPlot(robustResults = DeltaSD_RobustResults,
+OLSresults = OLSresults)
+createSensitivityPlot(robustResults = DeltaSD_RobustResults,
+OLSresults = OLSresults)
+createSensitivityPlot(robustResults = DeltaSD_RobustResults,
+OLSresults = OLSresults) + xlim(-0.05,0.04)
+createSensitivityPlot(robustResults = DeltaSD_RobustResults,
+OLSresults = OLSresults) + xlim(-0.05,0.04) + ylim(-15,20)
+OLSresults
+LWdata_EventStudy$betahat
 # Load in LWdata_RawData.dta
 LWdata_RawData = haven::read_dta(system.file("extdata", "LWdata_RawData.dta",
 package = "HonestDiD"))
@@ -415,98 +469,44 @@ postPeriodIndices = postPeriodIndices,
 stdErrors = stdErrors
 )
 # Construct dataframe with OLS confidence interval for theta
-OriginalResults = constructOriginalCS(betahat = LWdata_EventStudy$betahat,
+OLSresults = constructOLSCI(betahat = LWdata_EventStudy$betahat,
 sigma = LWdata_EventStudy$sigma,
+Delta = "DeltaSD",
 numPrePeriods = numPrePeriods,
 numPostPeriods = numPostPeriods,
-l_vec = l_vec )
+l_vec = basisVector(15, numPostPeriods) )
 # Construct sensitivity plot
 DeltaSD_SensitivityPlot = createSensitivityPlot(robustResults = DeltaSD_RobustResults,
-originalResults = OriginalResults)
+OLSresults = OLSresults)
 DeltaSD_SensitivityPlot
-#Create l_vec corresponding with 15 years of exposure
-#Reference is -2 years of exposure, so want effect 17 pds later
-l_vec = basisVector(15 - (-2), numPostPeriods)
-# Construct robust confidence intervals for Delta^{SD}(M) for 15 years of exposure
-DeltaSD_RobustResults = createSensitivityResults(betahat = LWdata_EventStudy$betahat,
+# Construct robust confidence intervals for Delta^{SD}(M)
+DeltaSDD_RobustResults = constructRobustCI(betahat = LWdata_EventStudy$betahat,
 sigma = LWdata_EventStudy$sigma,
+Delta = "DeltaSDM",
+monotonicityDirection = "decreasing",
 numPrePeriods = numPrePeriods,
 numPostPeriods = numPostPeriods,
-l_vec = l_vec,
+l_vec = basisVector(15, numPostPeriods),
 Mvec = seq(from = 0, to = 0.04, by = 0.005))
-head(DeltaSD_RobustResults)
-library(devtools)
-devtools::install_github("asheshrambachan/HonestDiD")
-#rm(list = ls())
-#install.packages("lfe")
-#install.packages("devtools") # if devtools package not installed
-#devtools::install_github("asheshrambachan/HonestDiD")
-library('HonestDiD')
-#data('LWdata_EventStudy', package = "HonestDiD")
-LWdata_RawData = haven::read_dta(system.file("extdata", "LWdata_RawData.dta",
-package = "HonestDiD"))
-# Estimate event study using lfe package
-EmpFemale.EventStudy = lfe::felm(emp ~ rtESV13 + rtESV14 + rtESV15 +
-rtESV16 + rtESV17 + rtESV18 +
-rtESV19 + rtESV110 + rtESV111 + # End Pre-periods
-rtESV113 + rtESV114 + rtESV115 +
-rtESV116 + rtESV117 + rtESV118 +
-rtESV119 + rtESV120 + rtESV121 +
-rtESV122 + rtESV123 + rtESV124 +
-rtESV125 + rtESV126 + rtESV127 +
-rtESV128 + rtESV129 + rtESV130 +
-rtESV131 + rtESV132 + rtESV133 +
-rtESV134 + rtESV135 + # End post-periods
-yearsfcor + yearsflr + aveitc + fscontrol +
-asian + black + hispanic + other |
-factor(PUS_SURVEY_YEAR)*factor(BIRTHYEAR) +
-factor(PUS_SURVEY_YEAR) + factor(BIRTHSTATE) |
-0 | BIRTHSTATE,
-data = LWdata_RawData,
-weights = LWdata_RawData$nobs)
-# Extract coefficients of regression associated with event study coefficients
-coefIndex = which(grepl(x = dimnames(EmpFemale.EventStudy$coefficients)[[1]], pattern = "rtESV"))
-betahat = EmpFemale.EventStudy$beta[coefIndex, ]
-# Extract estimated variance-covariance matrix of event study coefficients
-sigma = EmpFemale.EventStudy$clustervcv[coefIndex, coefIndex]
-#Rescale by 100 so that results will be in units of percentage points
-betahat = 100 * betahat
-sigma = 100^2 * sigma
-# Construct vector of event times and the scalar reference period
-timeVec = c(seq(from = -11, to = -3, by = 1), seq(from = -1, to = 21, by = 1))
-referencePeriod = -2
-postPeriodIndices = which(timeVec > -2)
-prePeriodIndices = which(timeVec < -2)
-# Construct standard errors associated with event study coefficients
-stdErrors = summary(EmpFemale.EventStudy)$coefficients[coefIndex,2]
-# Create list containing objects produced by the event study
-LWdata_EventStudy = list(
-betahat = betahat,
-sigma = sigma,
-timeVec = timeVec,
-referencePeriod = referencePeriod,
-prePeriodIndices = prePeriodIndices,
-postPeriodIndices = postPeriodIndices,
-stdErrors = stdErrors
-)
-# Number of pre-periods
-numPrePeriods = length(LWdata_EventStudy$prePeriodIndices)
-numPostPeriods = length(LWdata_EventStudy$postPeriodIndices)
-#Create l_vec corresponding with 15 years of exposure
-#Reference is -2 years of exposure, so want effect 17 pds later
-l_vec = basisVector(15 - (-2), numPostPeriods)
-betahat = betahat
-# Construct robust confidence intervals for Delta^{SD}(M) for 15 years of exposure
-DeltaSD_RobustResults = createSensitivityResults(betahat = betahat,
-sigma = sigma,
-numPrePeriods = numPrePeriods,
-numPostPeriods = numPostPeriods,
-l_vec = l_vec,
-Mvec = seq(from = 0, to = 0.04, by = 0.005))
-warnings()
-ok
-head(DeltaSD_RobustResults)
-library(devtools)
-library('devtools')
-install_github("asheshrambachan/HonestDiD")
-install_github("asheshrambachan/HonestDiD", force = TRUE)
+# Construct sensitivity plot
+DeltaSDD_SensitivityPlot = createSensitivityPlot(robustResults = DeltaSDD_RobustResults,
+OLSresults = OLSresults)
+DeltaSDD_SensitivityPlot
+saveRDA(LWdata_EventStudy, here("Data/LWdata_EventStudy.rda"))
+save(LWdata_EventStudy, here("Data/LWdata_EventStudy.rda"))
+save(LWdata_EventStudy, "Data/LWdata_EventStudy.rda")
+library(here)
+save(LWdata_EventStudy, here("Data/LWdata_EventStudy.rda"))
+save(LWdata_EventStudy, here("data/LWdata_EventStudy.rda"))
+save(list = LWdata_EventStudy, file = here("data/LWdata_EventStudy.rda"))
+save(LWdata_EventStudy, file = here("data/LWdata_EventStudy.rda"))
+library(HonestDiD)
+source('~/Dropbox/HonestParallelTrends/HonestDiD/R/HonestDiD-helper-functions.R')
+library(HonestDiD)
+library(HonestDiD)
+rm(list =ls())
+library(HonestDiD)
+library(HonestDiD)
+library(HonestDiD)
+library(HonestDiD)
+library(HonestDiD)

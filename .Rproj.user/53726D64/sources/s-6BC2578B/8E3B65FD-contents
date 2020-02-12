@@ -1,5 +1,0 @@
-basisVector <- function(index = 1, size = 1){
-  v <- matrix(0, nrow = size, ncol = 1)
-  v[index] = 1
-  return(v)
-}

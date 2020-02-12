@@ -1,4 +1,0 @@
-"0","library('knitr')"
-"0","knitr::opts_knit$set(self.contained = FALSE)"
-"0","knitr::opts_chunk$set(tidy = TRUE, collapse=TRUE, comment = ""#>"","
-"0","                      tidy.opts=list(blank=FALSE, width.cutoff=60))"

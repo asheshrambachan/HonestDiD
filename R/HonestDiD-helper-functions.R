@@ -57,14 +57,15 @@ library(foreach)
   A_sumweights <- c(rep(0,numPrePeriods), rep(1,numPrePeriods))
   threshold_sumweights <- t((1:numPostPeriods)) %*% l_vec
   direction_sumweights <- "=="
-  constraint = A_sumweights %*% UstackW == threshold_sumweights
+
+  constraint = t(A_sumweights) %*% UstackW == threshold_sumweights
   return(constraint)
 }
 
 .createObjectiveObjectForBias <- function(numPrePeriods, numPostPeriods, l_vec, UstackW){
   # Constructs the objective function for the worst-case bias.
   constant = sum(sapply(1:numPostPeriods, FUN = function(s) { abs(t(1:s) %*% l_vec[(numPostPeriods - s + 1):numPostPeriods]) })) - t((1:numPostPeriods)) %*% l_vec
-  objective.UstackW = Minimize( constant +  c(rep(1,numPrePeriods), rep(0,numPrePeriods)) %*% UstackW )
+  objective.UstackW = Minimize( constant +  t(c(rep(1,numPrePeriods), rep(0,numPrePeriods))) %*% UstackW )
   return(objective.UstackW)
 }
 
@@ -161,7 +162,7 @@ library(foreach)
   quad_constraint <- .createConstraintsObject_SDLessThanH(sigma = sigma, numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW, h = h)
 
   biasProblem = CVXR::Problem(objectiveBias, constraints = list(abs_constraint, sum_constraint, quad_constraint))
-  biasResult <- solve(biasProblem)
+  biasResult <- psolve(biasProblem)
 
   # Multiply objective by M (note that solution otherwise doesn't depend on M,
   # so no need to run many times with many different Ms)
@@ -196,7 +197,7 @@ library(foreach)
   sum_constraint <- .createConstraints_SumWeights(numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW)
   objectiveVariance = .createObjectiveObject_MinimizeSD(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, UstackW = UstackW, l_vec = l_vec)
   varProblem = Problem(objectiveVariance, constraints = list(abs_constraint, sum_constraint))
-  varResult <- solve(varProblem)
+  varResult <- psolve(varProblem)
 
   if(varResult$status != "optimal" & varResult$status != "optimal_inaccurate"){
     warning("Error in optimization for h0")
@@ -1145,6 +1146,7 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
 
   # HYBRID: If hybrid, compute FLCI
   if (hybrid_flag == "FLCI") {
+
     flci = .findOptimalFLCI_helper(sigma = sigma, M = M,
                            numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                            l_vec = l_vec, alpha = hybrid_kappa)
@@ -1157,7 +1159,7 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
     obj <- Minimize( t(flci$optimalVec) %*% flci$optimalVec -
                        2 * t(flci$optimalVec) %*% t(A_SD) %*% vbar + quad_form(x = vbar, P = A_SD %*% t(A_SD)) )
     prob = Problem(obj)
-    result = solve(prob)
+    result = psolve(prob)
     hybrid_list$vbar = result$getValue(vbar)
 
     # Add objects to hybrid_list: flci half-length
@@ -1364,7 +1366,7 @@ computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPost
     obj <- Minimize( t(flci$optimalVec) %*% flci$optimalVec -
                        2 * t(flci$optimalVec) %*% t(A_SDB) %*% vbar + quad_form(x = vbar, P = A_SDB %*% t(A_SDB)) )
     prob = Problem(obj)
-    result = solve(prob)
+    result = psolve(prob)
     hybrid_list$vbar = result$getValue(vbar)
 
     # Add objects to hybrid_list: flci half-length
@@ -1588,7 +1590,7 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
     obj <- Minimize( t(flci$optimalVec) %*% flci$optimalVec -
                        2 * t(flci$optimalVec) %*% t(A_SDM) %*% vbar + quad_form(x = vbar, P = A_SDM %*% t(A_SDM)) )
     prob = Problem(obj)
-    result = solve(prob)
+    result = psolve(prob)
     hybrid_list$vbar = result$getValue(vbar)
 
     # Add objects to hybrid_list: flci half-length
