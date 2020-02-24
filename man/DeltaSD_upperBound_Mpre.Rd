@@ -4,7 +4,7 @@
 \title{Construct upper bound for M for Delta = Delta^{SD}(M) based on observed pre-period coefficients.
 }
 \description{
-  Constructs an upper bound for M using the observed pre-period event study coefficients. This is constructed using (1-alpha) level one-sided upper confidence intervala for the second differences of the observed pre-period event study coefficients.
+  Constructs an upper bound for M using the observed pre-period event study coefficients. This is constructed using (1-alpha) level one-sided upper confidence intervala for the second differences of the observed pre-period event study coefficients. The number of pre-periods (not including the reference period) must be larger than or equal to two.
 }
 \usage{
 DeltaSD_upperBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05)
@@ -18,7 +18,7 @@ DeltaSD_upperBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05)
   Covariance matrix of event study coefficients.
  }
  \item{numPrePeriods}{
-  Number of pre-periods. Must be larger than one.
+  Number of pre-periods. Must be larger than or equal to two.
   }
   \item{alpha}{
   Desired size of the one-sided confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)

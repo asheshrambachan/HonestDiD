@@ -5,7 +5,7 @@
 Construct lower bound for M for Delta = Delta^{SD}(M) based on observed pre-period coefficients.
 }
 \description{
-  Constructs a lower bound for M using the observed pre-period coefficients. It constructs a one-sided confidence interval for the maximal second difference of the observed pre-period using the conditional test developed in Andrews, Roth & Pakes (2019).
+  Constructs a lower bound for M using the observed pre-period coefficients. It constructs a one-sided confidence interval for the maximal second difference of the observed pre-period using the conditional test developed in Andrews, Roth & Pakes (2019). The number of pre-periods (not including the reference period) must be larger than or equal to two.
 }
 \usage{
 DeltaSD_lowerBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05, grid.ub = NA, gridPoints = 1000)
@@ -19,7 +19,7 @@ DeltaSD_lowerBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05, grid.ub = N
   Covariance matrix of event study coefficients.
  }
  \item{numPrePeriods}{
-  Number of pre-periods.
+  Number of pre-periods. Must be larger than or equal to two.
   }
   \item{alpha}{
   Desired size of the one-sided confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)
