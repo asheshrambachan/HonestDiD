@@ -18,7 +18,7 @@ DeltaSD_upperBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05)
   Covariance matrix of event study coefficients.
  }
  \item{numPrePeriods}{
-  Number of pre-periods.
+  Number of pre-periods. Must be larger than one.
   }
   \item{alpha}{
   Desired size of the one-sided confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)

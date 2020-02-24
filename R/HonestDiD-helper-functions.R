@@ -1135,8 +1135,12 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
 
   if(postPeriodMomentsOnly){
     postPeriodIndices <- (numPrePeriods +1):NCOL(A_SD)
-    postPeriodRows <- which( rowSums( A_SD[ , postPeriodIndices] != 0 ) > 0 )
-    rowsForARP <- postPeriodRows
+    if(numPostPeriods == 1) {
+      rowsForARP = postPeriodIndices
+    } else {
+      postPeriodRows <- which( rowSums( A_SD[ , postPeriodIndices] != 0 ) > 0 )
+      rowsForARP <- postPeriodRows
+    }
   }else{
     rowsForARP <- 1:NROW(A_SD)
   }
@@ -1260,7 +1264,7 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
   A_SDB = .create_A_SDB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                         biasDirection = biasDirection)
   d_SDB = .create_d_SDB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M)
-  dir_SDB = rep("<=", NROW(A_SDPB))
+  dir_SDB = rep("<=", NROW(A_SDB))
 
   # Create equality constraint that delta_pre = beta_pre
   prePeriodEqualityMat = cbind(diag(numPrePeriods),
@@ -1344,8 +1348,12 @@ computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPost
 
   if (postPeriodMomentsOnly) {
     postPeriodIndices <- (numPrePeriods +1):NCOL(A_SDB)
-    postPeriodRows <- which( rowSums( A_SDB[ , postPeriodIndices] != 0 ) > 0 )
-    rowsForARP <- postPeriodRows
+    if(numPostPeriods == 1) {
+      rowsForARP = postPeriodIndices
+    } else {
+      postPeriodRows <- which( rowSums( A_SDB[ , postPeriodIndices] != 0 ) > 0 )
+      rowsForARP <- postPeriodRows
+    }
   } else{
     rowsForARP <- 1:NROW(A_SDB)
   }
@@ -1381,7 +1389,7 @@ computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPost
     }
   } else {
     # Compute ID set under parallel trends
-    IDset = .compute_IDset_DeltaSDB(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
+    IDset = .compute_IDset_DeltaSDB(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods), biasDirection = biasDirection,
                                     l_vec = l_vec, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
     # If direction is negative, flip the signs and the upper and lower bounds
     if(biasDirection == "negative"){
@@ -1426,8 +1434,10 @@ computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPost
   A_M[numPrePeriods, numPrePeriods] <- 1
   if(numPostPeriods > 0){
     A_M[numPrePeriods + 1, numPrePeriods + 1] <- -1
+    if (numPostPeriods > 1) {
     for (r in (numPrePeriods + 2):(numPrePeriods+numPostPeriods)) {
       A_M[r, (r-1):r] <- c(1,-1)
+    }
     }
   }
   # If postPeriodMomentsOnly == T, exclude moments that only involve pre-periods
@@ -1568,8 +1578,12 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
 
   if (postPeriodMomentsOnly) {
     postPeriodIndices <- (numPrePeriods +1):NCOL(A_SDM)
-    postPeriodRows <- which( rowSums( A_SDM[ , postPeriodIndices] != 0 ) > 0 )
-    rowsForARP <- postPeriodRows
+    if(numPostPeriods == 1) {
+      rowsForARP = postPeriodIndices
+    } else {
+      postPeriodRows <- which( rowSums( A_SDM[ , postPeriodIndices] != 0 ) > 0 )
+      rowsForARP <- postPeriodRows
+    }
   } else {
     rowsForARP <- 1:NROW(A_SDM)
   }
@@ -1769,8 +1783,12 @@ computeConditionalCS_DeltaRMI <- function(betahat, sigma, numPrePeriods, numPost
 
   if(postPeriodMomentsOnly){
     postPeriodIndices <- (numPrePeriods +1):NCOL(A_RMI)
-    postPeriodRows <- which( rowSums( A_RMI[ , postPeriodIndices] != 0 ) > 0 )
-    rowsForARP <- postPeriodRows
+    if(numPostPeriods == 1) {
+      rowsForARP = postPeriodIndices
+    } else {
+      postPeriodRows <- which( rowSums( A_RMI[ , postPeriodIndices] != 0 ) > 0 )
+      rowsForARP <- postPeriodRows
+    }
   }else{
     rowsForARP <- 1:NROW(A_RMI)
   }
@@ -1934,6 +1952,8 @@ DeltaSD_upperBound_Mpre <- function(betahat, sigma, numPrePeriods, alpha = 0.05)
   # This function constructs an upper-bound for M at the 1-alpha level
   # based on the observed pre-period coefficients.
 
+  stopifnot(numPrePeriods > 1)
+
   prePeriod.coef = betahat[1:numPrePeriods]
   prePeriod.sigma = sigma[1:numPrePeriods, 1:numPrePeriods]
 
@@ -1977,8 +1997,12 @@ createSensitivityResults <- function(betahat, sigma,
 
   # If Mvec is null, construct default Mvec
   if (is.null(Mvec)) {
-    Mub = DeltaSD_upperBound_Mpre(betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods, alpha = 0.05)
-    Mvec = seq(from = 0, to = Mub, length.out = 10)
+    if (numPrePeriods == 1) {
+      Mvec = seq(from = 0, to = sigma[1, 1], length.out = 10)
+    } else {
+      Mub = DeltaSD_upperBound_Mpre(betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods, alpha = 0.05)
+      Mvec = seq(from = 0, to = Mub, length.out = 10)
+    }
   }
 
   # If Delta = Delta^{SD}, construct confidence intervals
