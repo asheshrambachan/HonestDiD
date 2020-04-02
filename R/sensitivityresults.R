@@ -50,7 +50,7 @@ createSensitivityResults <- function(betahat, sigma,
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                                 l_vec = l_vec, M = Mvec[m], alpha = 0.05)
+                                 l_vec = l_vec, M = Mvec[m], alpha = alpha)
           tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
                  method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
         }
@@ -58,7 +58,7 @@ createSensitivityResults <- function(betahat, sigma,
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                                 l_vec = l_vec, M = Mvec[m], alpha = 0.05)
+                                 l_vec = l_vec, M = Mvec[m], alpha = alpha)
           tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
                  method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
         }
