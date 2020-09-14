@@ -11,7 +11,7 @@ Computes the conditional confidence set and hybridized confidence set for Delta 
 computeConditionalCS_DeltaSDM(betahat, sigma, numPrePeriods, numPostPeriods,
                          l_vec = .basisVector(index = 1, size=numPostPeriods), M = 0,
                          alpha = 0.05, hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
-                         returnLength = F, biasDirection = "positive",
+                         returnLength = F, monotonicityDirection = "increasing",
                          postPeriodMomentsOnly = T, gridPoints = 10^3,
                          grid.lb = NA, grid.ub = NA)
 }

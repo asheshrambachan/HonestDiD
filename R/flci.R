@@ -180,7 +180,7 @@ library(foreach)
                 optimal.w = I(list(unlist(optimal.w))),
                 optimal.l = I(list(unlist(optimal.l)))
     )
-    return(as.data.frame(temp))
+    return(as.data.frame(temp, stringsAsFactors = FALSE))
   }
 }
 
@@ -228,7 +228,7 @@ library(foreach)
                                     l_vec, numPoints = 100, alpha){
   h0 <- .findHForMinimumBias(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
   hMin <- .findLowestH(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
-  hGrid <- seq(from = hMin, to = h0, length.out = numPoints)
+  hGrid <- seq(from = hMin, to = c(h0), length.out = numPoints)
   biasDF <- purrr::map_dfr(.x = hGrid,
                            .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = T) %>% mutate(h = h) } )
   biasDF <- biasDF %>% rename(bias = value)

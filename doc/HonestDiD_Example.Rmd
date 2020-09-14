@@ -92,7 +92,7 @@ In the next code snippet, we conduct the sensitivity analysis plotted in Figure 
 ```{r warning = FALSE}
 
 #Create l_vec corresponding with 15 years of exposure
-  #Reference is -2 years of exposure, so want effect 17 pds later 
+# Reference is -2 years of exposure, so want effect 17 pds later 
 l_vec = basisVector(15 - (-2), numPostPeriods)
 
 # Construct robust confidence intervals for Delta^{SD}(M) for 15 years of exposure
@@ -124,7 +124,7 @@ DeltaSD_SensitivityPlot
 In the next code snippet, we replicate the sensitivity analysis in Figure 9b) of @RambachanRoth. The exercise is similar to that shown above, except we now impose that any violations of parallel trends be (weakly) decreasing ($\Delta = \Delta^{SDD}(M)$). This incorporates the intuition from @LovenheimWillen that the pre-trends for women are likely due to secular trends in female labor supply that would have continued absent treatment.  
 
 ```{r warning = FALSE}
-# Construct robust confidence intervals for Delta^{SD}(M)
+# Construct robust confidence intervals for Delta^{SDD}(M)
 DeltaSDD_RobustResults = createSensitivityResults(betahat = LWdata_EventStudy$betahat, 
                                           sigma = LWdata_EventStudy$sigma,
                                           monotonicityDirection = "decreasing",
