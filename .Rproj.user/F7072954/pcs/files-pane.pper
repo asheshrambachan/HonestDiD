@@ -1,9 +1,9 @@
 {
-    "path" : "~/Dropbox/HonestParallelTrends/HonestDiD/man",
-    "sortOrder" : [
+    "path": "~/Dropbox/HonestParallelTrends/HonestDiD/man",
+    "sortOrder": [
         {
-            "ascending" : false,
-            "columnIndex" : 2
+            "ascending": false,
+            "columnIndex": 2
         }
     ]
 }

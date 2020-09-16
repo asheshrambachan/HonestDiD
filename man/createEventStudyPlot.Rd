@@ -9,7 +9,7 @@ Constructs event study plot using the estimated event study coefficients and sta
 }
 \usage{
 createEventStudyPlot(betahat, stdErrors = NULL, sigma = NULL,
-                     numPrePeriods, numPostPeriods, timeVec,
+                     numPrePeriods, numPostPeriods, alpha, timeVec,
                      referencePeriod, useRelativeEventTime = F)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -28,6 +28,9 @@ createEventStudyPlot(betahat, stdErrors = NULL, sigma = NULL,
   }
   \item{numPostPeriods}{
   Number of post-periods.
+  }
+  \item{alpha}{
+  Desired size of confidence intervals. Default = 0.05.
   }
   \item{timeVec}{
   Vector that contains the time periods associated with the event study coefficients. This vector should not include the reference period that is normalized to zero.

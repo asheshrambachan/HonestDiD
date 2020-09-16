@@ -396,8 +396,8 @@ constructOriginalCS <- function(betahat, sigma,
                                 l_vec = .basisVector(index = 1, size = numPostPeriods),
                                 alpha = 0.05) {
   stdError = sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
-  lb = t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] - qnorm(1-alpha)*stdError
-  ub = t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] + qnorm(1-alpha)*stdError
+  lb = t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] - qnorm(1-alpha/2)*stdError
+  ub = t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] + qnorm(1-alpha/2)*stdError
   return(tibble(
     lb = lb,
     ub = ub,
@@ -409,7 +409,7 @@ constructOriginalCS <- function(betahat, sigma,
 
 # Sensitivity plot functions ------------------------------------------
 createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
-                                 numPrePeriods, numPostPeriods,
+                                 numPrePeriods, numPostPeriods, alpha = 0.05,
                                  timeVec, referencePeriod,
                                  useRelativeEventTime = F) {
   if (is.null(stdErrors) & is.null(sigma)) {
@@ -428,7 +428,7 @@ createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
                                   se = c(stdErrors[1:numPrePeriods], NA, stdErrors[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])),
                            aes(x = t)) +
     geom_point(aes(y = beta), color = "red") +
-    geom_errorbar(aes(ymin = beta - qnorm(0.975)*se, ymax = beta + qnorm(0.975)*se), width = 0.5, colour = "#01a2d9") +
+    geom_errorbar(aes(ymin = beta - qnorm(1-alpha/2)*se, ymax = beta + qnorm(1-alpha/2)*se), width = 0.5, colour = "#01a2d9") +
     theme(legend.position = "none") + labs(x = "Event time", y = "") +
     scale_x_continuous(breaks = seq(from = min(timeVec), to = max(timeVec), by = 1),
                        labels = as.character(seq(from = min(timeVec), to = max(timeVec), by = 1)))
