@@ -11,9 +11,14 @@ Foundation Graduate Research Fellowship under Grant DGE1745303 (Rambachan) and G
 
 ## Installation
 
-The package may be installed by using the function `install_github()` from the `devtools` package:
+The package may be installed by using the function `install_github()` from the `remotes` package:
 
 ```
-install.packages("devtools") ## if devtools package not installed
-devtools::install_github("asheshrambachan/HonestDiD")
+install.packages("remotes") # if remotes package not installed
+
+# Turn off warning-error-conversion, because the tiniest warning stops installation
+Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
+
+# install from github
+remotes::install_github("asheshrambachan/HonestDiD")
 ```
