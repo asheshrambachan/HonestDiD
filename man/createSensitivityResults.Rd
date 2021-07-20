@@ -29,7 +29,7 @@ createSensitivityResults(betahat, sigma, numPrePeriods, numPostPeriods,
   Number of post-periods.
   }
   \item{method}{
-  String that specifies the choice of method for constructing robust confidence intervals. This must be one of "FLCI", "Conditional", "C-F" (conditional FLCI hybrid), or "C-LF" (conditional least-favorable hybrid). Default equals NULL and the function automatically sets method based on the recommendations in Rambachan & Roth (2019) depending on the choice of Delta. If Delta = DeltaSD, default selects the FLCI. If Delta = DeltaSDB or DeltaSDM, default delects the conditional FLCI hybrid.
+  String that specifies the choice of method for constructing robust confidence intervals. This must be one of "FLCI", "Conditional", "C-F" (conditional FLCI hybrid), or "C-LF" (conditional least-favorable hybrid). Default equals NULL and the function automatically sets method based on the recommendations in Rambachan & Roth (2021) depending on the choice of Delta. If Delta = DeltaSD, default selects the FLCI. If Delta = DeltaSDB or DeltaSDM, default delects the conditional FLCI hybrid.
   }
   \item{Mvec}{
   Vector of M values for which the user wishes to construct robust confidence intervals. If NULL, the function constructs a grid of length 10 that starts at M = 0 and ends at M equal to the upper bound constructed from the pre-periods using the function DeltaSD_upperBound_Mpre if number of pre-periods > 1 or the standard deviation of the first post-period coefficient if number of pre-periods = 1. Default equals null.
@@ -72,7 +72,7 @@ Returns a dataframe with columns
   }
 }
 \references{
-Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2019.
+Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2021.
 }
 \author{
 Ashesh Rambachan

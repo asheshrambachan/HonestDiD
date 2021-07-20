@@ -62,7 +62,7 @@ findOptimalFLCI(betahat, sigma, numPrePeriods, numPostPeriods, l_vec, M = 0 numP
     }
 }
 \references{
- Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2019.
+ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2021.
 }
 \author{
 Ashesh Rambachan

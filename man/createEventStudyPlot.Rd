@@ -49,7 +49,7 @@ createEventStudyPlot(betahat, stdErrors = NULL, sigma = NULL,
 Returns ggplot object of the event study plot.
 }
 \references{
-Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2019.
+Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2021.
 }
 \author{
 Ashesh Rambachan

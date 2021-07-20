@@ -23,7 +23,7 @@ library(foreach)
 # Delta^{SDB}(M) into the form needed to use the ARP functions.
 .create_A_SDB <- function(numPrePeriods, numPostPeriods,
                           biasDirection = "positive", postPeriodMomentsOnly = F) {
-  # This function creates a matrix for the linear constraints that \delta \in Delta^SDPB(M).
+  # This function creates a matrix for the linear constraints that \delta \in Delta^SDB(M).
   # It implements this using the general characterization of A.
   #
   # Inputs:
@@ -32,21 +32,15 @@ library(foreach)
 
   A_SD = .create_A_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                       postPeriodMomentsOnly = postPeriodMomentsOnly)
-  A_PB = -diag(numPrePeriods + numPostPeriods)
-  A_PB = A_PB[(numPrePeriods+1):(numPrePeriods+numPostPeriods), ]
+  A_B = .create_A_B(numPrePeriods = numPrePeriods,
+                    numPostPeriods = numPostPeriods, biasDirection = biasDirection)
 
-  if(biasDirection == "negative"){
-    A_PB <- -A_PB
-  }else if(biasDirection != "positive"){
-    stop("Input biasDirection must equal either `positive' or `negative'")
-  }
-
-  A = rbind(A_SD, A_PB)
+  A = rbind(A_SD, A_B)
   return(A)
 }
 
 .create_d_SDB <- function(numPrePeriods, numPostPeriods, M, postPeriodMomentsOnly = F) {
-  # This function creates a vector for the linear constraints that \delta \in Delta^SDPB(M).
+  # This function creates a vector for the linear constraints that \delta \in Delta^SDB(M).
   # It implements this using the general characterization of d.
   #
   # Inputs:
@@ -54,9 +48,10 @@ library(foreach)
   #   numPostPeriods = number of post-periods. This is an element of resultsObjects.
   #   M              = smoothness parameter of Delta^SD(M).
 
-  d_SD = .create_d_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = postPeriodMomentsOnly)
-  d_PB = rep(0, numPostPeriods)
-  d = c(d_SD, d_PB)
+  d_SD = .create_d_SD(numPrePeriods = numPrePeriods,
+                      numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = postPeriodMomentsOnly)
+  d_B = rep(0, numPostPeriods)
+  d = c(d_SD, d_B)
   return(d)
 }
 
@@ -151,7 +146,8 @@ computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPost
   #   hybrid_kappa   = desired size of first-stage least favorable test, default = NULL
   #   returnLength   = returns length of CI only. Otherwise, returns matrix with grid in col 1 and test result in col 2.
   #   gridPoints     = number of gridpoints to test over, default = 1000
-  #   postPeriodMomentsOnly = include the delta^SD moments corresponding with the first period only
+  #   biasDirection       = "positive" or "negative"; specifies direction of sign restriction.
+  #   postPeriodMomentsOnly = include the delta^RM moments corresponding with the first period only
   #
   #  Outputs:
   #   data_frame containing upper and lower bounds of CI.
@@ -300,9 +296,5 @@ computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPost
                         gridPoints = gridPoints, rowsForARP = rowsForARP)
     # Returns CI
     return(CI)
-
-
   }
-
-
 }

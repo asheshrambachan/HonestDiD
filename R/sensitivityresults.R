@@ -18,7 +18,7 @@ library(pracma)
 library(CVXR)
 library(foreach)
 
-# Construct Robust Results Function -----------------------------------
+# Construct Robust Results Function for Smoothness Restrictions -----------------------------------
 createSensitivityResults <- function(betahat, sigma,
                                      numPrePeriods, numPostPeriods,
                                      method = NULL,
@@ -381,10 +381,327 @@ createSensitivityResults <- function(betahat, sigma,
       stop("Method must equal one of: FLCI, Conditional, C-F or C-LF")
     }
   }
-
   return(Results)
 }
 
+createSensitivityPlot <- function(robustResults, originalResults, rescaleFactor = 1, maxM = Inf, add_xAxis = TRUE) {
+  # Set M for OLS to be the min M in robust results minus the gap between Ms in robust
+  Mgap <- min( diff( sort( robustResults$M) ) )
+  Mmin <- min( robustResults$M)
+
+  originalResults$M <- Mmin - Mgap
+  df <- bind_rows(originalResults, robustResults)
+
+  # Rescale all the units by rescaleFactor
+  df <- df %>% mutate_at( c("M", "ub", "lb"), ~ .x * rescaleFactor)
+
+  # Filter out observations above maxM (after rescaling)
+  df <- df %>% filter(M <= maxM)
+
+  p <- ggplot(data = df, aes(x=M)) +
+    geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
+                  width = Mgap * rescaleFactor / 2) +
+    scale_color_manual(values = c("red", '#01a2d9')) +
+    theme(legend.title=element_blank(), legend.position="bottom") +
+    labs(x = "M", y = "")
+
+  if (add_xAxis) {
+    p <- p + geom_hline(yintercept = 0)
+  }
+  return(p)
+}
+
+# Construct Robust Results Function for Relative Magnitude Bounds -----------------------------------
+createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
+                                                        numPrePeriods, numPostPeriods,
+                                                        bound = "deviation from parallel trends",
+                                                        method = "C-LF",
+                                                        Mbarvec = NULL,
+                                                        l_vec = .basisVector(index = 1, size = numPostPeriods),
+                                                        monotonicityDirection = NULL,
+                                                        biasDirection = NULL,
+                                                        alpha = 0.05,
+                                                        gridPoints = 10^3, grid.ub = NA, grid.lb = NA,
+                                                        parallel = FALSE) {
+
+  # If Mbarvec is null, construct default Mbarvec to be 10 values on [0,2].
+  if (is.null(Mbarvec)) {
+    Mbarvec = seq(from = 0, to = 2, length.out = 10)
+  }
+
+  # Check if bound is specified correctly
+  if (bound != "deviation from parallel trends" & bound != "deviation from linear trend") {
+    stop("bound must equal either 'deviation from parallel trends' or 'deviation from linear trend'.")
+  }
+
+  # Check if both monotonicity direction and bias direction are specified:
+  if (!is.null(monotonicityDirection) & !is.null(biasDirection)) {
+    stop("Please select either a shape restriction or sign restriction (not both).")
+  }
+
+  # Use method to specify the choice of confidence set
+  if (method == "C-LF") {
+    hybrid_flag = "LF"
+    method_named = "C-LF"
+  } else if (method == "Conditional") {
+    hybrid_flag = "ARP"
+    method_named = "Conditional"
+  } else {
+    stop("method must be either NULL, Conditional or C-LF.")
+  }
+
+  # If bound = "parallel trends violation", we select Delta^{RM} and its variants.
+  if (bound == "deviation from parallel trends") {
+    # use monotonicity direction and biasDirection to select the choice of Delta
+    if (is.null(monotonicityDirection) & is.null(biasDirection)) { # if both null, Delta^{RM}
+      Delta = "DeltaRM"
+
+      if (parallel) {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+          temp = computeConditionalCS_DeltaRM(betahat = betahat, sigma = sigma,
+                                              numPrePeriods = numPrePeriods,
+                                              numPostPeriods = numPostPeriods,
+                                              l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                              hybrid_flag = hybrid_flag,
+                                              gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      } else {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+          temp = computeConditionalCS_DeltaRM(betahat = betahat, sigma = sigma,
+                                              numPrePeriods = numPrePeriods,
+                                              numPostPeriods = numPostPeriods,
+                                              l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                              hybrid_flag = hybrid_flag,
+                                              gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      }
+    } else if (!is.null(monotonicityDirection)) { # if monotonicityDirection specified, Delta^{RMM}.
+      if (monotonicityDirection == "increasing") {
+        Delta = "DeltaRMI"
+      } else if (monotonicityDirection == "decreasing") {
+        Delta = "DeltaRMD"
+      } else {
+        stop("monotonicityDirection must equal either increasing or decreasing.")
+      }
+
+      if (parallel) {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+          temp = computeConditionalCS_DeltaRMM(betahat = betahat, sigma = sigma,
+                                               numPrePeriods = numPrePeriods,
+                                               numPostPeriods = numPostPeriods,
+                                               l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                               monotonicityDirection = monotonicityDirection,
+                                               hybrid_flag = hybrid_flag,
+                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      } else {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+          temp = computeConditionalCS_DeltaRMM(betahat = betahat, sigma = sigma,
+                                               numPrePeriods = numPrePeriods,
+                                               numPostPeriods = numPostPeriods,
+                                               l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                               monotonicityDirection = monotonicityDirection,
+                                               hybrid_flag = hybrid_flag,
+                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      }
+    } else { # if biasDirection is specified, DeltaRMB.
+      if (biasDirection == "positive") {
+        Delta = "DeltaRMPB"
+      } else if (biasDirection == "negative") {
+        Delta = "DeltaRMNB"
+      } else {
+        stop("monotonicityDirection must equal either positive or negative.")
+      }
+
+      if (parallel) {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+          temp = computeConditionalCS_DeltaRMB(betahat = betahat, sigma = sigma,
+                                               numPrePeriods = numPrePeriods,
+                                               numPostPeriods = numPostPeriods,
+                                               l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                               biasDirection = biasDirection,
+                                               hybrid_flag = hybrid_flag,
+                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      } else {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+          temp = computeConditionalCS_DeltaRMB(betahat = betahat, sigma = sigma,
+                                               numPrePeriods = numPrePeriods,
+                                               numPostPeriods = numPostPeriods,
+                                               l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                               biasDirection = biasDirection,
+                                               hybrid_flag = hybrid_flag,
+                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      }
+    }
+  } else { # if bound = "deviation from linear trend", we select Delta^{SDRM} and its variants.
+    # use monotonicity direction and biasDirection to select the choice of Delta
+    if (is.null(monotonicityDirection) & is.null(biasDirection)) { # if both null, Delta^{SDRM}
+      Delta = "DeltaSDRM"
+
+      if (parallel) {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+          temp = computeConditionalCS_DeltaSDRM(betahat = betahat, sigma = sigma,
+                                                numPrePeriods = numPrePeriods,
+                                                numPostPeriods = numPostPeriods,
+                                                l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                                hybrid_flag = hybrid_flag,
+                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      } else {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+          temp = computeConditionalCS_DeltaSDRM(betahat = betahat, sigma = sigma,
+                                                numPrePeriods = numPrePeriods,
+                                                numPostPeriods = numPostPeriods,
+                                                l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                                hybrid_flag = hybrid_flag,
+                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      }
+    } else if (!is.null(monotonicityDirection)) { # if monotonicityDirection specified, Delta^{SDRMM}.
+      if (monotonicityDirection == "increasing") {
+        Delta = "DeltaSDRMI"
+      } else if (monotonicityDirection == "decreasing") {
+        Delta = "DeltaSDRMD"
+      } else {
+        stop("monotonicityDirection must equal either increasing or decreasing.")
+      }
+
+      if (parallel) {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+          temp = computeConditionalCS_DeltaSDRMM(betahat = betahat, sigma = sigma,
+                                                 numPrePeriods = numPrePeriods,
+                                                 numPostPeriods = numPostPeriods,
+                                                 l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                                 monotonicityDirection = monotonicityDirection,
+                                                 hybrid_flag = hybrid_flag,
+                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      } else {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+          temp = computeConditionalCS_DeltaSDRMM(betahat = betahat, sigma = sigma,
+                                                 numPrePeriods = numPrePeriods,
+                                                 numPostPeriods = numPostPeriods,
+                                                 l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                                 monotonicityDirection = monotonicityDirection,
+                                                 hybrid_flag = hybrid_flag,
+                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      }
+    } else { # if biasDirection is specified, DeltaRMB.
+      if (biasDirection == "positive") {
+        Delta = "DeltaSDRMPB"
+      } else if (biasDirection == "negative") {
+        Delta = "DeltaSDRMNB"
+      } else {
+        stop("monotonicityDirection must equal either positive or negative.")
+      }
+
+      if (parallel) {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+          temp = computeConditionalCS_DeltaSDRMB(betahat = betahat, sigma = sigma,
+                                                 numPrePeriods = numPrePeriods,
+                                                 numPostPeriods = numPostPeriods,
+                                                 l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                                 biasDirection = biasDirection,
+                                                 hybrid_flag = hybrid_flag,
+                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      } else {
+        Results = foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+          temp = computeConditionalCS_DeltaSDRMB(betahat = betahat, sigma = sigma,
+                                                 numPrePeriods = numPrePeriods,
+                                                 numPostPeriods = numPostPeriods,
+                                                 l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
+                                                 biasDirection = biasDirection,
+                                                 hybrid_flag = hybrid_flag,
+                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+          tibble(lb = min(temp$grid[temp$accept == 1]),
+                 ub = max(temp$grid[temp$accept == 1]),
+                 method = method_named,
+                 Delta = Delta, Mbar = Mbarvec[m])
+        }
+      }
+    }
+  }
+  # Return tibble of results
+  return(Results)
+}
+
+createSensitivityPlot_relativeMagnitudes <- function(robustResults, originalResults, rescaleFactor = 1, maxMbar = Inf, add_xAxis = TRUE) {
+  # Set Mbar for OLS to be the min Mbar in robust results minus the gap between Mbars in robust
+  Mbargap <- min( diff( sort( robustResults$Mbar) ) )
+  Mbarmin <- min( robustResults$Mbar)
+
+  originalResults$Mbar <- Mbarmin - Mbargap
+  df <- bind_rows(originalResults, robustResults)
+
+  # Rescale all the units by rescaleFactor
+  df <- df %>% mutate_at( c("Mbar", "ub", "lb"), ~ .x * rescaleFactor)
+
+  # Filter out observations above maxM (after rescaling)
+  df <- df %>% filter(Mbar <= maxMbar)
+
+  p <- ggplot(data = df, aes(x=Mbar)) +
+    geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
+                  width = Mbargap * rescaleFactor / 2) +
+    scale_color_manual(values = c("red", '#01a2d9')) +
+    theme(legend.title=element_blank(), legend.position="bottom") +
+    labs(x = latex2exp::TeX("$\\bar{M}$"), y = "")
+
+  if (add_xAxis) {
+    p <- p + geom_hline(yintercept = 0)
+  }
+  return(p)
+}
+
+# Construct Original CS -----------------------------------------------
 constructOriginalCS <- function(betahat, sigma,
                                 numPrePeriods, numPostPeriods,
                                 l_vec = .basisVector(index = 1, size = numPostPeriods),
@@ -396,12 +713,10 @@ constructOriginalCS <- function(betahat, sigma,
     lb = lb,
     ub = ub,
     method = "Original",
-    Delta = NA,
-    M = 0
+    Delta = NA
   ))
 }
 
-# Sensitivity plot functions ------------------------------------------
 createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
                                  numPrePeriods, numPostPeriods, alpha = 0.05,
                                  timeVec, referencePeriod,
@@ -427,30 +742,4 @@ createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
     scale_x_continuous(breaks = seq(from = min(timeVec), to = max(timeVec), by = 1),
                        labels = as.character(seq(from = min(timeVec), to = max(timeVec), by = 1)))
   return(EventStudyPlot)
-}
-
-createSensitivityPlot <- function(robustResults, originalResults, rescaleFactor = 1, maxM = Inf, add_xAxis = TRUE) {
-  # Set M for OLS to be the min M in robust results minus the gap between Ms in robust
-  Mgap <- min( diff( sort( robustResults$M) ) )
-  Mmin <- min( robustResults$M)
-  originalResults$M <- Mmin - Mgap
-  df <- bind_rows(originalResults, robustResults)
-
-  # Rescale all the units by rescaleFactor
-  df <- df %>% mutate_at( c("M", "ub", "lb"), ~ .x * rescaleFactor)
-
-  # Filter out observations above maxM (after rescaling)
-  df <- df %>% filter(M <= maxM)
-
-  p <- ggplot(data = df, aes(x=M)) +
-    geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
-                  width = Mgap * rescaleFactor / 2) +
-    scale_color_manual(values = c("red", '#01a2d9')) +
-    theme(legend.title=element_blank(), legend.position="bottom") +
-    labs(x = "M", y = "")
-
-  if (add_xAxis) {
-    p <- p + geom_hline(yintercept = 0)
-  }
-  return(p)
 }

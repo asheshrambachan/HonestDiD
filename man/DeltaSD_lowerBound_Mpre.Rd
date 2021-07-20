@@ -39,7 +39,7 @@ Returns a scalar that equals the lower bound of a one-sided confidence interval 
 }
 \references{
 Andrews, Isaiah, Jonathan Roth and Ariel Pakes. "Inference for Linear Conditional Moment Inequalities." 2019.
-Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2019.
+Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2021.
 }
 \author{
 Ashesh Rambachan

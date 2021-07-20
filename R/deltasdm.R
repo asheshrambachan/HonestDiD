@@ -2,7 +2,7 @@
 # Author: Ashesh Rambachan <asheshr@g.harvard.edu>
 #
 #  This script contains functions to implement the methods
-#  described in Rambachan & Roth (2019) for robust inference
+#  described in Rambachan & Roth (2021) for robust inference
 #  in difference-in-differences and event study designs.
 #
 #  This script contains functions that are used to construct
@@ -21,36 +21,6 @@ library(foreach)
 # DELTA^{SDM}(M) FUNCTIONS --------------------------------------------
 # In this section, we implement helper functions to place testing with
 # Delta^{SDM}(M) into the form needed to use the ARP functions.
-
-.create_A_M <- function(numPrePeriods, numPostPeriods,
-                        monotonicityDirection = "increasing", postPeriodMomentsOnly = F){
-  #This function creates a matrix so that A \delta <= 0 implies delta is increasing/decreasing depending on what direction is specified
-  A_M = matrix(0, nrow = numPrePeriods+numPostPeriods, ncol=numPrePeriods+numPostPeriods)
-  for(r in 1:(numPrePeriods-1)){
-    A_M[r, r:(r+1)] <- c(1,-1)
-  }
-  A_M[numPrePeriods, numPrePeriods] <- 1
-  if(numPostPeriods > 0){
-    A_M[numPrePeriods + 1, numPrePeriods + 1] <- -1
-    if (numPostPeriods > 1) {
-      for (r in (numPrePeriods + 2):(numPrePeriods+numPostPeriods)) {
-        A_M[r, (r-1):r] <- c(1,-1)
-      }
-    }
-  }
-  # If postPeriodMomentsOnly == T, exclude moments that only involve pre-periods
-  if(postPeriodMomentsOnly){
-    postPeriodIndices <- (numPrePeriods +1):NCOL(A_M)
-    prePeriodOnlyRows <- which( rowSums( A_I[ , postPeriodIndices] != 0 ) == 0 )
-    A_M <- A_M[-prePeriodOnlyRows , ]
-  }
-  if (monotonicityDirection == "decreasing") {
-    A_M <- -A_M
-  } else if(monotonicityDirection != "increasing") {
-    stop("direction must be 'increasing' or 'decreasing'")
-  }
-  return(A_M)
-}
 
 .create_A_SDM <- function(numPrePeriods, numPostPeriods,
                           monotonicityDirection = "increasing", postPeriodMomentsOnly = F) {
@@ -78,8 +48,8 @@ library(foreach)
   #   M              = smoothness parameter of Delta^SD(M).
 
   d_SD = .create_d_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = postPeriodMomentsOnly)
-  d_I = rep(0, ifelse(postPeriodMomentsOnly, numPostPeriods, numPrePeriods+numPostPeriods) )
-  d = c(d_SD, d_I)
+  d_M = rep(0, ifelse(postPeriodMomentsOnly, numPostPeriods, numPrePeriods+numPostPeriods) )
+  d = c(d_SD, d_M)
   return(d)
 }
 

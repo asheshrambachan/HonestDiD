@@ -76,7 +76,7 @@ If returnLength equals TRUE, function returns a scalar that equals the length of
   }
 }
 \references{
-Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2019.
+Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2021.
 }
 \author{
 Ashesh Rambachan

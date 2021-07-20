@@ -31,7 +31,7 @@ DeltaSD_upperBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05)
   Returns a scalar that equals the maximum of the upper bounds of one-sided upper confidence intervals for the observed second differences of the pre-period event study coefficients.
 }
 \references{
-Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2019.
+Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2021.
 }
 \author{
 Ashesh Rambachan

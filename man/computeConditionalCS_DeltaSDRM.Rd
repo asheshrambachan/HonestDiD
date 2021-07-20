@@ -1,22 +1,22 @@
-\name{computeConditionalCS_DeltaSD}
-\alias{computeConditionalCS_DeltaSD}
+\name{computeConditionalCS_DeltaSDRM}
+\alias{computeConditionalCS_DeltaSDRM}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Computes conditional and hybridized confidence set for Delta = Delta^{SD}(M).
+Computes conditional and hybridized confidence set for Delta = Delta^{SDRM}(Mbar).
 }
 \description{
-  Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{SD}(M).
+Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{SDRM}(Mbar).
 }
 \usage{
-computeConditionalCS_DeltaSD(betahat, sigma, numPrePeriods, numPostPeriods,
-                                    l_vec = .basisVector(index = 1, size = numPostPeriods), M = 0,
-                                    alpha = 0.05, hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
-                                    returnLength = F, postPeriodMomentsOnly = T,
-                                    gridPoints =10^3, grid.lb = NA, grid.ub = NA)
+computeConditionalCS_DeltaSDRM(betahat, sigma, numPrePeriods, numPostPeriods,
+                         l_vec = .basisVector(index = 1, size = numPostPeriods), Mbar = 0,
+                         alpha = 0.05, hybrid_flag = "LF", hybrid_kappa = alpha/10,
+                         returnLength = F, postPeriodMomentsOnly = T,
+                         gridPoints=10^3, grid.ub = NA, grid.lb = NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
- \item{betahat}{
+  \item{betahat}{
   Vector of estimated event study coefficients.
  }
  \item{sigma}{
@@ -31,23 +31,23 @@ computeConditionalCS_DeltaSD(betahat, sigma, numPrePeriods, numPostPeriods,
   \item{l_vec}{
   Vector of length numPostPeriods that describes the scalar parameter of interest, theta = l_vec'tau. Default equals to first basis vector, (1, 0, ..., 0)
   }
-  \item{M}{
-  Tuning parameter for Delta^{SD}(M) that governs the degree of non-linearity allowed in the violation of parallel trends. Default equals 0
+  \item{Mbar}{
+  Tuning parameter Mbar for Delta^{SDRM}(Mbar) that governs how different the maximal pre-period deviation from a linear trend may be from the maximal deviation from a linear trend in the post-treatment period the post-treatment period. Default sets Mbar = 0. See Section 2.3.2 of Rambachan & Roth (2021) for more details.
   }
   \item{alpha}{
-  Desired size of the confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)
+  Desired level of the confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)
   }
   \item{hybrid_flag}{
-  Flag for whether user wishes to compute a hybridized confidence set. "ARP" specifies the conditional confidence set, "FLCI" specifies the conditional FLCI confidence set and "LF" specifies the conditional least-favorable confidence set. Default equals "FLCI".
+  Flag for whether user wishes to compute a hybridized confidence set. "ARP" specifies the conditional confidence set "LF" specifies the conditional least-favorable confidence set. The conditional FLCI hybrid confidence set is not available for Delta^{SDRM}(Mbar) since the FLCI is infinite length for this choice of Delta. See Section 3.3 and Section 5.3 of Rambachan & Roth (2021) for details. Default equals "LF".
   }
   \item{hybrid_kappa}{
   Desired first-stage size of hybridized confidence set. Only specify this value if the user wishes to compute a hybridized confidence set. Default equals alpha/10. If user specifies hybrid_flag = "ARP", set this value to NULL.
   }
   \item{returnLength}{
-Logical value. If TRUE, function only returns the length of the robust confidence. If FALSE, function returns dataframe that contains a grid of possible parameter values and a vector of zeros and ones associated with each value in the grid (one denotes that the grid value lies in the confidence set and zero denotes that the grid value does not fall within the confidence set. Default equals FALSE.)
+Logical value. If TRUE, function only returns the length of the robust confidence. If FALSE, function returns dataframe that contains a grid of possible parameter values and a vector of zeros and ones associated with each value in the grid (one denotes that the grid value lies in the confidence set and zero denotes that the grid value does not fall within the confidence set.) Default equals FALSE.
   }
   \item{postPeriodMomentsOnly}{
-  Logical value. If TRUE, function excludes moments for Delta^{SD}(M) that only include pre-period coefficients. Default equals TRUE.
+  Logical value. If TRUE, function excludes moments for Delta^{SDRM}(Mbar) that only include pre-period coefficients. Default equals TRUE.
   }
   \item{gridPoints}{
   Number of grid points used in test inversion step. Default equals 1000.
@@ -63,7 +63,7 @@ Logical value. If TRUE, function only returns the length of the robust confidenc
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
-  If returnLength equals TRUE, function returns a scalar that equals the length of the confidence interval. If returnLength equals FALSE, function returns a dataframe with columns
+If returnLength equals TRUE, function returns a scalar that equals the length of the confidence interval. If returnLength equals FALSE, function returns a dataframe with columns
   \item{grid}{
     Vector of grid values used to construct the confidence interval by test inversion.
   }
@@ -75,11 +75,13 @@ Logical value. If TRUE, function only returns the length of the robust confidenc
 Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 2021.
 }
 \author{
-Ashesh Rambachan
+ Ashesh Rambachan
 }
 \note{
 %%  ~~further notes~~
 }
+
+%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
