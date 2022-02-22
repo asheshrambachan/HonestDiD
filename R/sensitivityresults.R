@@ -32,7 +32,7 @@ createSensitivityResults <- function(betahat, sigma,
   # If Mvec is null, construct default Mvec
   if (is.null(Mvec)) {
     if (numPrePeriods == 1) {
-      Mvec = seq(from = 0, to = sigma[1, 1], length.out = 10)
+      Mvec = seq(from = 0, to = sqrt(sigma[1, 1]), length.out = 10)
     } else {
       Mub = DeltaSD_upperBound_Mpre(betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods, alpha = 0.05)
       Mvec = seq(from = 0, to = Mub, length.out = 10)
