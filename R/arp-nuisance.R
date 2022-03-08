@@ -56,7 +56,7 @@ library(foreach)
 .vlo_vup_dual_fn <- function(eta, s_T, gamma_tilde, sigma, W_T) {
   # This function computes vlo and vup for the dual linear program for the
   # conditional values using the bisection method described in Appendix
-  # G in Algorithm 1.
+  # D of ARP (2021) in Algorithm 1.
   #
   # Inputs:
   #   eta         = solution to LP from test_delta_lp_fn
@@ -540,7 +540,9 @@ library(foreach)
                   delta = linSoln$delta_star,
                   lambda = linSoln$lambda))
     } else {
-      cval = .norminvp_generalized(p = 1 - mod_size, l = zlo_dual, u = zup_dual)
+      # Per ARP (2021), CV = max(0, c_{1-alpha}), where c_{1-alpha} is the 1-alpha
+      # quantile of truncated normal.
+      cval = max(0, .norminvp_generalized(p = 1 - mod_size, l = zlo_dual, u = zup_dual))
       reject = as.numeric(c(maxstat) > cval)
       return(list(reject = reject,
                   eta = linSoln$eta_star,
@@ -626,7 +628,9 @@ library(foreach)
                   delta = linSoln$delta_star,
                   lambda = linSoln$lambda))
     } else {
-      cval = .norminvp_generalized(p = 1 - mod_size, l = zlo, u = zup)
+      # Per ARP (2021), CV = max(0, c_{1-alpha}), where c_{1-alpha} is the 1-alpha
+      # quantile of truncated normal.
+      cval = max(0, .norminvp_generalized(p = 1 - mod_size, l = zlo, u = zup))
       reject = as.numeric(c(maxstat) > cval)
       return(list(reject = reject,
                   eta = linSoln$eta_star,

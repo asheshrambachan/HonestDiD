@@ -39,8 +39,11 @@
   c <- sigma %*% gamma / as.numeric( t(gamma) %*% sigma %*% gamma  )
   z <- (diag(NROW(y)) - c %*% t(gamma)) %*% y
   VLoVUpVec <- .VLoVUpFN(eta = gamma, Sigma = sigma, A = Abar, b = dbar, z = z)
-  criticalVal <- .norminvp_generalized(p = 1-alpha, l = VLoVUpVec[1], u = VLoVUpVec[2],
-                                       mu = T_B %*% dtilde, sd = sigmabar)
+
+  # Per ARP (2021), CV = max(0, c_{1-alpha}), where c_{1-alpha} is the 1-alpha
+  # quantile of truncated normal.
+  criticalVal <- max(0, .norminvp_generalized(p = 1-alpha, l = VLoVUpVec[1], u = VLoVUpVec[2],
+                                       mu = T_B %*% dtilde, sd = sigmabar))
   reject <- (maxMoment + T_B %*% dtilde > criticalVal)
 
   return(reject)
@@ -69,6 +72,8 @@
   if (max(A_firststage %*% y - d_firststage) > 0) {
     reject <- T
   } else {
+    # Per ARP (2021), CV = max(0, c_{1-alpha-tilde}), where alpha-tilde = (alpha - kappa)/(1-kappa)
+    # quantile of truncated normal that accounts for failing to reject in the first stage.
     alphatilde <- (alpha - hybrid_list$hybrid_kappa) / (1 - hybrid_list$hybrid_kappa)
     reject <- .testInIdentifiedSet(y = y, sigma = sigma,
                                       A = A, d = d,
@@ -104,8 +109,12 @@
     c <- sigma %*% gamma / as.numeric( t(gamma) %*% sigma %*% gamma  )
     z <- (diag(NROW(y)) - c %*% t(gamma)) %*% y
     VLoVUpVec <- .VLoVUpFN(eta = gamma, Sigma = sigma, A = Abar, b = dbar, z = z)
-    criticalVal <- .norminvp_generalized(p = 1-alpha, l = VLoVUpVec[1], u = VLoVUpVec[2],
-                                         mu = T_B %*% dtilde, sd = sigmabar)
+
+    # Per ARP (2021), CV = max(0, c_{1-alpha-tilde}), where alpha-tilde = (alpha - kappa)/(1-kappa)
+    # quantile of truncated normal that accounts for failing to reject in the first stage.
+    alphatilde <- (alpha - hybrid_list$hybrid_kappa) / (1 - hybrid_list$hybrid_kappa)
+    criticalVal <- max(0, .norminvp_generalized(p = 1-alphatilde, l = VLoVUpVec[1], u = VLoVUpVec[2],
+                                         mu = T_B %*% dtilde, sd = sigmabar))
     reject <- (maxMoment + T_B %*% dtilde > criticalVal)
 
     return(reject)
