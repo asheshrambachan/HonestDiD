@@ -8,7 +8,7 @@
   Constructs robust confidence intervals for Delta = Delta^{RM}(Mbar), Delta^{SDRM}(Mbar) and their variants that incorporate shape or sign restrictions for a vector of possible Mbar values. By default, the function constructs sensitivity results for Delta^{RM}(Mbar) and its variants. The confidence sets are constructed through test inversion.
 }
 \usage{
-createSensitivityResults(betahat, sigma, numPrePeriods, numPostPeriods,
+createSensitivityResults_relativeMagnitudes(betahat, sigma, numPrePeriods, numPostPeriods,
                   bound, method = NULL, Mvec = NULL,
                   l_vec = .basisVector(index = 1, size = numPostPeriods),
                   monotonicityDirection = NULL,

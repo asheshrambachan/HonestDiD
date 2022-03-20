@@ -42,7 +42,7 @@ library(purrr)
   v_max_dif <- matrix(0, nrow = 1, ncol = numPrePeriods + numPostPeriods + 1)
   v_max_dif[(numPrePeriods+1+s-2):(numPrePeriods+1+s)] <- c(1,-2, 1)
 
-  if(max_positive == F){
+  if (max_positive == F) {
     v_max_dif <- -v_max_dif
   }
 
@@ -53,10 +53,10 @@ library(purrr)
   # Construct A that imposes |Atilde * delta | <= A_UB * delta
   A = rbind(Atilde - A_UB, -Atilde - A_UB)
 
-  #Remove all-zero rows of the matrix Atilde, corresponding with the constraint (delta_s - delta_s-1) - (delta_s - delta_s-1) <= (delta_s - delta_s-1) - (delta_s - delta_s-1)
+  # Remove all-zero rows of the matrix Atilde, corresponding with the constraint (delta_s - delta_s-1) - (delta_s - delta_s-1) <= (delta_s - delta_s-1) - (delta_s - delta_s-1)
   zerorows <- apply(X = A, MARGIN = 1, FUN = function(x) t(x) %*% x) <= 10^-10
   A <- A[!zerorows, ]
-  #Remove the period corresponding with t=0
+  # Remove the period corresponding with t=0
   if (dropZero) {
     A = A[, -(numPrePeriods+1)]
     return(A)
@@ -250,7 +250,7 @@ computeConditionalCS_DeltaSDRM <- function(betahat, sigma, numPrePeriods, numPos
                                            l_vec = .basisVector(index = 1, size = numPostPeriods), Mbar = 0,
                                            alpha = 0.05, hybrid_flag = "LF", hybrid_kappa = alpha/10,
                                            returnLength = F, postPeriodMomentsOnly = T,
-                                           gridPoints = 10^3, grid.ub, grid.lb) {
+                                           gridPoints = 10^3, grid.ub = NA, grid.lb = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDRM}(Mbar). This functions uses ARP_computeCI for all
   # of its computations.
