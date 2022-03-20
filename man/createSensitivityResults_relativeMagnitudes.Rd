@@ -8,12 +8,17 @@
   Constructs robust confidence intervals for Delta = Delta^{RM}(Mbar), Delta^{SDRM}(Mbar) and their variants that incorporate shape or sign restrictions for a vector of possible Mbar values. By default, the function constructs sensitivity results for Delta^{RM}(Mbar) and its variants. The confidence sets are constructed through test inversion.
 }
 \usage{
-createSensitivityResults_relativeMagnitudes(betahat, sigma, numPrePeriods, numPostPeriods,
-                  bound, method = NULL, Mvec = NULL,
-                  l_vec = .basisVector(index = 1, size = numPostPeriods),
-                  monotonicityDirection = NULL,
-                  biasDirection = NULL, alpha = 0.05, parallel = FALSE,
-                  gridPoints = 10^3, grid.ub = NA, grid.lb = NA)
+createSensitivityResults_relativeMagnitudes(betahat, sigma,
+                                            numPrePeriods, numPostPeriods,
+                                            bound = "deviation from parallel trends",
+                                            method = "C-LF", Mbarvec = NULL,
+                                            l_vec = .basisVector(index = 1,
+                                                                  size = numPostPeriods),
+                                            monotonicityDirection = NULL,
+                                            biasDirection = NULL, alpha = 0.05,
+                                            parallel = FALSE,
+                                            gridPoints = 10^3,
+                                            grid.ub = NA, grid.lb = NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,7 +29,7 @@ createSensitivityResults_relativeMagnitudes(betahat, sigma, numPrePeriods, numPo
   Covariance matrix of event study coefficients.
   }
   \item{numPrePeriods}{
-  Number of pre-periods.
+  Number of pre-periods. If user selects bound = "deviation from linear trends" (Delta^{SDRM} as base choice of Delta), then numPrePeriods must be greater than one. See details for further explanation.
   }
   \item{numPostPeriods}{
   Number of post-periods.
@@ -64,7 +69,7 @@ createSensitivityResults_relativeMagnitudes(betahat, sigma, numPrePeriods, numPo
   }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+Note: If the user specifies bound = "deviation from linear trends", then numPrePeriods must be greater than one. By specifying bound = "deviation from linear trends", then the function selects Delta^{SDRM} as the base choice of Delta. As discussed in Section 2.3.2 of Rambachan & Roth (2021), Delta^{SDRM} uses observed non-linearities in the pre-treatment difference in trends to bound the possible non-linearities in the post-treatment difference in trends. This is only possible if there are multiple pre-treatment periods (i.e., numPrePeriods > 1).
 }
 \value{
 Returns a dataframe with columns
@@ -89,18 +94,6 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 }
 \author{
 Ashesh Rambachan
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

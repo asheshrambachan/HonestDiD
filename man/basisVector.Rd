@@ -21,11 +21,7 @@ basisVector(index = 1, size = 1)
   \item{size}{
 %%     ~~Describe \code{size} here~~
 The length of the vector. Default equals one.
-
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
 }
 \value{
 %%  ~Describe the value returned
@@ -35,18 +31,4 @@ The length of the vector. Default equals one.
 %% ...
 Returns a basis vector of length \code{size} with a 1 in the \code{index} position.
 }
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}

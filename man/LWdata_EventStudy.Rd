@@ -5,6 +5,9 @@
 \title{
   Event study estimates from baseline female specification on employment in Lovenheim & Willen (2019). See discussion in Section 6.2 of Rambachan & Roth (2021).
 }
+\description{
+  This list contains the event study estimates from the baseline female specification on employment in Lovenheim & Willen (2019). See discussion in Section 6.2 of Rambachan & Roth (2021).
+}
 \format{
   \describe{A list, containing 7 objects:
     \item{betahat}{Vector of estimated event study coefficients.}

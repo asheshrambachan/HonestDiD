@@ -288,6 +288,13 @@ computeConditionalCS_DeltaSDRMM <- function(betahat, sigma, numPrePeriods, numPo
   #  Outputs:
   #   data_frame containing upper and lower bounds of CI.
 
+  # Note: Since this choice of Delta^{SDRM} bounds the variation in post-treatment trends,
+  # based on observed variation in the pre-treatment trends, we provide an error
+  # if the user tries to provide data with only one pre-treatment period.
+  if (numPrePeriods == 1) {
+    stop("Error: not enough pre-periods (Delta^{SDRM} as base choice)! Plese see documentation.")
+  }
+
   # Create minimal s index for looping.
   min_s = -(numPrePeriods - 2)
   s_indices = min_s:0

@@ -5,6 +5,9 @@
 \title{
   Event study estimates from baseline event study specification on profits in Benzarti & Carloni (2019). See discussion in Section 6.1 of Rambachan & Roth (2021).
 }
+\description{
+This list contains the event study estimates from baseline event study specification on profits in Benzarti & Carloni (2019). See discussion in Section 6.1 of Rambachan & Roth (2021).
+}
 \format{
   \describe{A list, containing 7 objects:
     \item{betahat}{Vector of estimated event study coefficients.}

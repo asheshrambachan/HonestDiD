@@ -8,7 +8,8 @@ Construct lower bound for M for Delta = Delta^{SD}(M) based on observed pre-peri
   Constructs a lower bound for M using the observed pre-period coefficients. It constructs a one-sided confidence interval for the maximal second difference of the observed pre-period using the conditional test developed in Andrews, Roth & Pakes (2019). The number of pre-periods (not including the reference period) must be larger than or equal to two.
 }
 \usage{
-DeltaSD_lowerBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05, grid.ub = NA, gridPoints = 1000)
+DeltaSD_lowerBound_Mpre(betahat, sigma, numPrePeriods,
+                        alpha = 0.05, grid.ub = NA, gridPoints = 1000)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -31,9 +32,6 @@ DeltaSD_lowerBound_Mpre(betahat, sigma, numPrePeriods, alpha = 0.05, grid.ub = N
   Number of points to include in the grid that is used to construct the confidence interval by test inversion. Default equals 1000 points.
   }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 Returns a scalar that equals the lower bound of a one-sided confidence interval for the maximal second difference of the observed pre-period coefficients.
 }
@@ -43,15 +41,6 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 }
 \author{
 Ashesh Rambachan
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

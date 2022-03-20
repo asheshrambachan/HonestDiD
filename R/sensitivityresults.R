@@ -561,6 +561,14 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       }
     }
   } else { # if bound = "deviation from linear trend", we select Delta^{SDRM} and its variants.
+
+    # Note: Since this choice of Delta^{SDRM} bounds the variation in post-treatment trends,
+    # based on observed variation in the pre-treatment trends, we provide an error
+    # if the user tries to provide data with only one pre-treatment period.
+    if (numPrePeriods == 1) {
+      stop("Error: not enough pre-periods for 'deviation from linear trend' (Delta^{SDRM} as base choice). Plese see documentation.")
+    }
+
     # use monotonicity direction and biasDirection to select the choice of Delta
     if (is.null(monotonicityDirection) & is.null(biasDirection)) { # if both null, Delta^{SDRM}
       Delta = "DeltaSDRM"

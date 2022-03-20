@@ -8,7 +8,9 @@ Constructs sensitivity plot for Delta = Delta^{RM}(Mbar), Delta^{SDRM}(Mbar) and
   This function constructs sensitivity plots that examine how the robust confidence sets change as the parameter Mbar varies for Delta = Delta^{RM}(Mbar), Delta^{SDRM}(Mbar) and their variants that incorporate additional shape or sign restrictions. Similar plots are constructed in Section 6 of Rambachan & Roth (2021).
 }
 \usage{
-createSensitivityPlot_relativeMagnitudes(robustResults, originalResults, rescaleFactor = 1, maxMbar = Inf, add_xAxis = TRUE)
+createSensitivityPlot_relativeMagnitudes(robustResults, originalResults,
+                                         rescaleFactor = 1, maxMbar = Inf,
+                                         add_xAxis = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -28,9 +30,6 @@ createSensitivityPlot_relativeMagnitudes(robustResults, originalResults, rescale
   Logical specifying whether to plot the x-axis in the sensitivity plot. Default equals TRUE.
   }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
 Returns ggplot object of the sensitivity plot.
 }
@@ -39,17 +38,6 @@ Returns ggplot object of the sensitivity plot.
 }
 \author{
   Ashesh Rambachan
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

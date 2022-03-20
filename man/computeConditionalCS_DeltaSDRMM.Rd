@@ -9,9 +9,11 @@ Computes the conditional confidence set and hybridized confidence set for Delta 
 }
 \usage{
 computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
-                         l_vec = .basisVector(index = 1, size = numPostPeriods), Mbar = 0,
-                         alpha = 0.05, hybrid_flag = "LF", hybrid_kappa = alpha/10,
-                         returnLength = F, postPeriodMomentsOnly = T, monotonicityDirection = "increasing",
+                         l_vec = .basisVector(index = 1,
+                                              size = numPostPeriods),
+                         Mbar = 0, alpha = 0.05, hybrid_flag = "LF",
+                         hybrid_kappa = alpha/10, returnLength = F,
+                         postPeriodMomentsOnly = T, monotonicityDirection = "increasing",
                          gridPoints=10^3, grid.ub = NA, grid.lb = NA)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -23,7 +25,7 @@ computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
   Covariance matrix of event study coefficients.
  }
  \item{numPrePeriods}{
-  Number of pre-periods.
+  Number of pre-periods. For this function, \code{numPrePeriods} must be greater than one. See details for further explanation.
   }
   \item{numPostPeriods}{
   Number of post-periods.
@@ -63,10 +65,10 @@ Specifies direction of monotonicity restriction. If "increasing", underlying tre
   }
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+The choice Delta^{SDRMM} adds an additional shape restriction to Delta^{SDRM}(Mbar) that restricts the underlying trend to be monotone. For this choice Delta^{SDRMM}, \code{numPrePeriods} must be greater than one. As discussed in Section 2.3.2 of Rambachan & Roth (2021), Delta^{SDRM} uses observed non-linearities in the pre-treatment difference in trends to bound the possible non-linearities in the post-treatment difference in trends. This is only possible if there are multiple pre-treatment periods (i.e., \code{numPrePeriods} > 1).
 }
 \value{
-If returnLength equals TRUE, function returns a scalar that equals the length of the confidence interval. If returnLength equals FALSE, function returns a dataframe with columns
+If \code{returnLength} equals TRUE, function returns a scalar that equals the length of the confidence interval. If \code{returnLength} equals FALSE, function returns a dataframe with columns
   \item{grid}{
     Vector of grid values used to construct the confidence interval by test inversion.
   }
@@ -79,15 +81,4 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 }
 \author{
  Ashesh Rambachan
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
 }

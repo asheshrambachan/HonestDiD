@@ -9,9 +9,11 @@ Computes conditional and hybridized confidence set for Delta = Delta^{SD}(M).
 }
 \usage{
 computeConditionalCS_DeltaSD(betahat, sigma, numPrePeriods, numPostPeriods,
-                                    l_vec = .basisVector(index = 1, size = numPostPeriods), M = 0,
-                                    alpha = 0.05, hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
-                                    returnLength = F, postPeriodMomentsOnly = T,
+                                    l_vec = .basisVector(index = 1,
+                                                         size = numPostPeriods),
+                                    M = 0, alpha = 0.05, hybrid_flag = "FLCI",
+                                    hybrid_kappa = alpha/10, returnLength = F,
+                                    postPeriodMomentsOnly = T,
                                     gridPoints =10^3, grid.lb = NA, grid.ub = NA)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -59,9 +61,6 @@ Logical value. If TRUE, function only returns the length of the robust confidenc
   Lower bound of grid for test inversion. The user should only specify this if she wishes to manually specify the upper bound of the grid. Default equals NA sets grid lower bound to equal the lower bound of the identified set under parallel trends minus 20*standard deviation of the point estimate, l_vec'betahat.
   }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
   If returnLength equals TRUE, function returns a scalar that equals the length of the confidence interval. If returnLength equals FALSE, function returns a dataframe with columns
   \item{grid}{
@@ -76,13 +75,4 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 }
 \author{
 Ashesh Rambachan
-}
-\note{
-%%  ~~further notes~~
-}
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
 }

@@ -8,7 +8,9 @@ Constructs optimal fixed length confidence interval for Delta = Delta^{SD}(M).
   Computes the optimal FLCI for the scalar parameter of interest under Delta = Delta^{SD}(M).
 }
 \usage{
-findOptimalFLCI(betahat, sigma, numPrePeriods, numPostPeriods, l_vec, M = 0 numPoints = 100, alpha = 0.05)
+findOptimalFLCI(betahat, sigma,
+                numPrePeriods, numPostPeriods, l_vec,
+                M = 0 numPoints = 100, alpha = 0.05)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -37,9 +39,6 @@ findOptimalFLCI(betahat, sigma, numPrePeriods, numPostPeriods, l_vec, M = 0 numP
   Desired size of the FLCI. Default equals 0.05 (corresponding to 95\% confidence interval)
   }
 }
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
 \value{
   Returns a list containing items
     \item{FLCI}{
@@ -66,15 +65,4 @@ findOptimalFLCI(betahat, sigma, numPrePeriods, numPostPeriods, l_vec, M = 0 numP
 }
 \author{
 Ashesh Rambachan
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
 }
