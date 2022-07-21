@@ -347,7 +347,7 @@ library(foreach)
 
   if (is.null(X_T)) { # no nuisance parameter case
     set.seed(0)
-    xi.draws = mvtnorm::rmvnorm(n = sims, sigma = sigma)/sqrt(diag(sigma))
+    xi.draws = t( t(mvtnorm::rmvnorm(n = sims, sigma = sigma)) /sqrt(diag(sigma)) )
     eta_vec = matrixStats::rowMaxs(xi.draws)
     return(quantile(eta_vec, probs = 1 - hybrid_kappa, names = FALSE))
   } else { # Nuisance parameter case
