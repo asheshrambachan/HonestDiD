@@ -38,19 +38,24 @@ library(foreach)
   f = s_T + c(t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)*c
   Aeq = t(W_T)
   beq = c(1, rep(0, dim(Aeq)[1]-1))
+
   # Set up linear program. Note: don't need to provide lower bound because default lb is zero in ROI package.
   linprog = Rglpk::Rglpk_solve_LP(obj = -c(f),
                                   mat = Aeq,
                                   dir = rep("==", NROW(Aeq)),
                                   rhs = beq)
-  # Solve linear program and return negative of objective because we want the max.
-  return(-linprog$optimum)
+  return(linprog)
+}
+
+.roundeps <- function(x, eps = .Machine$double.eps^(3/4)) {
+    if ( abs(x) < eps ) return (0) else return(x)
 }
 
 .check_if_solution_helper <- function(c, tol, s_T, gamma_tilde, sigma, W_T) {
-  min_value = .max_program(s_T, gamma_tilde, sigma, W_T, c)
-  solution = (abs(c - min_value) <= tol)
-  return(solution)
+  # Solve linear program and use negative of objective because we want the max.
+  linprog = .max_program(s_T, gamma_tilde, sigma, W_T, c)
+  linprog$honestsolution = (abs(c - (-linprog$optimum)) <= tol)
+  return(linprog)
 }
 
 .vlo_vup_dual_fn <- function(eta, s_T, gamma_tilde, sigma, W_T) {
@@ -70,53 +75,76 @@ library(foreach)
   #   vup
 
   # Options for bisection algorithm
-  tol_c = 10^(-6)
-  tol_equality = 10^(-6)
-  sigma_B = sqrt( t(gamma_tilde) %*% sigma %*% gamma_tilde )
-  low_initial = min(-100, eta-20*sigma_B)
+  tol_c        = 1e-6
+  tol_equality = 1e-6
+  sigma_B      = sqrt( t(gamma_tilde) %*% sigma %*% gamma_tilde )
+  low_initial  = min(-100, eta-20*sigma_B)
   high_initial = max(100, eta + 20*sigma_B)
-  maxiters = 10000
+  maxiters     = 10000
+  switchiters  = 10
+  checksol     = .check_if_solution_helper(eta,
+                                           tol_equality,
+                                           s_T,
+                                           gamma_tilde,
+                                           sigma,
+                                           W_T)$honestsolution
+
+  if (is.na(checksol) || !checksol) {
+    # warning('User-supplied eta is not a solution. Not rejecting automatically')
+    return( list(vlo = eta, vup = Inf) )
+  }
 
   ### Compute vup ###
-  dif = tol_c+1
-  iters = 0
-  low = eta
-  high = high_initial
-
-  if (is.na(.check_if_solution_helper(c = eta, tol = tol_equality,
-                                      s_T = s_T, gamma_tilde = gamma_tilde,
-                                      sigma = sigma, W_T = W_T))) {
-    # warning('User-supplied eta is not a solution. Not rejecting automatically')
-    return( list(vlo = eta, vup = Inf) )
-  }
-  if (!.check_if_solution_helper(c = eta, tol = tol_equality,
-                                 s_T = s_T, gamma_tilde = gamma_tilde,
-                                 sigma = sigma, W_T = W_T)) {
-    # warning('User-supplied eta is not a solution. Not rejecting automatically')
-    return( list(vlo = eta, vup = Inf) )
-  }
-
-  if (.check_if_solution_helper(c = high_initial,
-                                tol = tol_equality,
-                                s_T = s_T,
-                                gamma_tilde = gamma_tilde,
-                                sigma = sigma, W_T = W_T)) {
+  if ( (linprog = .check_if_solution_helper(high_initial,
+                                            tol_equality,
+                                            s_T,
+                                            gamma_tilde,
+                                            sigma,
+                                            W_T))$honestsolution ) {
     vup = Inf
   } else {
+    # Shortcut: We want to find c s.t. the maximized value is equal to c. This
+    # takes the form a + b c = c, so for a given value we can find a, b and
+    # compute the value of c s.t. a + (b - 1) c = 0. In practice iterating
+    # over c in this way is faster than the bisection (it also appears to be
+    # more precise); however, if it's taking too long we switch to the bisection.
+    dif   = 0
+    iters = 1
+    b     = c(t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)
+    mid   = (.roundeps(linprog$solution %*% s_T) / (1 - linprog$solution %*% b))[1]
+    while ( !(linprog = .check_if_solution_helper(mid,
+                                                  tol_equality,
+                                                  s_T,
+                                                  gamma_tilde,
+                                                  sigma,
+                                                  W_T))$honestsolution && (iters < maxiters) ) {
+      iters = iters + 1
+      if ( iters >= switchiters ) {
+        dif = tol_c + 1
+        break
+      }
+      mid = (.roundeps(linprog$solution %*% s_T) / (1 - linprog$solution %*% b))[1]
+    }
+
     # Throughout the while loop, the high value is not a solution and the
     # low-value is a solution. If the midpoint between them is a solution,
     # then we set low to the midpoint; otherwise, we set high to the midpoint.
+    low   = eta
+    high  = mid
     while ( dif > tol_c & iters < maxiters ) {
       iters = iters+1
-      mid = 0.5*(high + low)
-      if (.check_if_solution_helper(c = mid, tol = tol_equality,
-                                    s_T = s_T, gamma_tilde = gamma_tilde,
-                                    sigma = sigma, W_T = W_T)) {
+      mid   = (high + low) / 2
+      if ( .check_if_solution_helper(mid,
+                                     tol_equality,
+                                     s_T,
+                                     gamma_tilde,
+                                     sigma,
+                                     W_T)$honestsolution ) {
         low = mid
       } else {
         high = mid
       }
-      dif = high-low
+      dif = high - low
     }
     if (iters == maxiters) {
       # warning("vup: Reached max iterations without a solution!")
@@ -125,36 +153,59 @@ library(foreach)
   }
 
   ### Compute vlo ###
-  dif = tol_c+1
-  iters = 0
-  low = low_initial
-  high = eta
-
-  if (.check_if_solution_helper(low_initial, tol = tol_equality,
-                                s_T = s_T, gamma_tilde = gamma_tilde,
-                                sigma = sigma, W_T = W_T)) {
+  if ( (linprog = .check_if_solution_helper(low_initial,
+                                            tol_equality,
+                                            s_T,
+                                            gamma_tilde,
+                                            sigma,
+                                            W_T))$honestsolution ) {
     vlo = -Inf
   } else {
+    # Shortcut: See shortcut notes above
+    dif   = 0
+    iters = 1
+    b     = c(t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)
+    mid   = (.roundeps(linprog$solution %*% s_T) / (1 - linprog$solution %*% b))[1]
+    while ( !(linprog = .check_if_solution_helper(mid,
+                                                  tol_equality,
+                                                  s_T,
+                                                  gamma_tilde,
+                                                  sigma,
+                                                  W_T))$honestsolution && (iters < maxiters) ) {
+      iters = iters + 1
+      if ( iters >= switchiters ) {
+        dif = tol_c + 1
+        break
+      }
+      mid = (.roundeps(linprog$solution %*% s_T) / (1 - linprog$solution %*% b))[1]
+    }
+
     # Throughout the while loop, the low value is not a solution and the
     # high-value is a solution. If the midpoint between them is a solution,
     # then we set high to the midpoint; otherwise, we set low to the midpoint.
+    low  = mid
+    high = eta
     while (dif > tol_c & iters < maxiters) {
-      mid = 0.5*(low + high)
-      iters = iters+1
-      if (.check_if_solution_helper(mid, tol = tol_equality,
-                                    s_T = s_T, gamma_tilde = gamma_tilde,
-                                    sigma = sigma, W_T = W_T)) {
+      mid   = (low + high) / 2
+      iters = iters + 1
+      if (.check_if_solution_helper(mid,
+                                    tol_equality,
+                                    s_T,
+                                    gamma_tilde,
+                                    sigma,
+                                    W_T)$honestsolution) {
         high = mid
       } else {
         low = mid
       }
-      dif = high-low
+      dif = high - low
     }
     if (iters == maxiters) {
       # warning("vlo: Reached max iterations without a solution!")
     }
     vlo = mid
   }
+
   return(list(vlo = vlo, vup = vup))
 }
 
@@ -347,7 +398,7 @@ library(foreach)
 
   if (is.null(X_T)) { # no nuisance parameter case
     set.seed(0)
-    xi.draws = mvtnorm::rmvnorm(n = sims, sigma = sigma)/sqrt(diag(sigma))
+    xi.draws = t(t(mvtnorm::rmvnorm(n = sims, sigma = sigma))/sqrt(diag(sigma)))
     eta_vec = matrixStats::rowMaxs(xi.draws)
     return(quantile(eta_vec, probs = 1 - hybrid_kappa, names = FALSE))
   } else { # Nuisance parameter case
