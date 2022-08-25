@@ -379,9 +379,7 @@ library(foreach)
     sigma <- sigma[rowsForARP, rowsForARP]
   }
 
-  .compute_eta <- function(seed, f, C) {
-    set.seed(seed)
-    b = -mvtnorm::rmvnorm(n = 1, sigma = sigma) # Define linear constraint
+  .compute_eta <- function(b, f, C) {
     # Define linear program using lpSolveAPI
     linprog = make.lp(nrow = 0, ncol = length(f))
     set.objfn(linprog, f)
@@ -396,8 +394,8 @@ library(foreach)
     return(get.objective(linprog))
   }
 
+  set.seed(0)
   if (is.null(X_T)) { # no nuisance parameter case
-    set.seed(0)
     xi.draws = t( t(mvtnorm::rmvnorm(n = sims, sigma = sigma)) /sqrt(diag(sigma)) )
     eta_vec = matrixStats::rowMaxs(xi.draws)
     return(quantile(eta_vec, probs = 1 - hybrid_kappa, names = FALSE))
@@ -407,9 +405,10 @@ library(foreach)
     dimDelta = dim(X_T)[2]     # dimension of delta
     f = c(1, rep(0, dimDelta)) # Define objective function
     C = -cbind(sdVec, X_T)     # Define linear constraint
+    xi.draws = mvtnorm::rmvnorm(n=sims, sigma=sigma)
 
     # Compute eta for each simulation
-    eta_vec = purrr::map_dbl(.x = 1:sims, .f = .compute_eta, f = f, C = C)
+    eta_vec = apply(-xi.draws, 1, .compute_eta, f, C)
 
     # We compute the 1-kappa quantile of eta_vec and return this value
     return(quantile(eta_vec, probs = 1-hybrid_kappa, names = FALSE))
