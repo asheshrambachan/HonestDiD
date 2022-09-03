@@ -228,26 +228,36 @@ library(foreach)
                                     l_vec, numPoints = 100, alpha){
   h0 <- .findHForMinimumBias(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
   hMin <- .findLowestH(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
-  hGrid <- seq(from = hMin, to = c(h0), length.out = numPoints)
-  biasDF <- purrr::map_dfr(.x = hGrid,
-                           .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = T) %>% mutate(h = h) } )
-  biasDF <- biasDF %>% rename(bias = value)
-  biasDF <-
-    left_join(
-      biasDF %>% mutate(id = 1),
-      data.frame(m = M, id = 1),
-      by = "id") %>% dplyr::select(-id)
+  hstar <- .findOptimalCIDerivativeBisection(hMin, h0, M, numPoints, alpha, sigma, numPrePeriods, numPostPeriods, l_vec, T)
 
-  biasDF <- biasDF %>%
-    rename(maxBias = bias) %>% filter(maxBias < Inf)
-  biasDF <- biasDF %>%
-    mutate(maxBias = maxBias * m) %>%
-    mutate(CI.halflength = .qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
-
-  optimalCIDF <- biasDF %>%
-    group_by(m) %>%
-    filter(status == "optimal" | status == "optimal_inaccurate") %>%
-    filter(CI.halflength == min(CI.halflength))
+  if ( is.na(hstar) ) {
+    # Numerical derivatives will occasionally fail; fall back into grid
+    # search in that case
+    hGrid <- seq(from = hMin, to = c(h0), length.out = numPoints)
+    biasDF <- purrr::map_dfr(.x = hGrid,
+                             .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = T) %>% mutate(h = h) } )
+    biasDF <- biasDF %>% rename(bias = value)
+    biasDF <-
+      left_join(
+        biasDF %>% mutate(id = 1),
+        data.frame(m = M, id = 1),
+        by = "id") %>% dplyr::select(-id)
+  
+    biasDF <- biasDF %>%
+      rename(maxBias = bias) %>% filter(maxBias < Inf)
+    biasDF <- biasDF %>%
+      mutate(maxBias = maxBias * m) %>%
+      mutate(CI.halflength = .qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
+  
+    optimalCIDF <- biasDF %>%
+      group_by(m) %>%
+      filter(status == "optimal" | status == "optimal_inaccurate") %>%
+      filter(CI.halflength == min(CI.halflength))
+  } else {
+    optimalCIDF <- .findWorstCaseBiasGivenH(hstar, sigma, numPrePeriods, numPostPeriods, l_vec, T)
+    optimalCIDF$m <- M
+    optimalCIDF$CI.halflength <- .qfoldednormal(p = 1-alpha, mu = (M * optimalCIDF$value)/hstar) * hstar
+  }
 
   results = list(
     optimalVec = c(unlist(optimalCIDF$optimal.l), l_vec),
@@ -257,6 +267,62 @@ library(foreach)
     status = optimalCIDF$status
   )
   return(results)
+}
+
+.findOptimalCIDerivativeBisection <-  function(a, b, M, numPoints, alpha, sigma,
+                                               numPrePeriods, numPostPeriods, l_vec, returnDF) {
+
+  # Function of h, which is convex (returns CI half length)
+  .f <- function(h, ...) {
+    biasDF <- .findWorstCaseBiasGivenH(h, sigma, numPrePeriods, numPostPeriods, l_vec, returnDF)
+    maxBias <- M * biasDF$value
+    if (biasDF$value < Inf) {
+      return(.qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
+    } else {
+      return(NaN)
+    }
+  }
+
+  # Minimum search relying on convexity; check for failures at each
+  # step; return failure and fall back on grid if failed
+  hstar   <- NaN
+  failtol <- (.Machine$double.eps)^(1/2)
+  failed  <- FALSE
+  dif     <- min((b - a) / numPoints, abs(b) * (.Machine$double.eps^(1/3)))
+  fa      <- .f(a)
+  fb      <- .f(b)
+  fpa     <- (.f(a + dif) - fa) / dif  # Limit from the right for lb
+  fpb     <- (.f(b - dif) - fb) / -dif # Limit from the left for ub
+  iter    <- 1
+
+  if ( (fpa > fpb) | is.nan(fa) | is.nan(fb) ) {
+    failed <-  TRUE
+  } else if ( fpb < 0 ) {
+    hstar <- b
+  } else if ( fpa > 0 ) {
+    hstar <- a
+  } else {
+    while ( !failed & abs(b - a) > dif ) {
+      iter   <- iter + 1
+      x      <- (a + b) / 2
+      fpx    <- (.f(x + dif) - .f(x - dif)) / (2 * dif)
+      failed <- (fpx > fpb + failtol) | (fpx + failtol < fpa) 
+      # fx     <- .f(x)
+      if ( fpx > 0 ) {
+        b <- x
+      } else {
+        a <- x
+      }
+    }
+    hstar <- (a + b) / 2
+  }
+
+  # Only does 4 + 2 * iter function evaluations
+  if (failed) {
+    return(NaN)
+  } else {
+    return(hstar)
+  }
 }
 
 findOptimalFLCI <- function(betahat, sigma, M = 0,
