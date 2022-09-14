@@ -51,7 +51,7 @@ described above, Rambachan and Roth provide methods for creating robust
 confidence intervals that are guaranteed to include the true parameter
 at least 95% of the time when the imposed restrictions on satisfied.
 These confidence intervals account for the fact that there is estimation
-both in the treatment effects estimates and our estimates of the
+error both in the treatment effects estimates and our estimates of the
 pre-trends.
 
 **Sensitivity analysis**. The approach described above naturally lends
@@ -146,16 +146,16 @@ df_nonstaggered <- df_nonstaggered %>% mutate(D = case_when( yexp2 == 2014 ~ 1,
                                                              T ~ 0)) 
 
 #Run the TWFE spec
-twfe_results <- feols(dins ~ i(year, D, ref = 2013) | stfips + year, 
-                      cluster = "stfips",
-                      data = df_nonstaggered)
+twfe_results <- fixest::feols(dins ~ i(year, D, ref = 2013) | stfips + year, 
+                        cluster = "stfips",
+                        data = df_nonstaggered)
 
 
 betahat <- summary(twfe_results)$coefficients #save the coefficients
 sigma <- summary(twfe_results)$cov.scaled #save the covariance matrix
 
 
-iplot(twfe_results)
+fixest::iplot(twfe_results)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
@@ -164,7 +164,7 @@ iplot(twfe_results)
 
 We are now ready to apply the HonestDiD package to do sensitivity
 analysis. Suppose we’re interested in assessing the sensitivity of the
-estimate for 2014 (the first year of treatment).
+estimate for 2014, the first year after treatment.
 
 ``` r
 delta_rm_results <- 
@@ -173,8 +173,7 @@ HonestDiD::createSensitivityResults_relativeMagnitudes(
                                     sigma = sigma, #covariance matrix
                                     numPrePeriods = 5, #num. of pre-treatment coefs
                                     numPostPeriods = 2, #num. of post-treatment coefs
-                                    Mbarvec = seq(0.5,2,by=0.5), #values of Mbar
-                                    l_vec = basisVector(index = 1, size =2) # use first post-treament period
+                                    Mbarvec = seq(0.5,2,by=0.5) #values of Mbar
                                     )
 
 delta_rm_results
@@ -195,10 +194,10 @@ robust to allowing for violations of parallel trends up to twice as big
 as the max violation in the pre-treatment period.
 
 We can also visualize the sensitivity analysis using the
-*createSensitivityPlot_relativeMagnitudes*. To do this, we first have to
+`createSensitivityPlot_relativeMagnitudes`. To do this, we first have to
 calculate the CI for the original OLS estimates using the
-*constructOriginalCS* command. We then pass our sensitivity analysis and
-the original results to the *createSensitivityPlot_relativeMagnitudes*
+`constructOriginalCS` command. We then pass our sensitivity analysis and
+the original results to the `createSensitivityPlot_relativeMagnitudes`
 command.
 
 ``` r
@@ -252,9 +251,16 @@ more than 0.03 percentage points.
 
 ## Sensitivity Analysis for Average Effects
 
-We have focused on the effect for the first post-treatment period. If we
-are instead interested in the average over the two post-treatment
-periods, we can use the option *l_vec = c(0.5,0.5)*.
+So far we have focused on the effect for the first post-treatment
+period, which is the default in HonestDiD. If we are instead interested
+in the average over the two post-treatment periods, we can use the
+option `l_vec = c(0.5,0.5)`. More generally, the package accommodates
+inference on any scalar parameter of the form
+*θ* = *l*<sub>*v**e**c*</sub>′*τ*<sub>*p**o**s**t*</sub>, where
+*τ*<sub>*p**o**s**t*</sub> = (*τ*<sub>1</sub>,...,*τ*<sub>*T̄*</sub>)′ is
+the vector of dynamic treatment effects. Thus, for example, setting
+`l_vec = basisVector(3,numPostPeriods)` allows us to do inference on the
+effect for the third period.
 
 ``` r
 delta_rm_results_avg <- 
@@ -270,7 +276,7 @@ originalResults_avg <- HonestDiD::constructOriginalCS(betahat = betahat,
                                                   numPostPeriods = 2,
                                                   l_vec = c(0.5,0.5))
 
-createSensitivityPlot_relativeMagnitudes(delta_rm_results_avg, originalResults_avg)
+HonestDiD::createSensitivityPlot_relativeMagnitudes(delta_rm_results_avg, originalResults_avg)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
@@ -280,11 +286,12 @@ createSensitivityPlot_relativeMagnitudes(delta_rm_results_avg, originalResults_a
 So far we have focused on a simple case without staggered timing.
 Fortunately, the HonestDiD approach works well with recently-introduced
 methods for DiD under staggered treatment timing. Below, we show how the
-package can be used with the did package implementing Callaway and
-Sant’Anna. (See, also, the example on the did package
-[website](https://github.com/pedrohcgs/CS_RR)). We are hoping to more
-formally integrate the did and HonestDiD packages in the future – stay
-tuned!
+package can be used with the [did
+package](https://github.com/bcallaway11/did#difference-in-differences-)
+implementing Callaway and Sant’Anna. (See, also, the example on the did
+package [website](https://github.com/pedrohcgs/CS_RR)). We are hoping to
+more formally integrate the did and HonestDiD packages in the future –
+stay tuned!
 
 ``` r
 ### First, we import the function Pedro Sant'Anna created for 
@@ -399,8 +406,9 @@ honest_did.AGGTEobj <- function(es,
 
 ########
 
-# Now, we run the C&S event-study with 'universal' base-period
-cs_results <- att_gt(yname = "dins",
+# Now, we run the C&S event-study with 'universal' base-period using the did package
+cs_results <- did::att_gt(
+                     yname = "dins",
                      tname = "year",
                      idname = "stfips", 
                      gname = "yexp2", 
@@ -408,7 +416,7 @@ cs_results <- att_gt(yname = "dins",
                      control_group = "notyettreated")
 
 #We create an event-study (using 5 periods before and after)
-es <- aggte(cs_results, type = "dynamic", 
+es <- did::aggte(cs_results, type = "dynamic", 
             min_e = -5, max_e = 5)
 
 #Run sensitivity analysis for relative magnitudes 
@@ -418,11 +426,21 @@ honest_did.AGGTEobj(es,
                     type = "relative_magnitude",
                     Mbarvec = seq(from = 0.5, to = 2, by = 0.5))
 
-createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_ci,
-                                         sensitivity_results$orig_ci)
+HonestDiD::createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_ci,
+                                                    sensitivity_results$orig_ci)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+## Additional options and resources
+
+See the previous package \[vignette\] for additional examples and
+package options, including incorporating sign and monotonicity
+restrictions, and combining relative magnitudes and smoothness
+restrictions.
+
+You can also view a video presentation about this paper
+[here](https://www.youtube.com/watch?v=6-NkiA2jN7U).
 
 ## Acknowledgements
 
