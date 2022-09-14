@@ -142,7 +142,7 @@ effects of Medicaid expansion using a canonical two-way fixed effects
 event-study specification,
 
 <img src= "https://latex.codecogs.com/svg.image?Y_%7Bit%7D%20=%20%5Calpha_i%20&plus;%20%5Clambda_t%20&plus;%20%5Csum_%7Bs%20%5Cneq%202013%7D%201%5Bs=t%5D%20%5Ctimes%20D_i%20%5Ctimes%20%5Cbeta_s%20&plus;%20u_%7Bit%7D%20" title = "TWFE" />
-where *D* is 1 if a unit is first treated in 2014 and 0 otherwise.
+where D is 1 if a unit is first treated in 2014 and 0 otherwise.
 
 ``` r
 df <- read_dta("https://raw.githubusercontent.com/Mixtape-Sessions/Advanced-DID/main/Exercises/Data/ehec_data.dta")
