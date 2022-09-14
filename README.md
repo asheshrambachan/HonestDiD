@@ -17,13 +17,17 @@ means.
 to say that the violations of parallel trends in the post-treatment
 period cannot be much bigger than those in the pre-treatment period.
 This can be formalized by imposing that the post-treatment violation of
-parallel trends is no more than some constant *M̄* larger than the
-maximum violation of parallel trends in the pre-treatment period. The
-value of *M̄* = 1, for instance, imposes that the post-treatment
-violation of parallel trends is no longer than the worst pre-treatment
-violation of parallel trends (between consecutive periods). Likewise,
-setting *M̄* = 2 implies that the post-treatment violation of parallel
-trends is no more than twice that in the pre-treatment period.
+parallel trends is no more than some constant
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
+larger than the maximum violation of parallel trends in the
+pre-treatment period. The value of
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> = 1,
+for instance, imposes that the post-treatment violation of parallel
+trends is no longer than the worst pre-treatment violation of parallel
+trends (between consecutive periods). Likewise, setting
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> = 2
+implies that the post-treatment violation of parallel trends is no more
+than twice that in the pre-treatment period.
 
 **Smoothness restrictions.** A second way of formalizing this is to say
 that the post-treatment violations of parallel trends cannot deviate too
@@ -42,9 +46,11 @@ values of *M* allow for more non-linearity.
 variety of other restrictions on the differences in trends as well. For
 example, the smoothness restrictions and relative magnitudes ideas can
 be combined to impose that the non-linearity in the post-treatment
-period is no more than *M̄* times larger than that in the pre-treatment
-periods. The researcher can also impose monotonicity or sign
-restrictions on the differences in trends as well.
+period is no more than
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
+times larger than that in the pre-treatment periods. The researcher can
+also impose monotonicity or sign restrictions on the differences in
+trends as well.
 
 **Robust confidence intervals**. Given restrictions of the type
 described above, Rambachan and Roth provide methods for creating robust
@@ -58,9 +64,13 @@ pre-trends.
 itself to sensitivity analysis. That is, the researcher can report
 confidence intervals under different assumptions about how bad the
 post-treatment violation of parallel trends can be (e.g., different
-values of *M̄* or *M*.) They can also report the “breakdown value” of *M̄*
-(or *M*) for a particular conclusion – e.g. the largest value of *M̄* for
-which the effect is still significant.
+values of
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
+or *M*.) They can also report the “breakdown value” of
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
+(or *M*) for a particular conclusion – e.g. the largest value of
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
+for which the effect is still significant.
 
 ## Package installation
 
@@ -130,9 +140,10 @@ dataset where some units are first treated in 2014 and the remaining
 units are not treated during the sample period. We can then estimate the
 effects of Medicaid expansion using a canonical two-way fixed effects
 event-study specification,
-*Y*<sub>*i**t*</sub> = *α*<sub>*i*</sub> + *λ*<sub>*t*</sub> + ∑<sub>*s* ≠ 2013</sub>1\[*s*=*t*\] × *D*<sub>*i*</sub> × *β*<sub>*s*</sub> + *u*<sub>*i**t*</sub>,
-where *D*<sub>*i*</sub> = 1 if a unit is first treated in 2014 and 0
-otherwise.
+
+<img src= "https://latex.codecogs.com/svg.image?Y_%7Bit%7D%20=%20%5Calpha_i%20&plus;%20%5Clambda_t%20&plus;%20%5Csum_%7Bs%20%5Cneq%202013%7D%201%5Bs=t%5D%20%5Ctimes%20D_i%20%5Ctimes%20%5Cbeta_s%20&plus;%20u_%7Bit%7D%20" title = "TWFE" />
+where <img src = "https://latex.codecogs.com/svg.image?D_i"> is 1 if a
+unit is first treated in 2014 and 0 otherwise.
 
 ``` r
 df <- read_dta("https://raw.githubusercontent.com/Mixtape-Sessions/Advanced-DID/main/Exercises/Data/ehec_data.dta")
@@ -188,10 +199,13 @@ delta_rm_results
     ## 4 -0.000916 0.0881 C-LF   DeltaRM   2
 
 The output of the previous command shows a robust confidence interval
-for different values of *M̄*. We see that the “breakdown value” for a
-significant effect is *M̄* ≈ 2, meaning that the significant result is
-robust to allowing for violations of parallel trends up to twice as big
-as the max violation in the pre-treatment period.
+for different values of
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />.
+We see that the “breakdown value” for a significant effect is
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> ≈ 2,
+meaning that the significant result is robust to allowing for violations
+of parallel trends up to twice as big as the max violation in the
+pre-treatment period.
 
 We can also visualize the sensitivity analysis using the
 `createSensitivityPlot_relativeMagnitudes`. To do this, we first have to

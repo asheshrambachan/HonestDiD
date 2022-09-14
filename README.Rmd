@@ -14,7 +14,7 @@ The HonestDiD package implements the tools for robust inference and sensitivity 
 
 The robust inference approach in Rambachan and Roth formalizes the intuition that pre-trends are informative about violations of parallel trends. They provide a few different ways of formalizing what this means. 
 
-**Bounds on relative magnitudes.** One way of formalizing this idea is to say that the violations of parallel trends in the post-treatment period cannot be much bigger than those in the pre-treatment period. This can be formalized by imposing that the post-treatment violation of parallel trends is no more than some constant $\bar{M}$ larger than the maximum violation of parallel trends in the pre-treatment period. The value of $\bar{M}=1$, for instance, imposes that the post-treatment violation of parallel trends is no longer than the worst pre-treatment violation of parallel trends (between consecutive periods). Likewise, setting $\bar{M}=2$ implies that the post-treatment violation of parallel trends is no more than twice that in the pre-treatment period. 
+**Bounds on relative magnitudes.** One way of formalizing this idea is to say that the violations of parallel trends in the post-treatment period cannot be much bigger than those in the pre-treatment period. This can be formalized by imposing that the post-treatment violation of parallel trends is no more than some constant <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> larger than the maximum violation of parallel trends in the pre-treatment period. The value of <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />$=1$, for instance, imposes that the post-treatment violation of parallel trends is no longer than the worst pre-treatment violation of parallel trends (between consecutive periods). Likewise, setting <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />$=2$ implies that the post-treatment violation of parallel trends is no more than twice that in the pre-treatment period. 
 
 **Smoothness restrictions.** A second way of formalizing this is to say that the post-treatment violations of parallel trends cannot deviate too much from a linear extrapolation of the pre-trend. In particular, we can impose that the slope of the pre-trend can change by no more than $M$ across consecutive periods, as shown in the figure below for an example with three periods.
 
@@ -22,11 +22,11 @@ The robust inference approach in Rambachan and Roth formalizes the intuition tha
 
 Thus, imposing a smoothness restriction with $M=0$ implies that the counterfactual difference in trends is exactly linear, whereas larger values of $M$ allow for more non-linearity. 
 
-**Other restrictions**. The Rambachan and Roth framework allows for a variety of other restrictions on the differences in trends as well. For example, the smoothness restrictions and relative magnitudes ideas can be combined to impose that the non-linearity in the post-treatment period is no more than $\bar{M}$ times larger than that in the pre-treatment periods. The researcher can also impose monotonicity or sign restrictions on the differences in trends as well. 
+**Other restrictions**. The Rambachan and Roth framework allows for a variety of other restrictions on the differences in trends as well. For example, the smoothness restrictions and relative magnitudes ideas can be combined to impose that the non-linearity in the post-treatment period is no more than <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> times larger than that in the pre-treatment periods. The researcher can also impose monotonicity or sign restrictions on the differences in trends as well. 
 
 **Robust confidence intervals**. Given restrictions of the type described above, Rambachan and Roth provide methods for creating robust confidence intervals that are guaranteed to include the true parameter at least 95% of the time when the imposed restrictions on satisfied. These confidence intervals account for the fact that there is estimation error both in the treatment effects estimates and our estimates of the pre-trends.
 
-**Sensitivity analysis**. The approach described above naturally lends itself to sensitivity analysis. That is, the researcher can report confidence intervals under different assumptions about how bad the post-treatment violation of parallel trends can be (e.g., different values of $\bar{M}$ or $M$.) They can also report the "breakdown value" of $\bar{M}$ (or $M$) for a particular conclusion -- e.g. the largest value of $\bar{M}$ for which the effect is still significant. 
+**Sensitivity analysis**. The approach described above naturally lends itself to sensitivity analysis. That is, the researcher can report confidence intervals under different assumptions about how bad the post-treatment violation of parallel trends can be (e.g., different values of <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> or $M$.) They can also report the "breakdown value" of <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> (or $M$) for a particular conclusion -- e.g. the largest value of <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> for which the effect is still significant. 
 
 
 
@@ -73,7 +73,10 @@ The data is a state-level panel with information on health insurance coverage an
 
 ### Estimate the baseline DiD
 
-For simplicity, we will first focus on assessing sensitivity to violations of parallel trends in a non-staggered DiD (see below regarding methods for staggered timing). We therefore restrict the sample to the years 2015 and earlier, and drop the small number of states who are first treated in 2015. We are now left with a panel dataset where some units are first treated in 2014 and the remaining units are not treated during the sample period. We can then estimate the effects of Medicaid expansion using a canonical two-way fixed effects event-study specification, $Y_{it} = \alpha_i + \lambda_t + \sum_{s \neq 2013} 1[s=t] \times D_i \times \beta_s + u_{it} ,$ where $D_i =1$ if a unit is first treated in 2014 and 0 otherwise.
+For simplicity, we will first focus on assessing sensitivity to violations of parallel trends in a non-staggered DiD (see below regarding methods for staggered timing). We therefore restrict the sample to the years 2015 and earlier, and drop the small number of states who are first treated in 2015. We are now left with a panel dataset where some units are first treated in 2014 and the remaining units are not treated during the sample period. We can then estimate the effects of Medicaid expansion using a canonical two-way fixed effects event-study specification, 
+
+<img src= "https://latex.codecogs.com/svg.image?Y_%7Bit%7D%20=%20%5Calpha_i%20&plus;%20%5Clambda_t%20&plus;%20%5Csum_%7Bs%20%5Cneq%202013%7D%201%5Bs=t%5D%20%5Ctimes%20D_i%20%5Ctimes%20%5Cbeta_s%20&plus;%20u_%7Bit%7D%20" title = "TWFE" />
+where <img src = "https://latex.codecogs.com/svg.image?D_i"> is 1 if a unit is first treated in 2014 and 0 otherwise.
 
 
 ```{r, message = F, warning=F}
@@ -123,7 +126,7 @@ delta_rm_results
 
 ```
 
-The output of the previous command shows a robust confidence interval for different values of $\bar{M}$. We see that the "breakdown value" for a significant effect is $\bar{M}\approx 2$, meaning that the significant result is robust to allowing for violations of parallel trends up to twice as big as the max violation in the pre-treatment period. 
+The output of the previous command shows a robust confidence interval for different values of <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />. We see that the "breakdown value" for a significant effect is <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />$\approx 2$, meaning that the significant result is robust to allowing for violations of parallel trends up to twice as big as the max violation in the pre-treatment period. 
 
 We can also visualize the sensitivity analysis using the `createSensitivityPlot_relativeMagnitudes`. To do this, we first have to calculate the CI for the original OLS estimates using the `constructOriginalCS` command. We then pass our sensitivity analysis and the original results to the `createSensitivityPlot_relativeMagnitudes` command. 
 
