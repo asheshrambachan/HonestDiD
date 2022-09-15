@@ -262,7 +262,7 @@ meaning that we can reject a null effect unless we are willing to allow
 for the linear extrapolation across consecutive periods to be off by
 more than 0.03 percentage points.
 
-## Sensitivity Analysis for Average Effects
+## Sensitivity Analysis for Average Effects or Other Periods
 
 So far we have focused on the effect for the first post-treatment
 period, which is the default in HonestDiD. If we are instead interested
@@ -272,8 +272,8 @@ inference on any scalar parameter of the form
 *θ* = *l*<sub>*v**e**c*</sub>′*τ*<sub>*p**o**s**t*</sub>, where
 *τ*<sub>*p**o**s**t*</sub> = (*τ*<sub>1</sub>,...,*τ*<sub>*T̄*</sub>)′ is
 the vector of dynamic treatment effects. Thus, for example, setting
-`l_vec = basisVector(3,numPostPeriods)` allows us to do inference on the
-effect for the third period.
+`l_vec = basisVector(2,numPostPeriods)` allows us to do inference on the
+effect for the second period after treatment.
 
 ``` r
 delta_rm_results_avg <- 

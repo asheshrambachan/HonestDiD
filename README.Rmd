@@ -156,9 +156,9 @@ createSensitivityPlot(delta_sd_results, originalResults)
 
 We see that the breakdown value for a significant effect is $M\approx 0.03$, meaning that we can reject a null effect unless we are willing to allow for the linear extrapolation across consecutive periods to be off by more than 0.03 percentage points.
 
-## Sensitivity Analysis for Average Effects
+## Sensitivity Analysis for Average Effects or Other Periods
 
-So far we have focused on the effect for the first post-treatment period, which is the default in HonestDiD. If we are instead interested in the average over the two post-treatment periods, we can use the option `l_vec = c(0.5,0.5)`. More generally, the package accommodates inference on any scalar parameter of the form $\theta = l_{vec}'\tau_{post}$, where $\tau_{post} = (\tau_1,...,\tau_{\bar{T}})'$ is the vector of dynamic treatment effects. Thus, for example, setting `l_vec = basisVector(3,numPostPeriods)` allows us to do inference on the effect for the third period. 
+So far we have focused on the effect for the first post-treatment period, which is the default in HonestDiD. If we are instead interested in the average over the two post-treatment periods, we can use the option `l_vec = c(0.5,0.5)`. More generally, the package accommodates inference on any scalar parameter of the form $\theta = l_{vec}'\tau_{post}$, where $\tau_{post} = (\tau_1,...,\tau_{\bar{T}})'$ is the vector of dynamic treatment effects. Thus, for example, setting `l_vec = basisVector(2,numPostPeriods)` allows us to do inference on the effect for the second period after treatment. 
 
 ```{r, cache=TRUE}
 delta_rm_results_avg <- 
