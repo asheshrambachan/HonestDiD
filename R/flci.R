@@ -156,7 +156,7 @@ library(foreach)
   quad_constraint <- .createConstraintsObject_SDLessThanH(sigma = sigma, numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW, h = h)
 
   biasProblem = CVXR::Problem(objectiveBias, constraints = list(abs_constraint, sum_constraint, quad_constraint))
-  biasResult <- psolve(biasProblem)
+  biasResult <- psolve(biasProblem, solver = "ECOS")
 
   # Multiply objective by M (note that solution otherwise doesn't depend on M,
   # so no need to run many times with many different Ms)
