@@ -240,7 +240,7 @@ honest_did.AGGTEobj <- function(es,
   
   # check if used universal base period and warn otherwise
   if (es$DIDparams$base_period != "universal") {
-    warning("it is recommended to use a universal base period for honest_did")
+    stop("Use a universal base period for honest_did")
   }
   
   # recover influence function for event study estimates
@@ -250,21 +250,25 @@ honest_did.AGGTEobj <- function(es,
   n <- nrow(es_inf_func)
   V <- t(es_inf_func) %*% es_inf_func / (n*n) 
   
+  #Remove the coefficient normalized to zero
+  referencePeriodIndex <- which(es$egt == -1)
+  V <- V[-referencePeriodIndex,-referencePeriodIndex]
+  beta <- es$att.egt[-referencePeriodIndex]
   
-  nperiods <- nrow(V)
-  npre <- sum(1*(es$egt < 0))
+  nperiods <- nrow(V) 
+  npre <- sum(1*(es$egt < -1))
   npost <- nperiods - npre
   
   baseVec1 <- basisVector(index=(e+1),size=npost)
   
-  orig_ci <- constructOriginalCS(betahat = es$att.egt,
+  orig_ci <- constructOriginalCS(betahat = beta,
                                  sigma = V, numPrePeriods = npre,
                                  numPostPeriods = npost,
                                  l_vec = baseVec1)
   
   if (type=="relative_magnitude") {
     if (is.null(method)) method <- "C-LF"
-    robust_ci <- createSensitivityResults_relativeMagnitudes(betahat = es$att.egt, sigma = V, 
+    robust_ci <- createSensitivityResults_relativeMagnitudes(betahat = beta, sigma = V, 
                                                              numPrePeriods = npre, 
                                                              numPostPeriods = npost,
                                                              bound=bound,
@@ -275,12 +279,10 @@ honest_did.AGGTEobj <- function(es,
                                                              biasDirection=biasDirection,
                                                              alpha=alpha,
                                                              gridPoints=100,
-                                                             grid.lb=-1,
-                                                             grid.ub=1,
                                                              parallel=parallel)
     
   } else if (type=="smoothness") {
-    robust_ci <- createSensitivityResults(betahat = es$att.egt,
+    robust_ci <- createSensitivityResults(betahat = beta,
                                           sigma = V, 
                                           numPrePeriods = npre, 
                                           numPostPeriods = npost,
@@ -292,33 +294,33 @@ honest_did.AGGTEobj <- function(es,
                                           parallel=parallel)
   }
   
-  list(robust_ci=robust_ci, orig_ci=orig_ci, type=type)
+  return(list(robust_ci=robust_ci, orig_ci=orig_ci, type=type))
 }
 
-########
+###
 
-# Now, we run the C&S event-study with 'universal' base-period using the did package
-cs_results <- did::att_gt(
-                     yname = "dins",
+# Run the CS event-study with 'universal' base-period option
+## Note that universal base period normalizes the event-time minus 1 coef to 0
+cs_results <- att_gt(yname = "dins",
                      tname = "year",
                      idname = "stfips", 
                      gname = "yexp2", 
-                     data = df,
-                     control_group = "notyettreated")
+                     data = df %>% mutate(yexp2 = ifelse(is.na(yexp2), 3000, yexp2)),
+                     control_group = "notyettreated",
+                     base_period = "universal")
 
-#We create an event-study (using 5 periods before and after)
-es <- did::aggte(cs_results, type = "dynamic", 
+es <- aggte(cs_results, type = "dynamic", 
             min_e = -5, max_e = 5)
 
 #Run sensitivity analysis for relative magnitudes 
 sensitivity_results <-
-honest_did.AGGTEobj(es,
-                    e =0,
-                    type = "relative_magnitude",
-                    Mbarvec = seq(from = 0.5, to = 2, by = 0.5))
+  honest_did.AGGTEobj(es,
+                      e =0,
+                      type = "relative_magnitude",
+                      Mbarvec = seq(from = 0.5, to = 2, by = 0.5))
 
-HonestDiD::createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_ci,
-                                                    sensitivity_results$orig_ci)
+createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_ci,
+                                         sensitivity_results$orig_ci)
 
 ```
 
