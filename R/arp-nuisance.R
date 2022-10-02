@@ -388,10 +388,10 @@ library(foreach)
     }
     set.bounds(linprog, lower = rep(-Inf, length(f)), columns = 1:length(f))
     # Solve linear program using dual simplex
-    lp.control(linprog, sense = "min", simplextype="dual", pivoting = "dantzig", verbose="neutral")
+    lp.control(linprog, sense = "min", simplextype="dual", pivoting = "dantzig", verbose="neutral", timeout=10)
     error_flag = solve(linprog)
     # Return value of eta
-    return(get.objective(linprog))
+    return(if (error_flag) NA else get.objective(linprog))
   }
 
   set.seed(0)
@@ -411,7 +411,7 @@ library(foreach)
     eta_vec = apply(-xi.draws, 1, .compute_eta, f, C)
 
     # We compute the 1-kappa quantile of eta_vec and return this value
-    return(quantile(eta_vec, probs = 1-hybrid_kappa, names = FALSE))
+    return(quantile(eta_vec, probs=1-hybrid_kappa, names=FALSE, na.rm=T))
   }
 }
 

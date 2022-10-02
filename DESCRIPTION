@@ -1,7 +1,7 @@
 Package: HonestDiD
 Type: Package
 Title: Robust inference in difference-in-differences and event study designs
-Version: 0.2.0
+Version: 0.2.1
 Depends:
     CVXR (>= 0.99-6),
     doParallel (>= 1.0.15),

@@ -294,6 +294,7 @@ library(foreach)
   fpa     <- (.f(a + dif) - fa) / dif  # Limit from the right for lb
   fpb     <- (.f(b - dif) - fb) / -dif # Limit from the left for ub
   iter    <- 1
+  maxiter <- 10 * ceiling(log(abs(b - a) / dif) / log(2))
 
   if ( (fpa > fpb) | is.nan(fa) | is.nan(fb) ) {
     failed <-  TRUE
@@ -306,7 +307,7 @@ library(foreach)
       iter   <- iter + 1
       x      <- (a + b) / 2
       fpx    <- (.f(x + dif) - .f(x - dif)) / (2 * dif)
-      failed <- (fpx > fpb + failtol) | (fpx + failtol < fpa) 
+      failed <- (fpx > fpb + failtol) | (fpx + failtol < fpa) | iter > maxiter
       # fx     <- .f(x)
       if ( fpx > 0 ) {
         b <- x
