@@ -5,8 +5,10 @@ The HonestDiD R package implements the tools for robust inference and
 sensitivity analysis for differences-in-differences and event study
 designs developed in [Rambachan and Roth
 (2022)](https://asheshrambachan.github.io/assets/files/hpt-draft.pdf).
-There is also a [HonestDiD Stata
-package](https://github.com/mcaceresb/stata-honestdid#honestdid).
+There is also an [HonestDiD Stata
+package](https://github.com/mcaceresb/stata-honestdid#honestdid), and a
+[Shiny app](https://ccfang2.shinyapps.io/HonestDiDSenAnlys/) developed
+by Chengcheng Fang.
 
 ## Background
 
