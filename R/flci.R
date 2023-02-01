@@ -244,15 +244,15 @@ library(foreach)
         by = "id") %>% dplyr::select(-id)
   
     biasDF <- biasDF %>%
-      rename(maxBias = bias) %>% filter(maxBias < Inf)
+      rename(maxBias = bias) %>% dplyr::filter(maxBias < Inf)
     biasDF <- biasDF %>%
       mutate(maxBias = maxBias * m) %>%
       mutate(CI.halflength = .qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
   
     optimalCIDF <- biasDF %>%
       group_by(m) %>%
-      filter(status == "optimal" | status == "optimal_inaccurate") %>%
-      filter(CI.halflength == min(CI.halflength))
+      dplyr::filter(status == "optimal" | status == "optimal_inaccurate") %>%
+      dplyr::filter(CI.halflength == min(CI.halflength))
   } else {
     optimalCIDF <- .findWorstCaseBiasGivenH(hstar, sigma, numPrePeriods, numPostPeriods, l_vec, T)
     optimalCIDF$m <- M

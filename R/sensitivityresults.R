@@ -396,7 +396,7 @@ createSensitivityPlot <- function(robustResults, originalResults, rescaleFactor 
   df <- df %>% mutate_at( c("M", "ub", "lb"), ~ .x * rescaleFactor)
 
   # Filter out observations above maxM (after rescaling)
-  df <- df %>% filter(M <= maxM)
+  df <- df %>% dplyr::filter(M <= maxM)
 
   p <- ggplot(data = df, aes(x=M)) +
     geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
@@ -694,7 +694,7 @@ createSensitivityPlot_relativeMagnitudes <- function(robustResults, originalResu
   df <- df %>% mutate_at( c("Mbar", "ub", "lb"), ~ .x * rescaleFactor)
 
   # Filter out observations above maxM (after rescaling)
-  df <- df %>% filter(Mbar <= maxMbar)
+  df <- df %>% dplyr::filter(Mbar <= maxMbar)
 
   p <- ggplot(data = df, aes(x=Mbar)) +
     geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
