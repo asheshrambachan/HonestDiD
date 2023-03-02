@@ -105,7 +105,7 @@ library(foreach)
     id.lb = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - max.results$optimum
   }
   # Return identified set
-  return(tibble(
+  return(tibble::tibble(
     id.lb = id.lb,
     id.ub = id.ub))
 }
@@ -171,10 +171,10 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
 
       # compute FLCI ub and FLCI lb
       if (is.na(grid.ub)){
-        grid.ub = (t(flci$optimalVec) %*% betahat) + flci$optimalHalfLength
+        grid.ub = c(t(flci$optimalVec) %*% betahat) + flci$optimalHalfLength
       }
       if (is.na(grid.lb)){
-        grid.lb = (t(flci$optimalVec) %*% betahat) - flci$optimalHalfLength
+        grid.lb = c(t(flci$optimalVec) %*% betahat) - flci$optimalHalfLength
       }
     } else if (hybrid_flag == "LF") {
       # Compute LF CV
@@ -189,7 +189,7 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
         IDset = .compute_IDset_DeltaSDM(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
                                         monotonicityDirection = monotonicityDirection,
                                         l_vec = l_vec, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-        sdTheta <- sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
+        sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
         if(is.na(grid.ub)){
           grid.ub = IDset$id.ub + 20*sdTheta
         }
@@ -204,7 +204,7 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
         IDset = .compute_IDset_DeltaSDM(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
                                         monotonicityDirection = monotonicityDirection,
                                         l_vec = l_vec, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-        sdTheta <- sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
+        sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
         if(is.na(grid.ub)){
           grid.ub = IDset$id.ub + 20*sdTheta
         }
@@ -234,25 +234,25 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
       hybrid_list$flci_l = flci$optimalVec
 
       # Add vbar to flci l vector
-      vbar = Variable(NROW(A_SDM))
-      obj <- Minimize( t(flci$optimalVec) %*% flci$optimalVec -
-                         2 * t(flci$optimalVec) %*% t(A_SDM) %*% vbar + quad_form(x = vbar, P = A_SDM %*% t(A_SDM)) )
-      prob = Problem(obj)
-      result = psolve(prob)
+      vbar = CVXR::Variable(NROW(A_SDM))
+      obj <- CVXR::Minimize( t(flci$optimalVec) %*% flci$optimalVec -
+                         2 * t(flci$optimalVec) %*% t(A_SDM) %*% vbar + CVXR::quad_form(x = vbar, P = A_SDM %*% t(A_SDM)) )
+      prob = CVXR::Problem(obj)
+      result = CVXR::psolve(prob)
       hybrid_list$vbar = result$getValue(vbar)
 
       # Add objects to hybrid_list: flci half-length
       hybrid_list$flci_halflength = flci$optimalHalfLength
 
       # compute FLCI ub and FLCI lb
-      grid.ub = (t(hybrid_list$flci_l) %*% betahat) + flci$optimalHalfLength
-      grid.lb = (t(hybrid_list$flci_l) %*% betahat) - flci$optimalHalfLength
+      grid.ub = c(t(hybrid_list$flci_l) %*% betahat) + flci$optimalHalfLength
+      grid.lb = c(t(hybrid_list$flci_l) %*% betahat) - flci$optimalHalfLength
     } else {
       # Compute ID set
       IDset = .compute_IDset_DeltaSDM(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
                                       monotonicityDirection = monotonicityDirection, l_vec = l_vec,
                                       numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-      sdTheta <- sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
+      sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
       if (is.na(grid.ub)) {
         grid.ub = IDset$id.ub + 20*sdTheta
       }

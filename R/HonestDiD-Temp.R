@@ -38,7 +38,7 @@ createSensitivityResults <- function(betahat, sigma,
   # If Mvec is null, construct default Mvec
   if (is.null(Mvec)) {
     if (numPrePeriods == 1) {
-      Mvec = seq(from = 0, to = sigma[1, 1], length.out = 10)
+      Mvec = seq(from = 0, to = c(sigma[1, 1]), length.out = 10)
     } else {
       Mub = DeltaSD_upperBound_Mpre(betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods, alpha = 0.05)
       Mvec = seq(from = 0, to = Mub, length.out = 10)
@@ -57,16 +57,16 @@ createSensitivityResults <- function(betahat, sigma,
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = 0.05)
-          tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
-                 method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
+          tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
+                         method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = 0.05)
-          tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
-                 method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
+          tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
+                         method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
         }
       }
     } else if (method == "Conditional") { # If method = Conditional, construct conditional confidence intervals
@@ -77,10 +77,10 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "ARP")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "Conditional",
-                 Delta = "DeltaSD", M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "Conditional",
+                         Delta = "DeltaSD", M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -89,10 +89,10 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "ARP")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "Conditional",
-                 Delta = "DeltaSD", M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "Conditional",
+                         Delta = "DeltaSD", M = Mvec[m])
         }
       }
     } else if (method == "C-F") { # If method = C-F, construct conditional FLCI,
@@ -103,10 +103,10 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "FLCI")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-F",
-                 Delta = "DeltaSD", M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-F",
+                         Delta = "DeltaSD", M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -115,10 +115,10 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "FLCI")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-F",
-                 Delta = "DeltaSD", M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-F",
+                         Delta = "DeltaSD", M = Mvec[m])
         }
       }
     } else if (method == "C-LF") {
@@ -129,10 +129,10 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "LF")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-LF",
-                 Delta = "DeltaSD", M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-LF",
+                         Delta = "DeltaSD", M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -141,10 +141,10 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "LF")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-LF",
-                 Delta = "DeltaSD", M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-LF",
+                         Delta = "DeltaSD", M = Mvec[m])
         }
       }
     } else{
@@ -168,16 +168,16 @@ createSensitivityResults <- function(betahat, sigma,
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = 0.05)
-          tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
-                 method = "FLCI", Delta = Delta, M = Mvec[m])
+         tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
+                        method = "FLCI", Delta = Delta, M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = 0.05)
-          tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
-                 method = "FLCI", Delta = Delta, M = Mvec[m])
+         tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
+                        method = "FLCI", Delta = Delta, M = Mvec[m])
         }
       }
     } else if (method == "Conditional") { # If method = Conditional, construct conditional confidence intervals
@@ -189,10 +189,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "ARP")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "Conditional",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "Conditional",
+                         Delta = Delta, M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -202,10 +202,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "ARP")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "Conditional",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "Conditional",
+                         Delta = Delta, M = Mvec[m])
         }
       }
     } else if (method == "C-F") { # If method = C-F, construct conditional FLCI,
@@ -217,10 +217,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "FLCI")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-F",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-F",
+                         Delta = Delta, M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -230,10 +230,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "FLCI")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-F",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-F",
+                         Delta = Delta, M = Mvec[m])
         }
       }
     } else if (method == "C-LF") {
@@ -245,10 +245,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "LF")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-LF",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-LF",
+                         Delta = Delta, M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -258,10 +258,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "LF")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-LF",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-LF",
+                         Delta = Delta, M = Mvec[m])
         }
       }
     } else{
@@ -285,16 +285,16 @@ createSensitivityResults <- function(betahat, sigma,
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = 0.05)
-          tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
-                 method = "FLCI", Delta = Delta, M = Mvec[m])
+         tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
+                        method = "FLCI", Delta = Delta, M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = 0.05)
-          tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
-                 method = "FLCI", Delta = Delta, M = Mvec[m])
+         tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
+                        method = "FLCI", Delta = Delta, M = Mvec[m])
         }
       }
     } else if (method == "Conditional") { # If method = Conditional, construct conditional confidence intervals
@@ -306,10 +306,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "ARP")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "Conditional",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "Conditional",
+                         Delta = Delta, M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -319,10 +319,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "ARP")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "Conditional",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "Conditional",
+                         Delta = Delta, M = Mvec[m])
         }
       }
     } else if (method == "C-F") { # If method = C-F, construct conditional FLCI,
@@ -334,11 +334,11 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "FLCI")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-F",
-                 Delta = Delta,
-                 M = Mvec[m])
+         tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                        ub = max(temp$grid[temp$accept == 1]),
+                        method = "C-F",
+                        Delta = Delta,
+                        M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -348,11 +348,11 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "FLCI")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-F",
-                 Delta = Delta,
-                 M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-F",
+                         Delta = Delta,
+                         M = Mvec[m])
         }
       }
     } else if (method == "C-LF") {
@@ -364,10 +364,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "LF")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-LF",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-LF",
+                         Delta = Delta, M = Mvec[m])
         }
       } else {
         Results = foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
@@ -377,10 +377,10 @@ createSensitivityResults <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "LF")
-          tibble(lb = min(temp$grid[temp$accept == 1]),
-                 ub = max(temp$grid[temp$accept == 1]),
-                 method = "C-LF",
-                 Delta = Delta, M = Mvec[m])
+          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
+                         ub = max(temp$grid[temp$accept == 1]),
+                         method = "C-LF",
+                         Delta = Delta, M = Mvec[m])
         }
       }
     } else{
@@ -398,7 +398,7 @@ constructOriginalCS <- function(betahat, sigma,
   stdError = sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
   lb = t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] - qnorm(1-alpha/2)*stdError
   ub = t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] + qnorm(1-alpha/2)*stdError
-  return(tibble(
+  return(tibble::tibble(
     lb = lb,
     ub = ub,
     method = "Original",
@@ -423,9 +423,9 @@ createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
     referencePeriod = 0
   }
 
-  EventStudyPlot <- ggplot(tibble(t = c(timeVec[1:numPrePeriods], referencePeriod, timeVec[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
-                                  beta = c(betahat[1:numPrePeriods], 0, betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
-                                  se = c(stdErrors[1:numPrePeriods], NA, stdErrors[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])),
+  EventStudyPlot <- ggplot(tibble::tibble(t = c(timeVec[1:numPrePeriods], referencePeriod, timeVec[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
+                                          beta = c(betahat[1:numPrePeriods], 0, betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
+                                          se = c(stdErrors[1:numPrePeriods], NA, stdErrors[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])),
                            aes(x = t)) +
     geom_point(aes(y = beta), color = "red") +
     geom_errorbar(aes(ymin = beta - qnorm(1-alpha/2)*se, ymax = beta + qnorm(1-alpha/2)*se), width = 0.5, colour = "#01a2d9") +

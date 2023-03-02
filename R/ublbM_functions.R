@@ -128,7 +128,7 @@ DeltaSD_lowerBound_Mpre <- function(betahat, sigma, numPrePeriods, alpha = 0.05,
 
   if (is.na(grid.ub)) {
     # If Mub not specified, use 3 times the max SE in the preperiod
-    grid.ub <- 3 * max(sqrt(diag(prePeriod.sigma)))
+    grid.ub <- c(3 * max(sqrt(diag(prePeriod.sigma))))
   }
   results <- .estimate_lowerBound_M_conditionalTest(prePeriod.coef = prePeriod.coef,
                                                     prePeriod.covar = prePeriod.sigma,

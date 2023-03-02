@@ -1,3 +1,6 @@
+importFrom(dplyr, "%>%")
+importFrom(foreach, "%dopar%")
+importFrom(foreach, "%do%")
 export(computeConditionalCS_DeltaRM)
 export(computeConditionalCS_DeltaRMB)
 export(computeConditionalCS_DeltaRMM)
@@ -17,5 +20,3 @@ export(DeltaSD_lowerBound_Mpre)
 export(DeltaSD_upperBound_Mpre)
 export(findOptimalFLCI)
 export(basisVector)
-
-

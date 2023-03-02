@@ -22,7 +22,7 @@ library(foreach)
 .norminvp_generalized <- function(p, l, u, mu = 0, sd = 1){
   lnormalized <- (l-mu)/sd
   unormalized <- (u-mu)/sd
-  qnormalized <- norminvp(p, lnormalized, unormalized)
+  qnormalized <- TruncatedNormal::norminvp(p, lnormalized, unormalized)
   q <- mu + qnormalized * sd
   return(q)
 }
@@ -241,20 +241,20 @@ library(foreach)
   b = -y_T
 
   # Define linear program using lpSolveAPI
-  linprog = make.lp(nrow = 0, ncol = length(f))
-  set.objfn(linprog, f)
+  linprog = lpSolveAPI::make.lp(nrow = 0, ncol = length(f))
+  lpSolveAPI::set.objfn(linprog, f)
   for (r in 1:dim(C)[1]) {
-    add.constraint(linprog, xt = c(C[r,]), type = "<=", rhs = b[r])
+    lpSolveAPI::add.constraint(linprog, xt = c(C[r,]), type = "<=", rhs = b[r])
   }
-  set.bounds(linprog, lower = rep(-Inf, length(f)), columns = 1:length(f))
+  lpSolveAPI::set.bounds(linprog, lower = rep(-Inf, length(f)), columns = 1:length(f))
 
   # Solve linear program using dual simplex
-  lp.control(linprog, sense = "min", simplextype="dual", pivoting = "dantzig", verbose="neutral")
-  error_flag = solve(linprog)
-  eta = get.objective(linprog)
-  primalSoln = get.primal.solution(linprog)
+  lpSolveAPI::lp.control(linprog, sense = "min", simplextype="dual", pivoting = "dantzig", verbose="neutral")
+  error_flag = lpSolveAPI::solve.lpExtPtr(linprog)
+  eta = lpSolveAPI::get.objective(linprog)
+  primalSoln = lpSolveAPI::get.primal.solution(linprog)
   delta = primalSoln[(length(primalSoln)-dimDelta+1):length(primalSoln)]
-  dual = -get.sensitivity.rhs(linprog)$duals[1:dim(C)[1]]
+  dual = -lpSolveAPI::get.sensitivity.rhs(linprog)$duals[1:dim(C)[1]]
 
   # Construct results  list
   results = list(eta_star = eta,
@@ -309,7 +309,7 @@ library(foreach)
   rrefB = pracma::rref(B) # compute reduced row echelon form of B.
 
   # Construct gamma and check if invertible
-  leading_ones <- map_dbl(.x = 1:dim(rrefB)[1], .leading_one, B = rrefB)
+  leading_ones <- purrr::map_dbl(.x = 1:dim(rrefB)[1], .leading_one, B = rrefB)
   Gamma = t(B[, leading_ones])
   if (det(Gamma) == 0) {
     stop('Something went wrong in RREF algorithm.')
@@ -320,10 +320,10 @@ library(foreach)
 
 # Compute maximum bias of a linear estimator
 .maxBiasFN <- function(v, A, d){
-  delta <- Variable(NCOL(A))
-  objective <- Maximize(t(v) %*% delta)
-  problem <- Problem(objective, constraints = list(A %*% delta - d<= 0) )
-  soln <- solve(problem)
+  delta <- CVXR::Variable(NCOL(A))
+  objective <- CVXR::Maximize(t(v) %*% delta)
+  problem <- CVXR::Problem(objective, constraints = list(A %*% delta - d<= 0) )
+  soln <- CVXR::solve(problem)
   return(soln)
 }
 
@@ -331,8 +331,8 @@ library(foreach)
 .minBiasFN <- function(v, A, d){
   delta <- CVXR::Variable(NCOL(A))
   objective <- CVXR::Minimize(t(v) %*% delta)
-  problem <- Problem(objective, constraints = list(A %*% delta - d<= 0) )
-  soln <- solve(problem)
+  problem <- CVXR::Problem(objective, constraints = list(A %*% delta - d<= 0) )
+  soln <- CVXR::solve(problem)
   return(soln)
 }
 
@@ -381,17 +381,17 @@ library(foreach)
 
   .compute_eta <- function(b, f, C) {
     # Define linear program using lpSolveAPI
-    linprog = make.lp(nrow = 0, ncol = length(f))
-    set.objfn(linprog, f)
+    linprog = lpSolveAPI::make.lp(nrow = 0, ncol = length(f))
+    lpSolveAPI::set.objfn(linprog, f)
     for (r in 1:dim(C)[1]) {
-      add.constraint(linprog, xt = c(C[r,]), type = "<=", rhs = b[r])
+      lpSolveAPI::add.constraint(linprog, xt = c(C[r,]), type = "<=", rhs = b[r])
     }
-    set.bounds(linprog, lower = rep(-Inf, length(f)), columns = 1:length(f))
+    lpSolveAPI::set.bounds(linprog, lower = rep(-Inf, length(f)), columns = 1:length(f))
     # Solve linear program using dual simplex
-    lp.control(linprog, sense = "min", simplextype="dual", pivoting = "dantzig", verbose="neutral", timeout=10)
-    error_flag = solve(linprog)
+    lpSolveAPI::lp.control(linprog, sense = "min", simplextype="dual", pivoting = "dantzig", verbose="neutral", timeout=10)
+    error_flag = lpSolveAPI::solve.lpExtPtr(linprog)
     # Return value of eta
-    return(if (error_flag) NA else get.objective(linprog))
+    return(if (error_flag) NA else lpSolveAPI::get.objective(linprog))
   }
 
   set.seed(0)
@@ -530,7 +530,7 @@ library(foreach)
   if (is.vector(X_TB)) {
     fullRank_flag = F
   } else {
-    fullRank_flag = (rankMatrix(X_TB) == min(dim( X_TB ) ))
+    fullRank_flag = (Matrix::rankMatrix(X_TB) == min(dim( X_TB ) ))
   }
 
   # If degenerate or binding moments don't have full rank, switch to dual
@@ -772,7 +772,7 @@ library(foreach)
     gridLength <- 0.5 * ( c(0, diff(thetaGrid)) + c(diff(thetaGrid), 0 ) )
     return(sum(resultsGrid[, 2]*gridLength))
   } else {
-    return(tibble(grid = resultsGrid[, 1],
-                  accept = resultsGrid[,2]))
+    return(tibble::tibble(grid   = resultsGrid[, 1],
+                          accept = resultsGrid[,2]))
   }
 }

@@ -154,7 +154,7 @@ library(purrr)
     id.lb = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - results.max$optimum
   }
   return(
-    tibble(id.lb = id.lb, id.ub = id.ub)
+    tibble::tibble(id.lb = id.lb, id.ub = id.ub)
   )
 }
 
@@ -202,7 +202,7 @@ library(purrr)
   id.ub = max(max(id_bounds_plus$id.ub), max(id_bounds_minus$id.ub))
 
   # Return identified set
-  return(tibble(
+  return(tibble::tibble(
     id.lb = id.lb,
     id.ub = id.ub))
 }
@@ -300,7 +300,7 @@ computeConditionalCS_DeltaRMB <- function(betahat, sigma, numPrePeriods, numPost
 
   # If grid.ub, grid.lb is not specified, we set these bounds to be equal to the id set under parallel trends
   # {0} +- 20*sdTheta (i.e. [-20*sdTheta, 20*sdTheta].
-  sdTheta <- sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
+  sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
   if (is.na(grid.ub)) { grid.ub = 20*sdTheta }
   if (is.na(grid.lb)) { grid.lb = -20*sdTheta }
 
@@ -331,8 +331,8 @@ computeConditionalCS_DeltaRMB <- function(betahat, sigma, numPrePeriods, numPost
   CIs_RMB_minus_maxS = apply(CIs_RMB_minus_allS, MARGIN = 1, FUN = max)
 
   # Take the max between (+), (-) and Construct grid containing theta points and whether any CI accepted
-  CI_RMB = tibble(grid = seq(grid.lb, grid.ub, length.out = gridPoints),
-                 accept = pmax(CIs_RMB_plus_maxS, CIs_RMB_minus_maxS))
+  CI_RMB = tibble::tibble(grid   = seq(grid.lb, grid.ub, length.out = gridPoints),
+                          accept = pmax(CIs_RMB_plus_maxS, CIs_RMB_minus_maxS))
 
   # Compute length if returnLength == T, else return grid
   if (returnLength) {

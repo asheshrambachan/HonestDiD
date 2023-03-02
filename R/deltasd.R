@@ -133,7 +133,7 @@ library(foreach)
     id.lb = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - results.max$optimum
   }
   # Return identified set
-  return(tibble(
+  return(tibble::tibble(
     id.lb = id.lb,
     id.ub = id.ub))
 }
@@ -195,10 +195,10 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
 
       # compute FLCI ub and FLCI lb
       if (is.na(grid.ub)){
-        grid.ub = (t(flci$optimalVec) %*% betahat) + flci$optimalHalfLength
+        grid.ub = c(t(flci$optimalVec) %*% betahat) + flci$optimalHalfLength
       }
       if (is.na(grid.lb)){
-        grid.lb = (t(flci$optimalVec) %*% betahat) - flci$optimalHalfLength
+        grid.lb = c(t(flci$optimalVec) %*% betahat) - flci$optimalHalfLength
       }
     } else if (hybrid_flag == "LF") {
       # Compute LF CV
@@ -212,7 +212,7 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
         # Compute identified set under parallel trends
         IDset = .compute_IDset_DeltaSD(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
                                        l_vec = l_vec, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-        sdTheta <- sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
+        sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
         if(is.na(grid.ub)){
           grid.ub = IDset$id.ub + 20*sdTheta
         }
@@ -226,7 +226,7 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
         # Compute identified set under parallel trends
         IDset = .compute_IDset_DeltaSD(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
                                        l_vec = l_vec, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-        sdTheta <- sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
+        sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
         if(is.na(grid.ub)){
           grid.ub = IDset$id.ub + 20*sdTheta
         }
@@ -243,7 +243,7 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
                                 A = A_SD, d = d_SD, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                 l_vec = l_vec, alpha = alpha, returnLength = returnLength,
                                 hybrid_flag = hybrid_flag, hybrid_list = hybrid_list,
-                                grid.ub = grid.ub, grid.lb = grid.lb,
+                                grid.ub = c(grid.ub), grid.lb = c(grid.lb),
                                 gridPoints = gridPoints)
     return(CI)
   } else { # CASE: NumPostPeriods > 1
@@ -258,11 +258,11 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
       hybrid_list$flci_l = flci$optimalVec
 
       # Add vbar to flci l vector
-      vbar = Variable(NROW(A_SD))
-      obj <- Minimize( t(flci$optimalVec) %*% flci$optimalVec -
-                         2 * t(flci$optimalVec) %*% t(A_SD) %*% vbar + quad_form(x = vbar, P = A_SD %*% t(A_SD)) )
-      prob = Problem(obj)
-      result = psolve(prob)
+      vbar = CVXR::Variable(NROW(A_SD))
+      obj <- CVXR::Minimize( t(flci$optimalVec) %*% flci$optimalVec -
+                         2 * t(flci$optimalVec) %*% t(A_SD) %*% vbar + CVXR::quad_form(x = vbar, P = A_SD %*% t(A_SD)) )
+      prob = CVXR::Problem(obj)
+      result = CVXR::psolve(prob)
       hybrid_list$vbar = result$getValue(vbar)
 
       # Add objects to hybrid_list: flci half-length
@@ -270,17 +270,17 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
 
       # compute FLCI ub and FLCI lb
       if (is.na(grid.ub)){
-        grid.ub = (t(flci$optimalVec) %*% betahat) + flci$optimalHalfLength
+        grid.ub = c(t(flci$optimalVec) %*% betahat) + flci$optimalHalfLength
       }
       if (is.na(grid.lb)){
-        grid.lb = (t(flci$optimalVec) %*% betahat) - flci$optimalHalfLength
+        grid.lb = c(t(flci$optimalVec) %*% betahat) - flci$optimalHalfLength
       }
 
     } else {
       # Compute identified set under parallel trends
       IDset = .compute_IDset_DeltaSD(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
                                      l_vec = l_vec, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-      sdTheta <- sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
+      sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
       if(is.na(grid.ub)){
         grid.ub = IDset$id.ub + 20*sdTheta
       }
@@ -295,7 +295,7 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
                         l_vec = l_vec, alpha = alpha,
                         hybrid_flag = hybrid_flag, hybrid_list = hybrid_list,
                         returnLength = returnLength,
-                        grid.lb = grid.lb, grid.ub = grid.ub,
+                        grid.lb = c(grid.lb), grid.ub = c(grid.ub),
                         gridPoints = gridPoints, rowsForARP = rowsForARP)
     # Returns CI
     return(CI)
