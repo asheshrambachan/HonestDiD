@@ -59,7 +59,7 @@ library(foreach)
 .createObjectiveObjectForBias <- function(numPrePeriods, numPostPeriods, l_vec, UstackW){
   # Constructs the objective function for the worst-case bias.
   constant = sum(sapply(1:numPostPeriods, FUN = function(s) { abs(t(1:s) %*% l_vec[(numPostPeriods - s + 1):numPostPeriods]) })) - t((1:numPostPeriods)) %*% l_vec
-  objective.UstackW = Minimize( constant +  t(c(rep(1,numPrePeriods), rep(0,numPrePeriods))) %*% UstackW )
+  objective.UstackW = CVXR::Minimize( constant +  t(c(rep(1,numPrePeriods), rep(0,numPrePeriods))) %*% UstackW )
   return(objective.UstackW)
 }
 
@@ -100,7 +100,7 @@ library(foreach)
 .createObjectiveObject_MinimizeSD <- function(sigma, numPrePeriods, numPostPeriods, UstackW, l_vec, ...){
   # Create objective function to minimize the standard deviation.
   A_matrices <- .createMatricesForVarianceFromW(sigma, numPrePeriods, l_vec, ...)
-  objective = Minimize(CVXR::quad_form(UstackW, A_matrices$A_quadratic_sd) + t(A_matrices$A_linear_sd) %*% UstackW + A_matrices$A_constant_sd)
+  objective = CVXR::Minimize(CVXR::quad_form(UstackW, A_matrices$A_quadratic_sd) + t(A_matrices$A_linear_sd) %*% UstackW + A_matrices$A_constant_sd)
   return(objective)
 }
 
@@ -156,7 +156,7 @@ library(foreach)
   quad_constraint <- .createConstraintsObject_SDLessThanH(sigma = sigma, numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW, h = h)
 
   biasProblem = CVXR::Problem(objectiveBias, constraints = list(abs_constraint, sum_constraint, quad_constraint))
-  biasResult <- psolve(biasProblem, solver = "ECOS")
+  biasResult <- CVXR::psolve(biasProblem, solver = "ECOS")
 
   # Multiply objective by M (note that solution otherwise doesn't depend on M,
   # so no need to run many times with many different Ms)
@@ -186,12 +186,12 @@ library(foreach)
 
 .findLowestH <- function(sigma, numPrePeriods, numPostPeriods, l_vec){
   # Finds the minimum variance affine estimator.
-  UstackW <- Variable(numPrePeriods + numPrePeriods)
+  UstackW <- CVXR::Variable(numPrePeriods + numPrePeriods)
   abs_constraint <- .createConstraints_AbsoluteValue(sigma = sigma, numPrePeriods = numPrePeriods, UstackW = UstackW)
   sum_constraint <- .createConstraints_SumWeights(numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW)
   objectiveVariance = .createObjectiveObject_MinimizeSD(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, UstackW = UstackW, l_vec = l_vec)
-  varProblem = Problem(objectiveVariance, constraints = list(abs_constraint, sum_constraint))
-  varResult <- psolve(varProblem)
+  varProblem = CVXR::Problem(objectiveVariance, constraints = list(abs_constraint, sum_constraint))
+  varResult <- CVXR::psolve(varProblem)
 
   if(varResult$status != "optimal" & varResult$status != "optimal_inaccurate"){
     warning("Error in optimization for h0")
@@ -233,24 +233,24 @@ library(foreach)
   if ( is.na(hstar) ) {
     # Numerical derivatives will occasionally fail; fall back into grid
     # search in that case
-    hGrid <- seq(from = hMin, to = c(h0), length.out = numPoints)
+    hGrid <- seq(from = hMin, to = h0, length.out = numPoints)
     biasDF <- purrr::map_dfr(.x = hGrid,
-                             .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = T) %>% mutate(h = h) } )
-    biasDF <- biasDF %>% rename(bias = value)
+                             .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = T) %>% dplyr::mutate(h = h) } )
+    biasDF <- biasDF %>% dplyr::rename(bias = value)
     biasDF <-
-      left_join(
-        biasDF %>% mutate(id = 1),
+      dplyr::left_join(
+        biasDF %>% dplyr::mutate(id = 1),
         data.frame(m = M, id = 1),
         by = "id") %>% dplyr::select(-id)
   
     biasDF <- biasDF %>%
-      rename(maxBias = bias) %>% dplyr::filter(maxBias < Inf)
+      dplyr::rename(maxBias = bias) %>% dplyr::filter(maxBias < Inf)
     biasDF <- biasDF %>%
-      mutate(maxBias = maxBias * m) %>%
-      mutate(CI.halflength = .qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
+      dplyr::mutate(maxBias = maxBias * m) %>%
+      dplyr::mutate(CI.halflength = .qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
   
     optimalCIDF <- biasDF %>%
-      group_by(m) %>%
+      dplyr::group_by(m) %>%
       dplyr::filter(status == "optimal" | status == "optimal_inaccurate") %>%
       dplyr::filter(CI.halflength == min(CI.halflength))
   } else {

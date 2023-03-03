@@ -185,7 +185,7 @@
     gridLength <- 0.5 * ( c(0, diff(thetaGrid)) + c(diff(thetaGrid), 0 ) )
     return(sum(resultsGrid[, 2]*gridLength))
   } else {
-    return(tibble(grid = resultsGrid[, 1],
-                  accept = resultsGrid[,2]))
+    return(tibble::tibble(grid   = resultsGrid[, 1],
+                          accept = resultsGrid[,2]))
   }
 }
