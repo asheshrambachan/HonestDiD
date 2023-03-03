@@ -398,15 +398,15 @@ createSensitivityPlot <- function(robustResults, originalResults, rescaleFactor 
   # Filter out observations above maxM (after rescaling)
   df <- df %>% dplyr::filter(M <= maxM)
 
-  p <- ggplot(data = df, aes(x=M)) +
-    geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
-                  width = Mgap * rescaleFactor / 2) +
-    scale_color_manual(values = c("red", '#01a2d9')) +
-    theme(legend.title=element_blank(), legend.position="bottom") +
-    labs(x = "M", y = "")
+  p <- ggplot2::ggplot(data = df, aes(x=M)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = lb, ymax = ub, color = factor(method)),
+                           width = Mgap * rescaleFactor / 2) +
+    ggplot2::scale_color_manual(values = c("red", '#01a2d9')) +
+    ggplot2::theme(legend.title=ggplot2::element_blank(), legend.position="bottom") +
+    ggplot2::labs(x = "M", y = "")
 
   if (add_xAxis) {
-    p <- p + geom_hline(yintercept = 0)
+    p <- p + ggplot2::geom_hline(yintercept = 0)
   }
   return(p)
 }
@@ -696,15 +696,15 @@ createSensitivityPlot_relativeMagnitudes <- function(robustResults, originalResu
   # Filter out observations above maxM (after rescaling)
   df <- df %>% dplyr::filter(Mbar <= maxMbar)
 
-  p <- ggplot(data = df, aes(x=Mbar)) +
-    geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
-                  width = Mbargap * rescaleFactor / 2) +
-    scale_color_manual(values = c("red", '#01a2d9')) +
-    theme(legend.title=element_blank(), legend.position="bottom") +
-    labs(x = latex2exp::TeX("$\\bar{M}$"), y = "")
+  p <- ggplot2::ggplot(data = df, ggplot2::aes(x=Mbar)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = lb, ymax = ub, color = factor(method)),
+                           width = Mbargap * rescaleFactor / 2) +
+    ggplot2::scale_color_manual(values = c("red", '#01a2d9')) +
+    ggplot2::theme(legend.title=ggplot2::element_blank(), legend.position="bottom") +
+    ggplot2::labs(x = latex2exp::TeX("$\\bar{M}$"), y = "")
 
   if (add_xAxis) {
-    p <- p + geom_hline(yintercept = 0)
+    p <- p + ggplot2::geom_hline(yintercept = 0)
   }
   return(p)
 }
@@ -740,14 +740,15 @@ createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
     referencePeriod = 0
   }
 
-  EventStudyPlot <- ggplot(tibble::tibble(t = c(timeVec[1:numPrePeriods], referencePeriod, timeVec[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
-                                          beta = c(betahat[1:numPrePeriods], 0, betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
-                                          se = c(stdErrors[1:numPrePeriods], NA, stdErrors[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])),
-                           aes(x = t)) +
-    geom_point(aes(y = beta), color = "red") +
-    geom_errorbar(aes(ymin = beta - qnorm(1-alpha/2)*se, ymax = beta + qnorm(1-alpha/2)*se), width = 0.5, colour = "#01a2d9") +
-    theme(legend.position = "none") + labs(x = "Event time", y = "") +
-    scale_x_continuous(breaks = seq(from = min(timeVec), to = max(timeVec), by = 1),
-                       labels = as.character(seq(from = min(timeVec), to = max(timeVec), by = 1)))
+  EventStudyPlot <- ggplot2::ggplot(tibble::tibble(t    = c(timeVec[1:numPrePeriods], referencePeriod, timeVec[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
+                                                   beta = c(betahat[1:numPrePeriods], 0, betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
+                                                   se   = c(stdErrors[1:numPrePeriods], NA, stdErrors[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])),
+                                    ggplot2::aes(x = t)) +
+    ggplot2::geom_point(ggplot2::aes(y = beta), color = "red") +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = beta - qnorm(1-alpha/2)*se, ymax = beta + qnorm(1-alpha/2)*se), width = 0.5, colour = "#01a2d9") +
+    ggplot2::theme(legend.position = "none") + 
+    ggplot2::labs(x = "Event time", y = "") +
+    ggplot2::scale_x_continuous(breaks = seq(from = min(timeVec), to = max(timeVec), by = 1),
+                                labels = as.character(seq(from = min(timeVec), to = max(timeVec), by = 1)))
   return(EventStudyPlot)
 }
