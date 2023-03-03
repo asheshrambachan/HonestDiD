@@ -175,7 +175,7 @@ createSensitivityResults <- function(betahat, sigma,
         }
       }
     } else if (method == "Conditional") { # If method = Conditional, construct conditional confidence intervals
-      if (parallel == TRUE) {
+      if (parallel == FALSE) {
         Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
@@ -203,7 +203,7 @@ createSensitivityResults <- function(betahat, sigma,
         }
       }
     } else if (method == "C-F") { # If method = C-F, construct conditional FLCI,
-      if (parallel == TRUE) {
+      if (parallel == FALSE) {
         Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
@@ -231,7 +231,7 @@ createSensitivityResults <- function(betahat, sigma,
         }
       }
     } else if (method == "C-LF") {
-      if (parallel == TRUE) {
+      if (parallel == FALSE) {
         Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
@@ -457,7 +457,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       Delta = "DeltaRM"
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaRM(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
@@ -470,7 +470,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaRM(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
@@ -493,7 +493,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       }
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaRMM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
@@ -507,7 +507,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaRMM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
@@ -531,7 +531,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       }
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaRMB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
@@ -545,7 +545,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaRMB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
@@ -574,7 +574,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       Delta = "DeltaSDRM"
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDRM(betahat = betahat, sigma = sigma,
                                                 numPrePeriods = numPrePeriods,
                                                 numPostPeriods = numPostPeriods,
@@ -587,7 +587,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDRM(betahat = betahat, sigma = sigma,
                                                 numPrePeriods = numPrePeriods,
                                                 numPostPeriods = numPostPeriods,
@@ -610,7 +610,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       }
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDRMM(betahat = betahat, sigma = sigma,
                                                  numPrePeriods = numPrePeriods,
                                                  numPostPeriods = numPostPeriods,
@@ -624,7 +624,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDRMM(betahat = betahat, sigma = sigma,
                                                  numPrePeriods = numPrePeriods,
                                                  numPostPeriods = numPostPeriods,
@@ -648,7 +648,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       }
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDRMB(betahat = betahat, sigma = sigma,
                                                  numPrePeriods = numPrePeriods,
                                                  numPostPeriods = numPostPeriods,
@@ -662,7 +662,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDRMB(betahat = betahat, sigma = sigma,
                                                  numPrePeriods = numPrePeriods,
                                                  numPostPeriods = numPostPeriods,
