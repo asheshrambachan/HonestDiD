@@ -114,8 +114,8 @@ library(foreach)
     id.lb = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - results.max$optimum
   }
   # Return identified set
-  return(tibble::tibble(
-base::    id.lb = id.lb,
+  base::return(tibble::tibble(
+    id.lb = id.lb,
     id.ub = id.ub))
 }
 
