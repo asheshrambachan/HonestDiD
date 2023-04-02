@@ -34,8 +34,8 @@ library(foreach)
                      monotonicityDirection = monotonicityDirection, postPeriodMomentsOnly = postPeriodMomentsOnly)
   A_SD = .create_A_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, postPeriodMomentsOnly =  postPeriodMomentsOnly)
 
-  A = rbind(A_SD, A_M)
-  return(A)
+  A = base::rbind(A_SD, A_M)
+  base::return(A)
 }
 
 .create_d_SDM <- function(numPrePeriods, numPostPeriods, M, postPeriodMomentsOnly = F) {
@@ -48,35 +48,33 @@ library(foreach)
   #   M              = smoothness parameter of Delta^SD(M).
 
   d_SD = .create_d_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = postPeriodMomentsOnly)
-  d_M = rep(0, ifelse(postPeriodMomentsOnly, numPostPeriods, numPrePeriods+numPostPeriods) )
+  d_M = base::rep(0, base::ifelse(postPeriodMomentsOnly, numPostPeriods, numPrePeriods+numPostPeriods) )
   d = c(d_SD, d_M)
-  return(d)
+  base::return(d)
 }
 
 .compute_IDset_DeltaSDM <- function(M, trueBeta, l_vec, numPrePeriods,
                                     numPostPeriods, monotonicityDirection) {
 
   # Create objective function: Wish to min/max l'delta_post
-  fDelta = c(rep(0, numPrePeriods), l_vec)
+  fDelta = base::c(base::rep(0, numPrePeriods), l_vec)
 
   # Create A, d that define Delta^SDM(M)
   A_SDM = .create_A_SDM(numPrePeriods = numPrePeriods,
                         numPostPeriods = numPostPeriods, monotonicityDirection = monotonicityDirection)
   d_SDM = .create_d_SDM(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M)
-  dir_SDM = rep("<=", NROW(A_SDM))
+  dir_SDM = base::rep("<=", base::NROW(A_SDM))
 
   # Create equality constraint that delta_pre = beta_pre
-  prePeriodEqualityMat = cbind(diag(numPrePeriods),
-                               matrix(data = 0, nrow = numPrePeriods, ncol = numPostPeriods))
-  A_SDM = rbind(A_SDM, prePeriodEqualityMat)
-  d_SDM = c(d_SDM,
-            trueBeta[1:numPrePeriods])
-  dir_SDM = c(dir_SDM,
-              rep("==", NROW(prePeriodEqualityMat)))
-  bounds = list(lower = list(ind = 1:(numPrePeriods + numPostPeriods),
-                             val = rep(-Inf, numPrePeriods+numPostPeriods)),
-                upper = list(ind = 1:(numPrePeriods + numPostPeriods),
-                             val = rep(Inf, numPrePeriods+numPostPeriods)))
+  prePeriodEqualityMat = base::cbind(base::diag(numPrePeriods),
+                                     base::matrix(data = 0, nrow = numPrePeriods, ncol = numPostPeriods))
+  A_SDM = base::rbind(A_SDM, prePeriodEqualityMat)
+  d_SDM = base::c(d_SDM, trueBeta[1:numPrePeriods])
+  dir_SDM = base::c(dir_SDM, base::rep("==", base::NROW(prePeriodEqualityMat)))
+  bounds = base::list(lower = base::list(ind = 1:(numPrePeriods + numPostPeriods),
+                                         val = base::rep(-Inf, numPrePeriods+numPostPeriods)),
+                      upper = base::list(ind = 1:(numPrePeriods + numPostPeriods),
+                                         val = base::rep(Inf, numPrePeriods+numPostPeriods)))
 
   # Create and solve for max
   max.results = Rglpk::Rglpk_solve_LP(obj = fDelta,
@@ -95,17 +93,17 @@ library(foreach)
                                       bounds = bounds)
 
   if (max.results$status != 0 & min.results$status != 0) {
-    warning("Solver did not find an optimum")
-    id.ub = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])
-    id.lb = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])
+    base::warning("Solver did not find an optimum")
+    id.ub = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])
+    id.lb = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])
   }
   else {
     # Construct upper/lower bound of identified set
-    id.ub = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - min.results$optimum
-    id.lb = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - max.results$optimum
+    id.ub = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - min.results$optimum
+    id.lb = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - max.results$optimum
   }
   # Return identified set
-  return(tibble::tibble(
+  base::return(tibble::tibble(
     id.lb = id.lb,
     id.ub = id.ub))
 }
@@ -145,15 +143,15 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
   d_SDM = .create_d_SDM(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = F)
 
   if (postPeriodMomentsOnly & numPostPeriods > 1) {
-    postPeriodIndices <- (numPrePeriods +1):NCOL(A_SDM)
-    postPeriodRows <- which( rowSums( A_SDM[ , postPeriodIndices] != 0 ) > 0 )
+    postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_SDM)
+    postPeriodRows <- base::which( base::rowSums( A_SDM[ , postPeriodIndices] != 0 ) > 0 )
     rowsForARP <- postPeriodRows
   } else {
-    rowsForARP <- 1:NROW(A_SDM)
+    rowsForARP <- 1:base::NROW(A_SDM)
   }
 
   # Create hybrid_list object
-  hybrid_list = list(hybrid_kappa = hybrid_kappa)
+  hybrid_list = base::list(hybrid_kappa = hybrid_kappa)
 
   # if there is only one post-period, we use the no-nuisance parameter functions
   if (numPostPeriods == 1) {
@@ -170,11 +168,11 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
       hybrid_list$flci_halflength = flci$optimalHalfLength
 
       # compute FLCI ub and FLCI lb
-      if (is.na(grid.ub)){
-        grid.ub = c(t(flci$optimalVec) %*% betahat) + flci$optimalHalfLength
+      if (base::is.na(grid.ub)){
+        grid.ub = base::c(base::t(flci$optimalVec) %*% betahat) + flci$optimalHalfLength
       }
-      if (is.na(grid.lb)){
-        grid.lb = c(t(flci$optimalVec) %*% betahat) - flci$optimalHalfLength
+      if (base::is.na(grid.lb)){
+        grid.lb = base::c(base::t(flci$optimalVec) %*% betahat) - flci$optimalHalfLength
       }
     } else if (hybrid_flag == "LF") {
       # Compute LF CV
@@ -184,36 +182,36 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
       hybrid_list$lf_cv = lf_cv
 
       # construct theta grid
-      if (is.na(grid.ub) & is.na(grid.lb)) {
+      if (base::is.na(grid.ub) & base::is.na(grid.lb)) {
         # Compute identified set under parallel trends
-        IDset = .compute_IDset_DeltaSDM(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
+        IDset = .compute_IDset_DeltaSDM(M = M, trueBeta = base::rep(0, numPrePeriods + numPostPeriods),
                                         monotonicityDirection = monotonicityDirection,
                                         l_vec = l_vec, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-        sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
-        if(is.na(grid.ub)){
+        sdTheta <- base::c(base::sqrt(base::t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
+        if(base::is.na(grid.ub)){
           grid.ub = IDset$id.ub + 20*sdTheta
         }
-        if(is.na(grid.lb)){
+        if(base::is.na(grid.lb)){
           grid.lb = IDset$id.lb - 20*sdTheta
         }
       }
     } else if (hybrid_flag == "ARP") {
       # construct theta grid
-      if (is.na(grid.ub) & is.na(grid.lb)) {
+      if (base::is.na(grid.ub) & base::is.na(grid.lb)) {
         # Compute identified set under parallel trends
         IDset = .compute_IDset_DeltaSDM(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
                                         monotonicityDirection = monotonicityDirection,
                                         l_vec = l_vec, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-        sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
-        if(is.na(grid.ub)){
+        sdTheta <- base::c(base::sqrt(base::t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
+        if(base::is.na(grid.ub)){
           grid.ub = IDset$id.ub + 20*sdTheta
         }
-        if(is.na(grid.lb)){
+        if(base::is.na(grid.lb)){
           grid.lb = IDset$id.lb - 20*sdTheta
         }
       }
     } else {
-      stop("hybrid_flag must equal 'APR' or 'FLCI' or 'LF'")
+      base::stop("hybrid_flag must equal 'APR' or 'FLCI' or 'LF'")
     }
 
     # Compute confidence set
@@ -223,7 +221,7 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
                                 hybrid_flag = hybrid_flag, hybrid_list = hybrid_list,
                                 grid.ub = grid.ub, grid.lb = grid.lb,
                                 gridPoints = gridPoints)
-    return(CI)
+    base::return(CI)
   } else { # if there are multiple post-periods, we use the nuisance parameter functions
     # HYBRID: If hybrid with FLCI, compute FLCI
     if (hybrid_flag == "FLCI") {
@@ -234,9 +232,9 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
       hybrid_list$flci_l = flci$optimalVec
 
       # Add vbar to flci l vector
-      vbar = CVXR::Variable(NROW(A_SDM))
-      obj <- CVXR::Minimize( t(flci$optimalVec) %*% flci$optimalVec -
-                         2 * t(flci$optimalVec) %*% t(A_SDM) %*% vbar + CVXR::quad_form(x = vbar, P = A_SDM %*% t(A_SDM)) )
+      vbar = CVXR::Variable(base::NROW(A_SDM))
+      obj <- CVXR::Minimize( base::t(flci$optimalVec) %*% flci$optimalVec -
+                         2 * base::t(flci$optimalVec) %*% base::t(A_SDM) %*% vbar + CVXR::quad_form(x = vbar, P = A_SDM %*% base::t(A_SDM)) )
       prob = CVXR::Problem(obj)
       result = CVXR::psolve(prob)
       hybrid_list$vbar = result$getValue(vbar)
@@ -245,18 +243,18 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
       hybrid_list$flci_halflength = flci$optimalHalfLength
 
       # compute FLCI ub and FLCI lb
-      grid.ub = c(t(hybrid_list$flci_l) %*% betahat) + flci$optimalHalfLength
-      grid.lb = c(t(hybrid_list$flci_l) %*% betahat) - flci$optimalHalfLength
+      grid.ub = base::c(base::t(hybrid_list$flci_l) %*% betahat) + flci$optimalHalfLength
+      grid.lb = base::c(base::t(hybrid_list$flci_l) %*% betahat) - flci$optimalHalfLength
     } else {
       # Compute ID set
-      IDset = .compute_IDset_DeltaSDM(M = M, trueBeta = rep(0, numPrePeriods + numPostPeriods),
+      IDset = .compute_IDset_DeltaSDM(M = M, trueBeta = base::rep(0, numPrePeriods + numPostPeriods),
                                       monotonicityDirection = monotonicityDirection, l_vec = l_vec,
                                       numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
-      sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
-      if (is.na(grid.ub)) {
+      sdTheta <- base::c(base::sqrt(base::t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
+      if (base::is.na(grid.ub)) {
         grid.ub = IDset$id.ub + 20*sdTheta
       }
-      if (is.na(grid.lb)) {
+      if (base::is.na(grid.lb)) {
         grid.lb = IDset$id.lb - 20*sdTheta
       }
     }
@@ -271,6 +269,6 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
                         gridPoints = gridPoints, rowsForARP = rowsForARP)
 
     # Returns CI
-    return(CI)
+    base::return(CI)
     }
 }
