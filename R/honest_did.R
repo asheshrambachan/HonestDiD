@@ -1,8 +1,3 @@
-# Staggered Timing Example
-
-### First, we import the function Pedro Sant'Anna created for
-##   formatting did output for HonestDiD ####
-
 #' @title honest_did
 #'
 #' @description a function to compute a sensitivity analysis

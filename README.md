@@ -315,12 +315,10 @@ package [website](https://github.com/pedrohcgs/CS_RR)). We are hoping to
 more formally integrate the did and HonestDiD packages in the future –
 stay tuned!
 
+First, we import the function Pedro Sant’Anna created for formatting did
+output for HonestDiD:
+
 ``` r
-# Staggered Timing Example
-
-### First, we import the function Pedro Sant'Anna created for
-##   formatting did output for HonestDiD ####
-
 #' @title honest_did
 #'
 #' @description a function to compute a sensitivity analysis

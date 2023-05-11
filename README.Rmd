@@ -182,6 +182,8 @@ HonestDiD::createSensitivityPlot_relativeMagnitudes(delta_rm_results_avg, origin
 
 So far we have focused on a simple case without staggered timing. Fortunately, the HonestDiD approach works well with recently-introduced methods for DiD under staggered treatment timing. Below, we show how the package can be used with the [did package](https://github.com/bcallaway11/did#difference-in-differences-) implementing Callaway and Sant'Anna. (See, also, the example on the did package [website](https://github.com/pedrohcgs/CS_RR)). We are hoping to more formally integrate the did and HonestDiD packages in the future -- stay tuned!
 
+First, we import the function Pedro Sant'Anna created for formatting did output for HonestDiD:
+
 ```{r, code = readLines("R/honest_did.R")}
 ```
 
