@@ -48,7 +48,7 @@ honest_did.AGGTEobj <- function(es,
 
   # Recover variance-covariance matrix
   n <- nrow(es_inf_func)
-  V <- t(es_inf_func) %*% es_inf_func / (n*n)
+  V <- t(es_inf_func) %*% es_inf_func / n / n
 
   # Remove the coefficient normalized to zero
   referencePeriodIndex <- which(es$egt == -1)
