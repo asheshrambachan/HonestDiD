@@ -10,7 +10,6 @@
 #  with a shape restriction (i.e., Delta^{I} or Delta^{D}).
 
 # PRELIMINARIES =======================================================
-library(tidyverse)
 library(TruncatedNormal)
 library(lpSolveAPI)
 library(ROI)

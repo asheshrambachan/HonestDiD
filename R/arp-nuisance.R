@@ -9,7 +9,6 @@
 #  the ARP test with nuisance parameters.
 
 # PRELIMINARIES =======================================================
-library(tidyverse)
 library(TruncatedNormal)
 library(lpSolveAPI)
 library(ROI)

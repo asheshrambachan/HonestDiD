@@ -9,7 +9,6 @@
 #  the confidence sets for Delta^{SDRM}(Mbar).
 
 # PRELIMINARIES =======================================================
-library(tidyverse)
 library(TruncatedNormal)
 library(lpSolveAPI)
 library(ROI)

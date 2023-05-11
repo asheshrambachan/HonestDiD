@@ -9,7 +9,6 @@
 #  the FLCI for a general choice of vector l and Delta = Delta^{SD}(M)
 
 # PRELIMINARIES =======================================================
-library(tidyverse)
 library(TruncatedNormal)
 library(lpSolveAPI)
 library(ROI)

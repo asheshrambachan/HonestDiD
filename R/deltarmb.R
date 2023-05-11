@@ -11,7 +11,6 @@
 #  Section 2.3.3 of Rambachan and Roth (2021).
 
 # PRELIMINARIES =======================================================
-library(tidyverse)
 library(TruncatedNormal)
 library(lpSolveAPI)
 library(ROI)
