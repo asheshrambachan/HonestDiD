@@ -12,7 +12,6 @@
 # PRELIMINARIES =======================================================
 library(TruncatedNormal)
 library(lpSolveAPI)
-library(ROI)
 library(Matrix)
 library(pracma)
 library(CVXR)

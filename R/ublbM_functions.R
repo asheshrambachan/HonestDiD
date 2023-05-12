@@ -11,7 +11,6 @@
 # PRELIMINARIES =======================================================
 library(TruncatedNormal)
 library(lpSolveAPI)
-library(ROI)
 library(Matrix)
 library(pracma)
 library(CVXR)
@@ -110,7 +109,7 @@ DeltaSD_upperBound_Mpre <- function(betahat, sigma, numPrePeriods, alpha = 0.05)
   prePeriodCoefDiffs = A_SD %*% prePeriod.coef
   prePeriodSigmaDiffs = A_SD %*% prePeriod.sigma %*% base::t(A_SD)
   seDiffs = base::sqrt(base::diag(prePeriodSigmaDiffs))
-  upperBoundVec = prePeriodCoefDiffs + stata::qnorm(1-alpha)*seDiffs
+  upperBoundVec = prePeriodCoefDiffs + stats::qnorm(1-alpha)*seDiffs
   maxUpperBound = base::max(upperBoundVec)
   base::return(maxUpperBound)
 }

@@ -13,7 +13,6 @@
 # PRELIMINARIES =======================================================
 library(TruncatedNormal)
 library(lpSolveAPI)
-library(ROI)
 library(Matrix)
 library(pracma)
 library(CVXR)
@@ -260,9 +259,10 @@ library(purrr)
 }
 
 computeConditionalCS_DeltaSDRMB <- function(betahat, sigma, numPrePeriods, numPostPeriods,
-                                            l_vec = .basisVector(index = 1, size = numPostPeriods), Mbar = 0,
-                                            alpha = 0.05, hybrid_flag = "LF", hybrid_kappa = alpha/10,
-                                            returnLength = F, postPeriodMomentsOnly = T, biasDirection = "positive",
+                                            l_vec = .basisVector(index = 1, size = numPostPeriods),
+                                            Mbar = 0, alpha = 0.05, hybrid_flag = "LF",
+                                            hybrid_kappa = alpha/10, returnLength = F,
+                                            postPeriodMomentsOnly = T, biasDirection = "positive",
                                             gridPoints = 10^3, grid.ub = NA, grid.lb = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDRMB}(Mbar). This functions uses ARP_computeCI for all

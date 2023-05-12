@@ -11,14 +11,17 @@
 createSensitivityResults_relativeMagnitudes(betahat, sigma,
                                             numPrePeriods, numPostPeriods,
                                             bound = "deviation from parallel trends",
-                                            method = "C-LF", Mbarvec = NULL,
+                                            method = "C-LF",
+                                            Mbarvec = NULL,
                                             l_vec = .basisVector(index = 1,
-                                                                  size = numPostPeriods),
+                                                                 size = numPostPeriods),
                                             monotonicityDirection = NULL,
-                                            biasDirection = NULL, alpha = 0.05,
-                                            parallel = FALSE,
+                                            biasDirection = NULL,
+                                            alpha = 0.05,
                                             gridPoints = 10^3,
-                                            grid.ub = NA, grid.lb = NA)
+                                            grid.ub = NA,
+                                            grid.lb = NA,
+                                            parallel = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

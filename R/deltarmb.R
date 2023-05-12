@@ -13,7 +13,6 @@
 # PRELIMINARIES =======================================================
 library(TruncatedNormal)
 library(lpSolveAPI)
-library(ROI)
 library(Matrix)
 library(pracma)
 library(CVXR)
@@ -107,7 +106,7 @@ library(purrr)
 
   # Create A_RM, d_RM for this choice of s, max_positive
   A_RMB_s = .create_A_RMB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                          Mbar = Mbar, s = s, max_positive = max_positive, biasDirection = biasDrection)
+                          Mbar = Mbar, s = s, max_positive = max_positive, biasDirection = biasDirection)
   d_RMB = .create_d_RMB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
 
   # Create vector for direction of inequalities associated with RM

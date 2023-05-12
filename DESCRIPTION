@@ -1,29 +1,34 @@
 Package: HonestDiD
 Type: Package
-Title: Robust inference in difference-in-differences and event study designs
+Title: Robust Inference in Difference-in-Differences and Event Study Designs
 Version: 0.2.2
 Depends:
     R (>= 3.6.0)
 Imports:
+    stats,
     foreach (>= 1.4.7),
     doParallel (>= 1.0.15),
+    matrixStats (>= 0.63.0),
     CVXR (>= 0.99-6),
     latex2exp (>= 0.4.0),
     lpSolveAPI (>= 5.5.2.0-17),
     Matrix (>= 1.2-17),
     pracma (>= 2.2.5),
     purrr (>= 0.3.4),
-    ROI (>= 0.3-2),
     tibble (>= 1.3.4),
     dplyr (>= 0.7.4),
     ggplot2 (>= 2.2.1),
     Rglpk (>= 0.6-4),
     mvtnorm (>= 1.1-3),
     TruncatedNormal (>= 1.0)
+Suggests: 
+    knitr
 Author: Ashesh Rambachan
 Maintainer: Ashesh Rambachan <asheshr@g.harvard.edu>
-Description: 
-    This package provides functions to conduct robust inference in difference-in-differences and event study designs by implementing the methods developed in Rambachan & Roth (2021). Inference is conducted under a weaker version of the parallel trends assumption. Uniformly valid confidence sets are constructed based upon conditional confidence sets, fixed-length confidence sets and hybridized confidence sets. See Ashesh Rambachan & Jonathan Roth, "An Honest Approach to Parallel Trends", 2021 for details on the methods.
+Description:
+    Provides functions to conduct robust inference in difference-in-differences and event study designs by implementing the methods developed in Rambachan & Roth (2021). Inference is conducted under a weaker version of the parallel trends assumption. Uniformly valid confidence sets are constructed based upon conditional confidence sets, fixed-length confidence sets and hybridized confidence sets. See Ashesh Rambachan & Jonathan Roth, "An Honest Approach to Parallel Trends", 2021 for details on the methods.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: 
+    knitr
