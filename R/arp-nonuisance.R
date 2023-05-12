@@ -14,39 +14,39 @@
   # The APR test conditions on the location of the binding moment, which we write as Abar Y <= dbar.
   # This can be used, e.g. for hybrid values with the FLCI
 
-  sigmaTilde <- as.vector( sqrt( diag(A %*% sigma %*% t(A)) ) )
-  Atilde <- solve( diag(sigmaTilde) ) %*% A
-  dtilde <- solve( diag(sigmaTilde) ) %*% d
+  sigmaTilde <- base::as.vector( base::sqrt( base::diag(A %*% sigma %*% base::t(A)) ) )
+  Atilde <- base::solve( base::diag(sigmaTilde) ) %*% A
+  dtilde <- base::solve( base::diag(sigmaTilde) ) %*% d
 
   normalizedMoments <- Atilde %*% y - dtilde
-  maxLocation <- which.max(normalizedMoments)
+  maxLocation <- base::which.max(normalizedMoments)
   maxMoment <- normalizedMoments[maxLocation]
 
-  T_B <- .selectionMat(maxLocation, size = NROW(Atilde), select = "rows")
-  iota <- matrix(1, nrow = NROW(Atilde), ncol = 1)
+  T_B <- .selectionMat(maxLocation, size = base::NROW(Atilde), select = "rows")
+  iota <- base::matrix(1, nrow = base::NROW(Atilde), ncol = 1)
 
-  gamma <- t(T_B %*% Atilde)
+  gamma <- base::t(T_B %*% Atilde)
   Abar <- Atilde - iota %*% T_B %*% Atilde
-  dbar <- ( diag(NROW(dtilde)) - iota %*% T_B ) %*% dtilde
+  dbar <- ( base::diag(base::NROW(dtilde)) - iota %*% T_B ) %*% dtilde
 
   # If statement, modifies Abar for the FLCI hybrid
-  if (!is.null(Abar_additional)) {
-    Abar <- rbind(Abar, Abar_additional)
-    dbar <- c(dbar, dbar_additional)
+  if (!base::is.null(Abar_additional)) {
+    Abar <- base::rbind(Abar, Abar_additional)
+    dbar <- base::c(dbar, dbar_additional)
   }
 
-  sigmabar <- sqrt( t(gamma) %*% sigma %*% gamma )
-  c <- sigma %*% gamma / as.numeric( t(gamma) %*% sigma %*% gamma  )
-  z <- (diag(NROW(y)) - c %*% t(gamma)) %*% y
+  sigmabar <- base::sqrt( base::t(gamma) %*% sigma %*% gamma )
+  c <- sigma %*% gamma / base::as.numeric( base::t(gamma) %*% sigma %*% gamma  )
+  z <- (base::diag(base::NROW(y)) - c %*% base::t(gamma)) %*% y
   VLoVUpVec <- .VLoVUpFN(eta = gamma, Sigma = sigma, A = Abar, b = dbar, z = z)
 
   # Per ARP (2021), CV = max(0, c_{1-alpha}), where c_{1-alpha} is the 1-alpha
   # quantile of truncated normal.
-  criticalVal <- max(0, .norminvp_generalized(p = 1-alpha, l = VLoVUpVec[1], u = VLoVUpVec[2],
-                                       mu = T_B %*% dtilde, sd = sigmabar))
+  criticalVal <- base::max(0, .norminvp_generalized(p = 1-alpha, l = VLoVUpVec[1], u = VLoVUpVec[2],
+                                                    mu = T_B %*% dtilde, sd = sigmabar))
   reject <- (maxMoment + T_B %*% dtilde > criticalVal)
 
-  return(reject)
+  base::return(reject)
 }
 
 .testInIdentifiedSet_FLCI_Hybrid <- function(y, sigma, A, d, alpha, hybrid_list) {
@@ -63,13 +63,13 @@
   # We reject if A_firstsage %*%y - d_firstage has any positive elements
   # otherwise we add these to the constraints
 
-  A_firststage <- rbind(hybrid_list$flci_l,
-                        -hybrid_list$flci_l)
-  d_firststage <- c(hybrid_list$flci_halflength,
-                    hybrid_list$flci_halflength)
+  A_firststage <- base::rbind(hybrid_list$flci_l,
+                             -hybrid_list$flci_l)
+  d_firststage <- base::c(hybrid_list$flci_halflength,
+                          hybrid_list$flci_halflength)
 
   # Run the first-stage test
-  if (max(A_firststage %*% y - d_firststage) > 0) {
+  if (base::max(A_firststage %*% y - d_firststage) > 0) {
     reject <- T
   } else {
     # Per ARP (2021), CV = max(0, c_{1-alpha-tilde}), where alpha-tilde = (alpha - kappa)/(1-kappa)
@@ -81,43 +81,43 @@
                                       dbar_additional = d_firststage,
                                       alpha = alphatilde)
   }
-  return(reject)
+  base::return(reject)
 }
 
 .testInIdentifiedSet_LF_Hybrid <- function(y, sigma, A, d, alpha, hybrid_list) {
 
-  sigmaTilde <- as.vector( sqrt( diag(A %*% sigma %*% t(A)) ) )
-  Atilde <- solve( diag(sigmaTilde) ) %*% A
-  dtilde <- solve( diag(sigmaTilde) ) %*% d
+  sigmaTilde <- base::as.vector( base::sqrt( base::diag(A %*% sigma %*% base::t(A)) ) )
+  Atilde <- base::solve( base::diag(sigmaTilde) ) %*% A
+  dtilde <- base::solve( base::diag(sigmaTilde) ) %*% d
 
   normalizedMoments <- Atilde %*% y - dtilde
-  maxLocation <- which.max(normalizedMoments)
+  maxLocation <- base::which.max(normalizedMoments)
   maxMoment <- normalizedMoments[maxLocation]
 
   if (maxMoment > hybrid_list$lf_cv) {
     reject = 1
-    return(reject)
+    base::return(reject)
   } else {
-    T_B <- .selectionMat(maxLocation, size = NROW(Atilde), select = "rows")
-    iota <- matrix(1, nrow = NROW(Atilde), ncol = 1)
+    T_B <- .selectionMat(maxLocation, size = base::NROW(Atilde), select = "rows")
+    iota <- base::matrix(1, nrow = base::NROW(Atilde), ncol = 1)
 
-    gamma <- t(T_B %*% Atilde)
+    gamma <- base::t(T_B %*% Atilde)
     Abar <- Atilde - iota %*% T_B %*% Atilde
-    dbar <- ( diag(NROW(dtilde)) - iota %*% T_B ) %*% dtilde
+    dbar <- ( base::diag(base::NROW(dtilde)) - iota %*% T_B ) %*% dtilde
 
-    sigmabar <- sqrt( t(gamma) %*% sigma %*% gamma )
-    c <- sigma %*% gamma / as.numeric( t(gamma) %*% sigma %*% gamma  )
-    z <- (diag(NROW(y)) - c %*% t(gamma)) %*% y
+    sigmabar <- base::sqrt( base::t(gamma) %*% sigma %*% gamma )
+    c <- sigma %*% gamma / base::as.numeric( base::t(gamma) %*% sigma %*% gamma  )
+    z <- (base::diag(base::NROW(y)) - c %*% base::t(gamma)) %*% y
     VLoVUpVec <- .VLoVUpFN(eta = gamma, Sigma = sigma, A = Abar, b = dbar, z = z)
 
     # Per ARP (2021), CV = max(0, c_{1-alpha-tilde}), where alpha-tilde = (alpha - kappa)/(1-kappa)
     # quantile of truncated normal that accounts for failing to reject in the first stage.
     alphatilde <- (alpha - hybrid_list$hybrid_kappa) / (1 - hybrid_list$hybrid_kappa)
-    criticalVal <- max(0, .norminvp_generalized(p = 1-alphatilde, l = VLoVUpVec[1], u = VLoVUpVec[2],
-                                         mu = T_B %*% dtilde, sd = sigmabar))
+    criticalVal <- base::max(0, .norminvp_generalized(p = 1-alphatilde, l = VLoVUpVec[1], u = VLoVUpVec[2],
+                                                      mu = T_B %*% dtilde, sd = sigmabar))
     reject <- (maxMoment + T_B %*% dtilde > criticalVal)
 
-    return(reject)
+    base::return(reject)
   }
 }
 
@@ -125,15 +125,15 @@
                                numPrePeriods, alpha, testFn = .testInIdentifiedSet, ...) {
   # Tests whether values in a grid lie in the identified set.
   testTauInSetFn <- function(theta) {
-    reject <- testFn(y = betahat - basisVector(index = numPrePeriods + 1, size = length(betahat))*theta,
+    reject <- testFn(y = betahat - basisVector(index = numPrePeriods + 1, size = base::length(betahat))*theta,
                      sigma =  sigma, A = A, d = d, alpha = alpha, ...)
     inSet <- !reject
-    return(inSet)
+    base::return(inSet)
   }
   testResultsGrid <- purrr::map_dbl(.x = thetaGrid, .f = testTauInSetFn)
   testValsGrid <- thetaGrid
-  resultsGrid <- cbind(testValsGrid, testResultsGrid)
-  return(resultsGrid)
+  resultsGrid <- base::cbind(testValsGrid, testResultsGrid)
+  base::return(resultsGrid)
 }
 
 .APR_computeCI_NoNuis <- function(betahat, sigma, A, d,
@@ -154,7 +154,7 @@
   #   alpha = size of CI, default 0.05.
 
   # Construct grid of tau values to test and test which values of tau lie in ID set.
-  thetaGrid <- seq(grid.lb, grid.ub, length.out = gridPoints)
+  thetaGrid <- base::seq(grid.lb, grid.ub, length.out = gridPoints)
 
   if (hybrid_flag == "ARP") {
     resultsGrid <- .testOverThetaGrid(betahat = betahat, sigma = sigma,
@@ -173,19 +173,19 @@
                                       testFn = .testInIdentifiedSet_LF_Hybrid,
                                       hybrid_list = hybrid_list)
   } else {
-    stop("hybrid_flag must equal 'APR' or 'FLCI' or 'LF'")
+    base::stop("hybrid_flag must equal 'APR' or 'FLCI' or 'LF'")
   }
 
-  if( resultsGrid[1] == 1 | resultsGrid[length(resultsGrid)] == 1 ){
-    warning("CI is open at one of the endpoints; CI length may not be accurate")
+  if( resultsGrid[1] == 1 | resultsGrid[base::length(resultsGrid)] == 1 ){
+    base::warning("CI is open at one of the endpoints; CI length may not be accurate")
   }
 
   # Compute length, else return grid
   if (returnLength == T) {
-    gridLength <- 0.5 * ( c(0, diff(thetaGrid)) + c(diff(thetaGrid), 0 ) )
-    return(sum(resultsGrid[, 2]*gridLength))
+    gridLength <- 0.5 * ( base::c(0, base::diff(thetaGrid)) + base::c(base::diff(thetaGrid), 0 ) )
+    base::return(base::sum(resultsGrid[, 2]*gridLength))
   } else {
-    return(tibble::tibble(grid   = resultsGrid[, 1],
-                          accept = resultsGrid[,2]))
+    base::return(tibble::tibble(grid   = resultsGrid[, 1],
+                                accept = resultsGrid[,2]))
   }
 }
