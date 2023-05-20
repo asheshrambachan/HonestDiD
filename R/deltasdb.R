@@ -8,14 +8,6 @@
 #  This script contains functions that are used to construct
 #  the confidence sets for Delta^{SDB}(M).
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-
 # DELTA^{SDB}(M) FUNCTIONS --------------------------------------------
 # In this section, we implement helper functions to place testing with
 # Delta^{SDB}(M) into the form needed to use the ARP functions.

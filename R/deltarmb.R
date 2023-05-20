@@ -10,15 +10,6 @@
 #  with a sign restriction (i.e., Delta^{PB} or Delta^{NB}). See the discussion
 #  Section 2.3.3 of Rambachan and Roth (2021).
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-library(purrr)
-
 # Delta^{RMB} functions -----------------------------------------------
 .create_A_RMB <- function(numPrePeriods, numPostPeriods,
                           Mbar = 1, s, max_positive = T,

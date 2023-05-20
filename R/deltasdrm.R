@@ -8,15 +8,6 @@
 #  This script contains functions that are used to construct
 #  the confidence sets for Delta^{SDRM}(Mbar).
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-library(purrr)
-
 # DELTA^{SDRM}(Mbar) FUNCTIONS ---------------------------------------------
 # In this section, we implement helper functions to place testing with
 # Delta^{SDRM}(Mbar) into the form needed to use the ARP functions.

@@ -8,14 +8,6 @@
 #  This script contains functions that are used to construct
 #  the ARP test with nuisance parameters.
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-
 # ARP HELPER FUNCTIONS ------------------------------------------------
 .norminvp_generalized <- function(p, l, u, mu = 0, sd = 1){
   lnormalized <- (l-mu)/sd

@@ -8,14 +8,6 @@
 #  Implements functions to perform sensitivity analysis on event study coefficients
 
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-
 # Construct Robust Results Function for Smoothness Restrictions -----------------------------------
 createSensitivityResults <- function(betahat, sigma,
                                      numPrePeriods, numPostPeriods,

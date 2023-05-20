@@ -8,14 +8,6 @@
 #  Implements functions to upper and lower bound M.
 
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-
 .testInIdentifiedSet_Max <- function(M, y, sigma, A,alpha, d) {
   # Runs APR test of the moments E[AY - 1*M] <= 0, where Y ~ N(mu, sigma).
   # We construct this such that this tests whether the mean of the max moment equals thetabar.

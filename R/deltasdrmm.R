@@ -9,15 +9,6 @@
 #  the confidence sets for Delta^{SDRMM}(Mbar), which intersects Delta^{SDRM}(Mbar)
 #  with a shape restriction (i.e., Delta^{I} or Delta^{D}).
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-library(purrr)
-
 # DELTA^{SDRMM}(Mbar) FUNCTIONS ---------------------------------------------
 # In this section, we implement helper functions to place testing with
 # Delta^{SDRMM}(Mbar) into the form needed to use the ARP functions.

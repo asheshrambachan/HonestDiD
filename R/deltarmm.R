@@ -9,15 +9,6 @@
 #  the confidence sets for Delta^{RM}(Mbar), which intersects Delta^{RM}(Mbar)
 #  with a shape restriction (i.e., Delta^{I} or Delta^{D}).
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-library(purrr)
-
 # Delta^{RMM} functions -----------------------------------------------
 .create_A_RMM <- function(numPrePeriods, numPostPeriods,
                          Mbar = 1, s, max_positive = T,
