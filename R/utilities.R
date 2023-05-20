@@ -1,20 +1,20 @@
 # Other helper functions ----
 .selectionMat <- function(selection, size, select = "columns"){
   if(select == "rows"){
-    m <- matrix(0, nrow = length(selection), ncol = size)
+    m <- base::matrix(0, nrow = base::length(selection), ncol = size)
 
-    m[ 1:length(selection), selection] <- diag(length(selection))
+    m[ 1:base::length(selection), selection] <- base::diag(base::length(selection))
   }else{
-    m <- matrix(0, ncol = length(selection), nrow = size)
+    m <- base::matrix(0, ncol = base::length(selection), nrow = size)
 
-    m[ selection , 1:length(selection)] <- diag(length(selection))
+    m[ selection , 1:base::length(selection)] <- base::diag(base::length(selection))
   }
-  return(m)
+  base::return(m)
 }
 
 .LeeCFN <- function(eta, Sigma){
-  c = Sigma %*% eta / as.numeric( t(eta) %*% Sigma %*% eta )
-  return(c)
+  c = Sigma %*% eta / base::as.numeric( base::t(eta) %*% Sigma %*% eta )
+  base::return(c)
 }
 
 .VLoVUpFN <- function(eta, Sigma, A, b, z){
@@ -22,26 +22,26 @@
 
   objective <- (b - A %*% z) / (A %*% c)
 
-  ACNegativeIndex <- which( (A %*% c) < 0 )
-  ACPositiveIndex <- which( (A %*% c) > 0 )
+  ACNegativeIndex <- base::which( (A %*% c) < 0 )
+  ACPositiveIndex <- base::which( (A %*% c) > 0 )
 
-  if( length(ACNegativeIndex) == 0){
+  if( base::length(ACNegativeIndex) == 0){
     VLo <- -Inf
   }else{
-    VLo <- max(objective[ACNegativeIndex])
+    VLo <- base::max(objective[ACNegativeIndex])
   }
 
-  if( length(ACPositiveIndex) == 0){
+  if( base::length(ACPositiveIndex) == 0){
     VUp <- Inf
   }else{
-    VUp <- min(objective[ACPositiveIndex])
+    VUp <- base::min(objective[ACPositiveIndex])
   }
 
-  return(c(VLo,VUp))
+  base::return(base::c(VLo,VUp))
 }
 
 basisVector <- function(index = 1, size = 1){
-  v <- matrix(0, nrow = size, ncol = 1)
+  v <- base::matrix(0, nrow = size, ncol = 1)
   v[index] = 1
-  return(v)
+  base::return(v)
 }

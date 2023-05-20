@@ -25,26 +25,30 @@ parallel trends is no more than some constant
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
 larger than the maximum violation of parallel trends in the
 pre-treatment period. The value of
-<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> = 1,
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />![=1](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D1 "=1"),
 for instance, imposes that the post-treatment violation of parallel
 trends is no longer than the worst pre-treatment violation of parallel
 trends (between consecutive periods). Likewise, setting
-<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> = 2
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />![=2](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D2 "=2")
 implies that the post-treatment violation of parallel trends is no more
 than twice that in the pre-treatment period.
 
 **Smoothness restrictions.** A second way of formalizing this is to say
 that the post-treatment violations of parallel trends cannot deviate too
 much from a linear extrapolation of the pre-trend. In particular, we can
-impose that the slope of the pre-trend can change by no more than *M*
+impose that the slope of the pre-trend can change by no more than
+![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M")
 across consecutive periods, as shown in the figure below for an example
 with three periods.
 
 ![diagram-smoothness-restriction](deltaSD.png)
 
-Thus, imposing a smoothness restriction with *M* = 0 implies that the
-counterfactual difference in trends is exactly linear, whereas larger
-values of *M* allow for more non-linearity.
+Thus, imposing a smoothness restriction with
+![M=0](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M%3D0 "M=0")
+implies that the counterfactual difference in trends is exactly linear,
+whereas larger values of
+![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M")
+allow for more non-linearity.
 
 **Other restrictions**. The Rambachan and Roth framework allows for a
 variety of other restrictions on the differences in trends as well. For
@@ -70,9 +74,13 @@ confidence intervals under different assumptions about how bad the
 post-treatment violation of parallel trends can be (e.g., different
 values of
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
-or *M*.) They can also report the “breakdown value” of
+or
+![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M").)
+They can also report the “breakdown value” of
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
-(or *M*) for a particular conclusion – e.g. the largest value of
+(or
+![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M"))
+for a particular conclusion – e.g. the largest value of
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
 for which the effect is still significant.
 
@@ -205,7 +213,7 @@ The output of the previous command shows a robust confidence interval
 for different values of
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />.
 We see that the “breakdown value” for a significant effect is
-<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" /> ≈ 2,
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />![\approx 2](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Capprox%202 "\approx 2"),
 meaning that the significant result is robust to allowing for violations
 of parallel trends up to twice as big as the max violation in the
 pre-treatment period.
@@ -232,7 +240,9 @@ HonestDiD::createSensitivityPlot_relativeMagnitudes(delta_rm_results, originalRe
 
 We can also do a sensitivity analysis based on smoothness restrictions –
 i.e. imposing that the slope of the difference in trends changes by no
-more than *M* between periods.
+more than
+![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M")
+between periods.
 
 ``` r
 delta_sd_results <- 
@@ -261,7 +271,8 @@ createSensitivityPlot(delta_sd_results, originalResults)
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-We see that the breakdown value for a significant effect is *M* ≈ 0.03,
+We see that the breakdown value for a significant effect is
+![M\approx 0.03](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M%5Capprox%200.03 "M\approx 0.03"),
 meaning that we can reject a null effect unless we are willing to allow
 for the linear extrapolation across consecutive periods to be off by
 more than 0.03 percentage points.
@@ -273,9 +284,10 @@ period, which is the default in HonestDiD. If we are instead interested
 in the average over the two post-treatment periods, we can use the
 option `l_vec = c(0.5,0.5)`. More generally, the package accommodates
 inference on any scalar parameter of the form
-*θ* = *l*<sub>*v**e**c*</sub>′*τ*<sub>*p**o**s**t*</sub>, where
-*τ*<sub>*p**o**s**t*</sub> = (*τ*<sub>1</sub>,...,*τ*<sub>*T̄*</sub>)′ is
-the vector of dynamic treatment effects. Thus, for example, setting
+![\theta = l\_{vec}'\tau\_{post}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Ctheta%20%3D%20l_%7Bvec%7D%27%5Ctau_%7Bpost%7D "\theta = l_{vec}'\tau_{post}"),
+where
+![\tau\_{post} = (\tau_1,...,\tau\_{\bar{T}})'](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Ctau_%7Bpost%7D%20%3D%20%28%5Ctau_1%2C...%2C%5Ctau_%7B%5Cbar%7BT%7D%7D%29%27 "\tau_{post} = (\tau_1,...,\tau_{\bar{T}})'")
+is the vector of dynamic treatment effects. Thus, for example, setting
 `l_vec = basisVector(2,numPostPeriods)` allows us to do inference on the
 effect for the second period after treatment.
 
@@ -463,9 +475,9 @@ You can also view a video presentation about this paper
 
 ## Authors
 
--   [Ashesh Rambachan](https://asheshrambachan.github.io/)
+- [Ashesh Rambachan](https://asheshrambachan.github.io/)
 
--   [Jonathan Roth](https://jonathandroth.github.io/)
+- [Jonathan Roth](https://jonathandroth.github.io/)
 
 ## Acknowledgements
 
