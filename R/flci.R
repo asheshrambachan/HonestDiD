@@ -32,35 +32,35 @@ library(foreach)
   # -U_1 - w_1 <= 0, and so on.
   # We return the values to be passed to optimSolve.
   K <- numPrePeriods
-  lowerTriMat <- diag(K)
-  lowerTriMat[lower.tri(lowerTriMat)] <- 1
+  lowerTriMat <- base::diag(K)
+  lowerTriMat[base::lower.tri(lowerTriMat)] <- 1
   A_absolutevalue <-
-    rbind(
-      cbind( -diag(K), lowerTriMat  ),
-      cbind( -diag(K), -lowerTriMat )
+    base::rbind(
+      base::cbind( -base::diag(K), lowerTriMat  ),
+      base::cbind( -base::diag(K), -lowerTriMat )
     )
-  threshold_absolutevalue <- rep(0, NROW(A_absolutevalue))
-  direction_absolutevalue <- rep("<=", NROW(A_absolutevalue))
+  threshold_absolutevalue <- base::rep(0, base::NROW(A_absolutevalue))
+  direction_absolutevalue <- base::rep("<=", base::NROW(A_absolutevalue))
   constraint = A_absolutevalue %*% UstackW <= threshold_absolutevalue
-  return(constraint)
+  base::return(constraint)
 }
 
 .createConstraints_SumWeights <- function(numPrePeriods, l_vec, UstackW){
   # Creates constraints on the sum of the weights.
-  numPostPeriods = length(l_vec)
-  A_sumweights <- c(rep(0,numPrePeriods), rep(1,numPrePeriods))
+  numPostPeriods = base::length(l_vec)
+  A_sumweights <- base::c(base::rep(0,numPrePeriods), base::rep(1,numPrePeriods))
   threshold_sumweights <- t((1:numPostPeriods)) %*% l_vec
   direction_sumweights <- "=="
 
   constraint = t(A_sumweights) %*% UstackW == threshold_sumweights
-  return(constraint)
+  base::return(constraint)
 }
 
 .createObjectiveObjectForBias <- function(numPrePeriods, numPostPeriods, l_vec, UstackW){
   # Constructs the objective function for the worst-case bias.
-  constant = sum(sapply(1:numPostPeriods, FUN = function(s) { abs(t(1:s) %*% l_vec[(numPostPeriods - s + 1):numPostPeriods]) })) - t((1:numPostPeriods)) %*% l_vec
-  objective.UstackW = CVXR::Minimize( constant +  t(c(rep(1,numPrePeriods), rep(0,numPrePeriods))) %*% UstackW )
-  return(objective.UstackW)
+  constant = base::sum(base::sapply(1:numPostPeriods, FUN = function(s) { base::abs(base::t(1:s) %*% l_vec[(numPostPeriods - s + 1):numPostPeriods]) })) - base::t((1:numPostPeriods)) %*% l_vec
+  objective.UstackW = CVXR::Minimize( constant +  base::t(base::c(base::rep(1,numPrePeriods), base::rep(0,numPrePeriods))) %*% UstackW )
+  base::return(objective.UstackW)
 }
 
 .createMatricesForVarianceFromW <- function(sigma, numPrePeriods, l_vec, UstackW,
@@ -68,8 +68,8 @@ library(foreach)
   # Constructs matrix to compute the variance of the affine estimator for a choice of weights W.
   SigmaPre <- sigma[prePeriodIndices, prePeriodIndices]
   SigmaPrePost <- sigma[prePeriodIndices, -prePeriodIndices]
-  SigmaPost <- t(l_vec) %*% sigma[-prePeriodIndices, -prePeriodIndices] %*% l_vec
-  WtoLPreMat <- diag(numPrePeriods)
+  SigmaPost <- base::t(l_vec) %*% sigma[-prePeriodIndices, -prePeriodIndices] %*% l_vec
+  WtoLPreMat <- base::diag(numPrePeriods)
   if (numPrePeriods == 1) {
     WtoLPreMat = 1
   } else {
@@ -78,14 +78,14 @@ library(foreach)
     }
   }
 
-  UstackWtoLPreMat <- cbind(matrix(0, nrow = numPrePeriods, ncol = numPrePeriods), WtoLPreMat)
+  UstackWtoLPreMat <- base::cbind(base::matrix(0, nrow = numPrePeriods, ncol = numPrePeriods), WtoLPreMat)
   A_quadratic_sd <-  t(UstackWtoLPreMat) %*% SigmaPre %*% UstackWtoLPreMat
   A_linear_sd <- 2 * t(UstackWtoLPreMat) %*% SigmaPrePost %*% l_vec
   A_constant_sd <- SigmaPost
 
-  return(list(A_quadratic_sd = A_quadratic_sd,
-              A_linear_sd = A_linear_sd,
-              A_constant_sd = A_constant_sd))
+  base::return(base::list(A_quadratic_sd = A_quadratic_sd,
+                          A_linear_sd = A_linear_sd,
+                          A_constant_sd = A_constant_sd))
 }
 
 .createConstraintsObject_SDLessThanH <- function(sigma, numPrePeriods, l_vec, UstackW, h, ...){
@@ -93,30 +93,30 @@ library(foreach)
   # some level h.
   A_matrices <- .createMatricesForVarianceFromW(sigma, numPrePeriods, l_vec, ...)
   threshold_sd_constraint <- h^2
-  constraint = CVXR::quad_form(UstackW, A_matrices$A_quadratic_sd) + t(A_matrices$A_linear_sd) %*% UstackW + A_matrices$A_constant_sd <= threshold_sd_constraint
-  return(constraint)
+  constraint = CVXR::quad_form(UstackW, A_matrices$A_quadratic_sd) + base::t(A_matrices$A_linear_sd) %*% UstackW + A_matrices$A_constant_sd <= threshold_sd_constraint
+  base::return(constraint)
 }
 
 .createObjectiveObject_MinimizeSD <- function(sigma, numPrePeriods, numPostPeriods, UstackW, l_vec, ...){
   # Create objective function to minimize the standard deviation.
   A_matrices <- .createMatricesForVarianceFromW(sigma, numPrePeriods, l_vec, ...)
-  objective = CVXR::Minimize(CVXR::quad_form(UstackW, A_matrices$A_quadratic_sd) + t(A_matrices$A_linear_sd) %*% UstackW + A_matrices$A_constant_sd)
-  return(objective)
+  objective = CVXR::Minimize(CVXR::quad_form(UstackW, A_matrices$A_quadratic_sd) + base::t(A_matrices$A_linear_sd) %*% UstackW + A_matrices$A_constant_sd)
+  base::return(objective)
 }
 
 .qfoldednormal <- function(p, mu = 0, sd = 1, numSims = 10^6, seed = 0){
   # Computes the pth quantile of the folded normal distribution with mean mu and sd = sd
   # Vectorized over mu
-  set.seed(seed)
-  normDraws <- rnorm(n = numSims, sd = sd)
-  pQuantiles <- purrr::map_dbl(.x = mu, .f = function(mu){quantile(abs(normDraws + mu), probs = p)})
-  return(pQuantiles)
+  base::set.seed(seed)
+  normDraws <- stats::rnorm(n = numSims, sd = sd)
+  pQuantiles <- purrr::map_dbl(.x = mu, .f = function(mu){stats::quantile(base::abs(normDraws + mu), probs = p)})
+  base::return(pQuantiles)
 }
 
 .wToLFn <- function(w){
   # Converts vector from w space to l space.
-  numPrePeriods <- length(w)
-  WtoLPreMat <- diag(numPrePeriods)
+  numPrePeriods <- base::length(w)
+  WtoLPreMat <- base::diag(numPrePeriods)
   if (numPrePeriods == 1) {
     WtoLPreMat = 1
   } else {
@@ -124,14 +124,14 @@ library(foreach)
       WtoLPreMat[col+1, col] <- -1
     }
   }
-  l <- c(WtoLPreMat %*% w)
-  return(l)
+  l <- base::c(WtoLPreMat %*% w)
+  base::return(l)
 }
 
 .lToWFn <- function(l_vec) {
   # Converts vector from l space to w space
-  numPostPeriods = length(l_vec)
-  lToWPostMat <- diag(numPostPeriods)
+  numPostPeriods = base::length(l_vec)
+  lToWPostMat <- base::diag(numPostPeriods)
   if (numPostPeriods == 1) {
     lToWPostMat = 1
   } else {
@@ -140,7 +140,7 @@ library(foreach)
     }
   }
   w = c(lToWPostMat %*% l_vec)
-  return(w)
+  base::return(w)
 }
 
 # FLCI FUNCTIONS ------------------------------------------------------
@@ -155,7 +155,7 @@ library(foreach)
   sum_constraint <- .createConstraints_SumWeights(numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW)
   quad_constraint <- .createConstraintsObject_SDLessThanH(sigma = sigma, numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW, h = h)
 
-  biasProblem = CVXR::Problem(objectiveBias, constraints = list(abs_constraint, sum_constraint, quad_constraint))
+  biasProblem = CVXR::Problem(objectiveBias, constraints = base::list(abs_constraint, sum_constraint, quad_constraint))
   biasResult <- CVXR::psolve(biasProblem, solver = "ECOS")
 
   # Multiply objective by M (note that solution otherwise doesn't depend on M,
@@ -164,23 +164,23 @@ library(foreach)
 
   # Compute the implied w and l
   optimal.x <- biasResult$getValue(UstackW)
-  optimal.w <- optimal.x[ (length(optimal.x)/2 + 1):length(optimal.x) ]
+  optimal.w <- optimal.x[ (base::length(optimal.x)/2 + 1):base::length(optimal.x) ]
   optimal.l <- .wToLFn(optimal.w)
 
   if(returnDF == F){
-    return(list(status = biasResult$status,
-                value = biasResult$value,
-                optimal.x = optimal.x,
-                optimal.w = optimal.w,
-                optimal.l = optimal.l))
+    base::return(base::list(status = biasResult$status,
+                            value = biasResult$value,
+                            optimal.x = optimal.x,
+                            optimal.w = optimal.w,
+                            optimal.l = optimal.l))
   } else{
-    temp = list(status = biasResult$status,
-                value = biasResult$value,
-                optimal.x = I(list(unlist(optimal.x))),
-                optimal.w = I(list(unlist(optimal.w))),
-                optimal.l = I(list(unlist(optimal.l)))
+    temp = base::list(status = biasResult$status,
+                      value = biasResult$value,
+                      optimal.x = base::I(base::list(base::unlist(optimal.x))),
+                      optimal.w = base::I(base::list(base::unlist(optimal.w))),
+                      optimal.l = base::I(base::list(base::unlist(optimal.l)))
     )
-    return(as.data.frame(temp, stringsAsFactors = FALSE))
+    base::return(base::as.data.frame(temp, stringsAsFactors = FALSE))
   }
 }
 
@@ -190,16 +190,16 @@ library(foreach)
   abs_constraint <- .createConstraints_AbsoluteValue(sigma = sigma, numPrePeriods = numPrePeriods, UstackW = UstackW)
   sum_constraint <- .createConstraints_SumWeights(numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW)
   objectiveVariance = .createObjectiveObject_MinimizeSD(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, UstackW = UstackW, l_vec = l_vec)
-  varProblem = CVXR::Problem(objectiveVariance, constraints = list(abs_constraint, sum_constraint))
+  varProblem = CVXR::Problem(objectiveVariance, constraints = base::list(abs_constraint, sum_constraint))
   varResult <- CVXR::psolve(varProblem)
 
   if(varResult$status != "optimal" & varResult$status != "optimal_inaccurate"){
-    warning("Error in optimization for h0")
+    base::warning("Error in optimization for h0")
   }
 
   minimalVariance <- varResult$value
-  minimalH <- sqrt(minimalVariance)
-  return(minimalH)
+  minimalH <- base::sqrt(minimalVariance)
+  base::return(minimalH)
 }
 
 .computeSigmaLFromW <- function(w, sigma, numPrePeriods, numPostPeriods, l_vec, ...){
@@ -207,20 +207,20 @@ library(foreach)
   A_matrices <- .createMatricesForVarianceFromW(sigma = sigma,
                                                 numPrePeriods = numPrePeriods,
                                                 l_vec = l_vec, ...)
-  UstackW <- matrix(c( rep(0, length(w)), w ), ncol = 1)
+  UstackW <- base::matrix(base::c( base::rep(0, base::length(w)), w ), ncol = 1)
   varL <- t(UstackW) %*% A_matrices$A_quadratic_sd %*% UstackW +
-    t(A_matrices$A_linear_sd) %*% UstackW + A_matrices$A_constant_sd
-  return(varL)
+    base::t(A_matrices$A_linear_sd) %*% UstackW + A_matrices$A_constant_sd
+  base::return(varL)
 }
 
 .findHForMinimumBias <- function(sigma, numPrePeriods, numPostPeriods, l_vec){
-  hsquared <- .computeSigmaLFromW(c(rep(0,numPrePeriods-1), t(1:numPostPeriods) %*% l_vec),
+  hsquared <- .computeSigmaLFromW(base::c(base::rep(0,numPrePeriods-1), base::t(1:numPostPeriods) %*% l_vec),
                                   sigma = sigma,
                                   numPrePeriods = numPrePeriods,
                                   numPostPeriods = numPostPeriods,
                                   l_vec = l_vec)
-  h <- sqrt(hsquared)
-  return(h)
+  h <- base::sqrt(hsquared)
+  base::return(h)
 }
 
 .findOptimalFLCI_helper <- function(sigma, M,
@@ -230,10 +230,10 @@ library(foreach)
   hMin <- .findLowestH(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
   hstar <- .findOptimalCIDerivativeBisection(hMin, h0, M, numPoints, alpha, sigma, numPrePeriods, numPostPeriods, l_vec, T)
 
-  if ( is.na(hstar) ) {
+  if ( base::is.na(hstar) ) {
     # Numerical derivatives will occasionally fail; fall back into grid
     # search in that case
-    hGrid <- seq(from = hMin, to = h0, length.out = numPoints)
+    hGrid <- base::seq(from = hMin, to = h0, length.out = numPoints)
     biasDF <- purrr::map_dfr(.x = hGrid,
                              .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = T) %>% dplyr::mutate(h = h) } )
     biasDF <- biasDF %>% dplyr::rename(bias = value)
@@ -259,14 +259,14 @@ library(foreach)
     optimalCIDF$CI.halflength <- .qfoldednormal(p = 1-alpha, mu = (M * optimalCIDF$value)/hstar) * hstar
   }
 
-  results = list(
-    optimalVec = c(unlist(optimalCIDF$optimal.l), l_vec),
-    optimalPrePeriodVec = unlist(optimalCIDF$optimal.l),
+  results = base::list(
+    optimalVec = base::c(base::unlist(optimalCIDF$optimal.l), l_vec),
+    optimalPrePeriodVec = base::unlist(optimalCIDF$optimal.l),
     optimalHalfLength = optimalCIDF$CI.halflength,
     M = optimalCIDF$m,
     status = optimalCIDF$status
   )
-  return(results)
+  base::return(results)
 }
 
 .findOptimalCIDerivativeBisection <-  function(a, b, M, numPoints, alpha, sigma,
@@ -277,9 +277,9 @@ library(foreach)
     biasDF <- .findWorstCaseBiasGivenH(h, sigma, numPrePeriods, numPostPeriods, l_vec, returnDF)
     maxBias <- M * biasDF$value
     if (biasDF$value < Inf) {
-      return(.qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
+      base::return(.qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
     } else {
-      return(NaN)
+      base::return(NaN)
     }
   }
 
@@ -288,22 +288,22 @@ library(foreach)
   hstar   <- NaN
   failtol <- (.Machine$double.eps)^(1/2)
   failed  <- FALSE
-  dif     <- min((b - a) / numPoints, abs(b) * (.Machine$double.eps^(1/3)))
+  dif     <- base::min((b - a) / numPoints, base::abs(b) * (.Machine$double.eps^(1/3)))
   fa      <- .f(a)
   fb      <- .f(b)
   fpa     <- (.f(a + dif) - fa) / dif  # Limit from the right for lb
   fpb     <- (.f(b - dif) - fb) / -dif # Limit from the left for ub
   iter    <- 1
-  maxiter <- 10 * ceiling(log(abs(b - a) / dif) / log(2))
+  maxiter <- 10 * base::ceiling(base::log(base::abs(b - a) / dif) / base::log(2))
 
-  if ( (fpa > fpb) | is.nan(fa) | is.nan(fb) ) {
+  if ( (fpa > fpb) | base::is.nan(fa) | base::is.nan(fb) ) {
     failed <-  TRUE
   } else if ( fpb < 0 ) {
     hstar <- b
   } else if ( fpa > 0 ) {
     hstar <- a
   } else {
-    while ( !failed & abs(b - a) > dif ) {
+    while ( !failed & base::abs(b - a) > dif ) {
       iter   <- iter + 1
       x      <- (a + b) / 2
       fpx    <- (.f(x + dif) - .f(x - dif)) / (2 * dif)
@@ -320,9 +320,9 @@ library(foreach)
 
   # Only does 4 + 2 * iter function evaluations
   if (failed) {
-    return(NaN)
+    base::return(NaN)
   } else {
-    return(hstar)
+    base::return(hstar)
   }
 }
 
@@ -337,15 +337,15 @@ findOptimalFLCI <- function(betahat, sigma, M = 0,
                                          l_vec = l_vec,
                                          numPoints = numPoints,
                                          alpha = alpha)
-  FLCI = c(t(FLCI_Results$optimalVec) %*% betahat - FLCI_Results$optimalHalfLength,
-           t(FLCI_Results$optimalVec) %*% betahat + FLCI_Results$optimalHalfLength)
+  FLCI = base::c(base::t(FLCI_Results$optimalVec) %*% betahat - FLCI_Results$optimalHalfLength,
+                 base::t(FLCI_Results$optimalVec) %*% betahat + FLCI_Results$optimalHalfLength)
 
-  Results = list(
+  Results = base::list(
     FLCI = FLCI,
     optimalVec = FLCI_Results$optimalVec,
     optimalHalfLength = FLCI_Results$optimalHalfLength,
     M = FLCI_Results$M,
     status = FLCI_Results$status
   )
-  return(Results)
+  base::return(Results)
 }

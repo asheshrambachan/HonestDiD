@@ -30,24 +30,24 @@ createSensitivityResults <- function(betahat, sigma,
                                      parallel = FALSE) {
 
   # If Mvec is null, construct default Mvec
-  if (is.null(Mvec)) {
+  if (base::is.null(Mvec)) {
     if (numPrePeriods == 1) {
-      Mvec = seq(from = 0, to = c(sqrt(sigma[1, 1])), length.out = 10)
+      Mvec = base::seq(from = 0, to = base::c(base::sqrt(base::sigma[1, 1])), length.out = 10)
     } else {
       Mub = DeltaSD_upperBound_Mpre(betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods, alpha = 0.05)
-      Mvec = seq(from = 0, to = Mub, length.out = 10)
+      Mvec = base::seq(from = 0, to = Mub, length.out = 10)
     }
   }
 
   # If Delta = Delta^{SD}, construct confidence intervals
-  if (is.null(monotonicityDirection) & is.null(biasDirection)) {
-    if (is.null(method)) {
+  if (base::is.null(monotonicityDirection) & base::is.null(biasDirection)) {
+    if (base::is.null(method)) {
       method = "FLCI"
     }
 
     if (method == "FLCI") { # If method = FLCI, construct FLCIs
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = alpha)
@@ -55,7 +55,7 @@ createSensitivityResults <- function(betahat, sigma,
                          method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = alpha)
@@ -65,87 +65,87 @@ createSensitivityResults <- function(betahat, sigma,
       }
     } else if (method == "Conditional") { # If method = Conditional, construct conditional confidence intervals
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSD(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "ARP")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
                          Delta = "DeltaSD", M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSD(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "ARP")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
                          Delta = "DeltaSD", M = Mvec[m])
         }
       }
     } else if (method == "C-F") { # If method = C-F, construct conditional FLCI,
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSD(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "FLCI")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
                          Delta = "DeltaSD", M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSD(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "FLCI")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
                          Delta = "DeltaSD", M = Mvec[m])
         }
       }
     } else if (method == "C-LF") {
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSD(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "LF")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
                          Delta = "DeltaSD", M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSD(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                               hybrid_flag = "LF")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
                          Delta = "DeltaSD", M = Mvec[m])
         }
       }
     } else{
-      stop("Method must equal one of: FLCI, Conditional, C-F or C-LF")
+      base::stop("Method must equal one of: FLCI, Conditional, C-F or C-LF")
     }
-  } else if (!is.null(biasDirection)) {
-    if (is.null(method)) {
+  } else if (!base::is.null(biasDirection)) {
+    if (base::is.null(method)) {
       method = "C-F"
     }
 
@@ -156,9 +156,9 @@ createSensitivityResults <- function(betahat, sigma,
     }
 
     if (method == "FLCI") {
-      warning("You specified a sign restriction but method = FLCI. The FLCI does not use the sign restriction!")
+      base::warning("You specified a sign restriction but method = FLCI. The FLCI does not use the sign restriction!")
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = alpha)
@@ -166,7 +166,7 @@ createSensitivityResults <- function(betahat, sigma,
                          method = "FLCI", Delta = Delta, M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = alpha)
@@ -175,94 +175,94 @@ createSensitivityResults <- function(betahat, sigma,
         }
       }
     } else if (method == "Conditional") { # If method = Conditional, construct conditional confidence intervals
-      if (parallel == TRUE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+      if (parallel == FALSE) {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "ARP")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
                          Delta = Delta, M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "ARP")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
                          Delta = Delta, M = Mvec[m])
         }
       }
     } else if (method == "C-F") { # If method = C-F, construct conditional FLCI,
-      if (parallel == TRUE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+      if (parallel == FALSE) {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "FLCI")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
                          Delta = Delta, M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "FLCI")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
                          Delta = Delta, M = Mvec[m])
         }
       }
     } else if (method == "C-LF") {
-      if (parallel == TRUE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+      if (parallel == FALSE) {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "LF")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
                          Delta = Delta, M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = "LF")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
                          Delta = Delta, M = Mvec[m])
         }
       }
     } else{
-      stop("Method must equal one of: FLCI, Conditional, C-F or C-LF")
+      base::stop("Method must equal one of: FLCI, Conditional, C-F or C-LF")
     }
   } else {
-    if (is.null(method)) {
+    if (base::is.null(method)) {
       method = "C-F"
     }
 
@@ -273,9 +273,9 @@ createSensitivityResults <- function(betahat, sigma,
     }
 
     if (method == "FLCI") {
-      warning("You specified a shape restriction but method = FLCI. The FLCI does not use the shape restriction!")
+      base::warning("You specified a shape restriction but method = FLCI. The FLCI does not use the shape restriction!")
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = alpha)
@@ -283,7 +283,7 @@ createSensitivityResults <- function(betahat, sigma,
                          method = "FLCI", Delta = Delta, M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                                  l_vec = l_vec, M = Mvec[m], alpha = alpha)
@@ -293,57 +293,57 @@ createSensitivityResults <- function(betahat, sigma,
       }
     } else if (method == "Conditional") { # If method = Conditional, construct conditional confidence intervals
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "ARP")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
                          Delta = Delta, M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "ARP")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
                          Delta = Delta, M = Mvec[m])
         }
       }
     } else if (method == "C-F") { # If method = C-F, construct conditional FLCI,
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "FLCI")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
                          Delta = Delta,
                          M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "FLCI")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
                          Delta = Delta,
                          M = Mvec[m])
@@ -351,43 +351,43 @@ createSensitivityResults <- function(betahat, sigma,
       }
     } else if (method == "C-LF") {
       if (parallel == FALSE) {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "LF")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
                          Delta = Delta, M = Mvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = "LF")
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
                          Delta = Delta, M = Mvec[m])
         }
       }
     } else{
-      stop("Method must equal one of: FLCI, Conditional, C-F or C-LF")
+      base::stop("Method must equal one of: FLCI, Conditional, C-F or C-LF")
     }
   }
-  return(Results)
+  base::return(Results)
 }
 
 createSensitivityPlot <- function(robustResults, originalResults, rescaleFactor = 1, maxM = Inf, add_xAxis = TRUE) {
   # Set M for OLS to be the min M in robust results minus the gap between Ms in robust
-  Mgap <- min( diff( sort( robustResults$M) ) )
-  Mmin <- min( robustResults$M)
+  Mgap <- base::min( base::diff( base::sort( robustResults$M) ) )
+  Mmin <- base::min( robustResults$M)
 
   originalResults$M <- Mmin - Mgap
   df <- dplyr::bind_rows(originalResults, robustResults)
@@ -398,17 +398,17 @@ createSensitivityPlot <- function(robustResults, originalResults, rescaleFactor 
   # Filter out observations above maxM (after rescaling)
   df <- df %>% dplyr::filter(M <= maxM)
 
-  p <- ggplot(data = df, aes(x=M)) +
-    geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
-                  width = Mgap * rescaleFactor / 2) +
-    scale_color_manual(values = c("red", '#01a2d9')) +
-    theme(legend.title=element_blank(), legend.position="bottom") +
-    labs(x = "M", y = "")
+  p <- ggplot2::ggplot(data = df, ggplot2::aes(x=M)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = lb, ymax = ub, color = base::factor(method)),
+                           width = Mgap * rescaleFactor / 2) +
+    ggplot2::scale_color_manual(values = base::c("red", '#01a2d9')) +
+    ggplot2::theme(legend.title=ggplot2::element_blank(), legend.position="bottom") +
+    ggplot2::labs(x = "M", y = "")
 
   if (add_xAxis) {
-    p <- p + geom_hline(yintercept = 0)
+    p <- p + ggplot2::geom_hline(yintercept = 0)
   }
-  return(p)
+  base::return(p)
 }
 
 # Construct Robust Results Function for Relative Magnitude Bounds -----------------------------------
@@ -425,18 +425,18 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                         parallel = FALSE) {
 
   # If Mbarvec is null, construct default Mbarvec to be 10 values on [0,2].
-  if (is.null(Mbarvec)) {
-    Mbarvec = seq(from = 0, to = 2, length.out = 10)
+  if (base::is.null(Mbarvec)) {
+    Mbarvec = base::seq(from = 0, to = 2, length.out = 10)
   }
 
   # Check if bound is specified correctly
   if (bound != "deviation from parallel trends" & bound != "deviation from linear trend") {
-    stop("bound must equal either 'deviation from parallel trends' or 'deviation from linear trend'.")
+    base::stop("bound must equal either 'deviation from parallel trends' or 'deviation from linear trend'.")
   }
 
   # Check if both monotonicity direction and bias direction are specified:
-  if (!is.null(monotonicityDirection) & !is.null(biasDirection)) {
-    stop("Please select either a shape restriction or sign restriction (not both).")
+  if (!base::is.null(monotonicityDirection) & !base::is.null(biasDirection)) {
+    base::stop("Please select either a shape restriction or sign restriction (not both).")
   }
 
   # Use method to specify the choice of confidence set
@@ -447,53 +447,53 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
     hybrid_flag = "ARP"
     method_named = "Conditional"
   } else {
-    stop("method must be either NULL, Conditional or C-LF.")
+    base::stop("method must be either NULL, Conditional or C-LF.")
   }
 
   # If bound = "parallel trends violation", we select Delta^{RM} and its variants.
   if (bound == "deviation from parallel trends") {
     # use monotonicity direction and biasDirection to select the choice of Delta
-    if (is.null(monotonicityDirection) & is.null(biasDirection)) { # if both null, Delta^{RM}
+    if (base::is.null(monotonicityDirection) & base::is.null(biasDirection)) { # if both null, Delta^{RM}
       Delta = "DeltaRM"
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaRM(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                               hybrid_flag = hybrid_flag,
                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaRM(betahat = betahat, sigma = sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                               hybrid_flag = hybrid_flag,
                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       }
-    } else if (!is.null(monotonicityDirection)) { # if monotonicityDirection specified, Delta^{RMM}.
+    } else if (!base::is.null(monotonicityDirection)) { # if monotonicityDirection specified, Delta^{RMM}.
       if (monotonicityDirection == "increasing") {
         Delta = "DeltaRMI"
       } else if (monotonicityDirection == "decreasing") {
         Delta = "DeltaRMD"
       } else {
-        stop("monotonicityDirection must equal either increasing or decreasing.")
+        base::stop("monotonicityDirection must equal either increasing or decreasing.")
       }
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaRMM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
@@ -501,13 +501,13 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = hybrid_flag,
                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaRMM(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
@@ -515,8 +515,8 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = hybrid_flag,
                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
@@ -527,11 +527,11 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       } else if (biasDirection == "negative") {
         Delta = "DeltaRMNB"
       } else {
-        stop("monotonicityDirection must equal either positive or negative.")
+        base::stop("monotonicityDirection must equal either positive or negative.")
       }
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaRMB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
@@ -539,13 +539,13 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                biasDirection = biasDirection,
                                                hybrid_flag = hybrid_flag,
                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaRMB(betahat = betahat, sigma = sigma,
                                                numPrePeriods = numPrePeriods,
                                                numPostPeriods = numPostPeriods,
@@ -553,8 +553,8 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                biasDirection = biasDirection,
                                                hybrid_flag = hybrid_flag,
                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
@@ -566,51 +566,51 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
     # based on observed variation in the pre-treatment trends, we provide an error
     # if the user tries to provide data with only one pre-treatment period.
     if (numPrePeriods == 1) {
-      stop("Error: not enough pre-periods for 'deviation from linear trend' (Delta^{SDRM} as base choice). Plese see documentation.")
+      base::stop("Error: not enough pre-periods for 'deviation from linear trend' (Delta^{SDRM} as base choice). Plese see documentation.")
     }
 
     # use monotonicity direction and biasDirection to select the choice of Delta
-    if (is.null(monotonicityDirection) & is.null(biasDirection)) { # if both null, Delta^{SDRM}
+    if (base::is.null(monotonicityDirection) & base::is.null(biasDirection)) { # if both null, Delta^{SDRM}
       Delta = "DeltaSDRM"
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDRM(betahat = betahat, sigma = sigma,
                                                 numPrePeriods = numPrePeriods,
                                                 numPostPeriods = numPostPeriods,
                                                 l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                 hybrid_flag = hybrid_flag,
                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDRM(betahat = betahat, sigma = sigma,
                                                 numPrePeriods = numPrePeriods,
                                                 numPostPeriods = numPostPeriods,
                                                 l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                 hybrid_flag = hybrid_flag,
                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       }
-    } else if (!is.null(monotonicityDirection)) { # if monotonicityDirection specified, Delta^{SDRMM}.
+    } else if (!base::is.null(monotonicityDirection)) { # if monotonicityDirection specified, Delta^{SDRMM}.
       if (monotonicityDirection == "increasing") {
         Delta = "DeltaSDRMI"
       } else if (monotonicityDirection == "decreasing") {
         Delta = "DeltaSDRMD"
       } else {
-        stop("monotonicityDirection must equal either increasing or decreasing.")
+        base::stop("monotonicityDirection must equal either increasing or decreasing.")
       }
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDRMM(betahat = betahat, sigma = sigma,
                                                  numPrePeriods = numPrePeriods,
                                                  numPostPeriods = numPostPeriods,
@@ -618,13 +618,13 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                  monotonicityDirection = monotonicityDirection,
                                                  hybrid_flag = hybrid_flag,
                                                  gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDRMM(betahat = betahat, sigma = sigma,
                                                  numPrePeriods = numPrePeriods,
                                                  numPostPeriods = numPostPeriods,
@@ -632,8 +632,8 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                  monotonicityDirection = monotonicityDirection,
                                                  hybrid_flag = hybrid_flag,
                                                  gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
@@ -644,11 +644,11 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
       } else if (biasDirection == "negative") {
         Delta = "DeltaSDRMNB"
       } else {
-        stop("monotonicityDirection must equal either positive or negative.")
+        base::stop("monotonicityDirection must equal either positive or negative.")
       }
 
       if (parallel) {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %do% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %dopar% {
           temp = computeConditionalCS_DeltaSDRMB(betahat = betahat, sigma = sigma,
                                                  numPrePeriods = numPrePeriods,
                                                  numPostPeriods = numPostPeriods,
@@ -656,13 +656,13 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                  biasDirection = biasDirection,
                                                  hybrid_flag = hybrid_flag,
                                                  gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
       } else {
-        Results = foreach::foreach(m = 1:length(Mbarvec), .combine = 'rbind') %dopar% {
+        Results = foreach::foreach(m = 1:base::length(Mbarvec), .combine = 'rbind') %do% {
           temp = computeConditionalCS_DeltaSDRMB(betahat = betahat, sigma = sigma,
                                                  numPrePeriods = numPrePeriods,
                                                  numPostPeriods = numPostPeriods,
@@ -670,8 +670,8 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                  biasDirection = biasDirection,
                                                  hybrid_flag = hybrid_flag,
                                                  gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-          tibble::tibble(lb = min(temp$grid[temp$accept == 1]),
-                         ub = max(temp$grid[temp$accept == 1]),
+          tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
+                         ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
                          Delta = Delta, Mbar = Mbarvec[m])
         }
@@ -679,34 +679,34 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
     }
   }
   # Return tibble of results
-  return(Results)
+  base::return(Results)
 }
 
 createSensitivityPlot_relativeMagnitudes <- function(robustResults, originalResults, rescaleFactor = 1, maxMbar = Inf, add_xAxis = TRUE) {
   # Set Mbar for OLS to be the min Mbar in robust results minus the gap between Mbars in robust
-  Mbargap <- min( diff( sort( robustResults$Mbar) ) )
-  Mbarmin <- min( robustResults$Mbar)
+  Mbargap <- base::min( base::diff( base::sort( robustResults$Mbar) ) )
+  Mbarmin <- base::min( robustResults$Mbar)
 
   originalResults$Mbar <- Mbarmin - Mbargap
   df <- dplyr::bind_rows(originalResults, robustResults)
 
   # Rescale all the units by rescaleFactor
-  df <- df %>% dplyr::mutate_at( c("Mbar", "ub", "lb"), ~ .x * rescaleFactor)
+  df <- df %>% dplyr::mutate_at( base::c("Mbar", "ub", "lb"), ~ .x * rescaleFactor)
 
   # Filter out observations above maxM (after rescaling)
   df <- df %>% dplyr::filter(Mbar <= maxMbar)
 
-  p <- ggplot(data = df, aes(x=Mbar)) +
-    geom_errorbar(aes(ymin = lb, ymax = ub, color = factor(method)),
-                  width = Mbargap * rescaleFactor / 2) +
-    scale_color_manual(values = c("red", '#01a2d9')) +
-    theme(legend.title=element_blank(), legend.position="bottom") +
-    labs(x = latex2exp::TeX("$\\bar{M}$"), y = "")
+  p <- ggplot2::ggplot(data = df, ggplot2::aes(x=Mbar)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = lb, ymax = ub, color = base::factor(method)),
+                           width = Mbargap * rescaleFactor / 2) +
+    ggplot2::scale_color_manual(values = base::c("red", '#01a2d9')) +
+    ggplot2::theme(legend.title=ggplot2::element_blank(), legend.position="bottom") +
+    ggplot2::labs(x = latex2exp::TeX("$\\bar{M}$"), y = "")
 
   if (add_xAxis) {
-    p <- p + geom_hline(yintercept = 0)
+    p <- p + ggplot2::geom_hline(yintercept = 0)
   }
-  return(p)
+  base::return(p)
 }
 
 # Construct Original CS -----------------------------------------------
@@ -714,10 +714,10 @@ constructOriginalCS <- function(betahat, sigma,
                                 numPrePeriods, numPostPeriods,
                                 l_vec = .basisVector(index = 1, size = numPostPeriods),
                                 alpha = 0.05) {
-  stdError = sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
-  lb = t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] - qnorm(1-alpha/2)*stdError
-  ub = t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] + qnorm(1-alpha/2)*stdError
-  return(tibble::tibble(
+  stdError = base::sqrt(base::t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
+  lb = base::t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] - stats::qnorm(1-alpha/2)*stdError
+  ub = base::t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] + stats::qnorm(1-alpha/2)*stdError
+  base::return(tibble::tibble(
     lb = lb,
     ub = ub,
     method = "Original",
@@ -729,10 +729,10 @@ createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
                                  numPrePeriods, numPostPeriods, alpha = 0.05,
                                  timeVec, referencePeriod,
                                  useRelativeEventTime = F) {
-  if (is.null(stdErrors) & is.null(sigma)) {
-    stop("User must specify either vector of standard errors or vcv matrix!")
-  } else if (is.null(stdErrors) & !is.null(sigma)) {
-    stdErrors = sqrt(diag(sigma))
+  if (base::is.null(stdErrors) & base::is.null(sigma)) {
+    base::stop("User must specify either vector of standard errors or vcv matrix!")
+  } else if (base::is.null(stdErrors) & !is.null(sigma)) {
+    stdErrors = base::sqrt(base::diag(sigma))
   }
 
   if (useRelativeEventTime == T) {
@@ -740,14 +740,15 @@ createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
     referencePeriod = 0
   }
 
-  EventStudyPlot <- ggplot(tibble::tibble(t = c(timeVec[1:numPrePeriods], referencePeriod, timeVec[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
-                                          beta = c(betahat[1:numPrePeriods], 0, betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
-                                          se = c(stdErrors[1:numPrePeriods], NA, stdErrors[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])),
-                           aes(x = t)) +
-    geom_point(aes(y = beta), color = "red") +
-    geom_errorbar(aes(ymin = beta - qnorm(1-alpha/2)*se, ymax = beta + qnorm(1-alpha/2)*se), width = 0.5, colour = "#01a2d9") +
-    theme(legend.position = "none") + labs(x = "Event time", y = "") +
-    scale_x_continuous(breaks = seq(from = min(timeVec), to = max(timeVec), by = 1),
-                       labels = as.character(seq(from = min(timeVec), to = max(timeVec), by = 1)))
-  return(EventStudyPlot)
+  EventStudyPlot <- ggplot2::ggplot(tibble::tibble(t    = base::c(timeVec[1:numPrePeriods], referencePeriod, timeVec[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
+                                                   beta = base::c(betahat[1:numPrePeriods], 0, betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]),
+                                                   se   = base::c(stdErrors[1:numPrePeriods], NA, stdErrors[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])),
+                                    ggplot2::aes(x = t)) +
+    ggplot2::geom_point(ggplot2::aes(y = beta), color = "red") +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = beta - stats::qnorm(1-alpha/2)*se, ymax = beta + stats::qnorm(1-alpha/2)*se), width = 0.5, colour = "#01a2d9") +
+    ggplot2::theme(legend.position = "none") + 
+    ggplot2::labs(x = "Event time", y = "") +
+    ggplot2::scale_x_continuous(breaks = base::seq(from = base::min(timeVec), to = base::max(timeVec), by = 1),
+                                labels = base::as.character(base::seq(from = base::min(timeVec), to = base::max(timeVec), by = 1)))
+  base::return(EventStudyPlot)
 }
