@@ -13,7 +13,6 @@ Matrix
 pracma
 purrr
 ROI
-tidyverse
 tibble
 tidyr
 readr
