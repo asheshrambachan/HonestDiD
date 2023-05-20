@@ -15,7 +15,6 @@
 #   nuisance parameters as described in  Andrews, Roth, Pakes (2019).
 
 # PRELIMINARIES =======================================================
-library(tidyverse)
 library(TruncatedNormal)
 library(lpSolveAPI)
 library(ROI)

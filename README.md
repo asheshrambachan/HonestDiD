@@ -25,30 +25,30 @@ parallel trends is no more than some constant
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
 larger than the maximum violation of parallel trends in the
 pre-treatment period. The value of
-<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />![=1](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D1 "=1"),
-for instance, imposes that the post-treatment violation of parallel
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
+= 1, for instance, imposes that the post-treatment violation of parallel
 trends is no longer than the worst pre-treatment violation of parallel
 trends (between consecutive periods). Likewise, setting
-<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />![=2](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%3D2 "=2")
-implies that the post-treatment violation of parallel trends is no more
-than twice that in the pre-treatment period.
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
+= 2 implies that the post-treatment violation of parallel trends is no
+more than twice that in the pre-treatment period.
 
 **Smoothness restrictions.** A second way of formalizing this is to say
 that the post-treatment violations of parallel trends cannot deviate too
 much from a linear extrapolation of the pre-trend. In particular, we can
-impose that the slope of the pre-trend can change by no more than
-![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M")
+impose that the slope of the pre-trend can change by no more than *M*
 across consecutive periods, as shown in the figure below for an example
 with three periods.
 
-![diagram-smoothness-restriction](deltaSD.png)
+<figure>
+<img src="deltaSD.png" alt="diagram-smoothness-restriction" />
+<figcaption
+aria-hidden="true">diagram-smoothness-restriction</figcaption>
+</figure>
 
-Thus, imposing a smoothness restriction with
-![M=0](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M%3D0 "M=0")
-implies that the counterfactual difference in trends is exactly linear,
-whereas larger values of
-![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M")
-allow for more non-linearity.
+Thus, imposing a smoothness restriction with *M* = 0 implies that the
+counterfactual difference in trends is exactly linear, whereas larger
+values of *M* allow for more non-linearity.
 
 **Other restrictions**. The Rambachan and Roth framework allows for a
 variety of other restrictions on the differences in trends as well. For
@@ -74,13 +74,9 @@ confidence intervals under different assumptions about how bad the
 post-treatment violation of parallel trends can be (e.g., different
 values of
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
-or
-![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M").)
-They can also report the “breakdown value” of
+or *M*.) They can also report the “breakdown value” of
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
-(or
-![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M"))
-for a particular conclusion – e.g. the largest value of
+(or *M*) for a particular conclusion – e.g. the largest value of
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
 for which the effect is still significant.
 
@@ -110,7 +106,7 @@ derived from the ACS. We first load the data and packages relevant for
 the analysis.
 
 ``` r
-#Install here, dplyr, did, haven, ggplot2 packages from CRAN if not yet installed
+#Install here, dplyr, did, haven, ggplot2, fixest packages from CRAN if not yet installed
 #install.packages(c("here", "dplyr", "did", "haven", "ggplot2", "fixest"))
 
 library(here)
@@ -126,8 +122,8 @@ head(df,5)
 ```
 
     ## # A tibble: 5 × 5
-    ##        stfips        year  dins yexp2      W
-    ##     <dbl+lbl>   <dbl+lbl> <dbl> <dbl>  <dbl>
+    ##   stfips      year         dins yexp2      W
+    ##   <dbl+lbl>   <dbl+lbl>   <dbl> <dbl>  <dbl>
     ## 1 1 [alabama] 2008 [2008] 0.681    NA 613156
     ## 2 1 [alabama] 2009 [2009] 0.658    NA 613156
     ## 3 1 [alabama] 2010 [2010] 0.631    NA 613156
@@ -154,6 +150,7 @@ effects of Medicaid expansion using a canonical two-way fixed effects
 event-study specification,
 
 <img src= "https://latex.codecogs.com/svg.image?Y_%7Bit%7D%20=%20%5Calpha_i%20&plus;%20%5Clambda_t%20&plus;%20%5Csum_%7Bs%20%5Cneq%202013%7D%201%5Bs=t%5D%20%5Ctimes%20D_i%20%5Ctimes%20%5Cbeta_s%20&plus;%20u_%7Bit%7D%20" title = "TWFE" />
+
 where D is 1 if a unit is first treated in 2014 and 0 otherwise.
 
 ``` r
@@ -213,10 +210,10 @@ The output of the previous command shows a robust confidence interval
 for different values of
 <img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />.
 We see that the “breakdown value” for a significant effect is
-<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />![\approx 2](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Capprox%202 "\approx 2"),
-meaning that the significant result is robust to allowing for violations
-of parallel trends up to twice as big as the max violation in the
-pre-treatment period.
+<img src="https://latex.codecogs.com/svg.image?%5Cbar%7BM%7D" title="Mbar" />
+= 2, meaning that the significant result is robust to allowing for
+violations of parallel trends up to twice as big as the max violation in
+the pre-treatment period.
 
 We can also visualize the sensitivity analysis using the
 `createSensitivityPlot_relativeMagnitudes`. To do this, we first have to
@@ -240,9 +237,7 @@ HonestDiD::createSensitivityPlot_relativeMagnitudes(delta_rm_results, originalRe
 
 We can also do a sensitivity analysis based on smoothness restrictions –
 i.e. imposing that the slope of the difference in trends changes by no
-more than
-![M](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M "M")
-between periods.
+more than *M* between periods.
 
 ``` r
 delta_sd_results <- 
@@ -271,8 +266,7 @@ createSensitivityPlot(delta_sd_results, originalResults)
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-We see that the breakdown value for a significant effect is
-![M\approx 0.03](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;M%5Capprox%200.03 "M\approx 0.03"),
+We see that the breakdown value for a significant effect is *M* ≈ 0.03,
 meaning that we can reject a null effect unless we are willing to allow
 for the linear extrapolation across consecutive periods to be off by
 more than 0.03 percentage points.
@@ -284,10 +278,9 @@ period, which is the default in HonestDiD. If we are instead interested
 in the average over the two post-treatment periods, we can use the
 option `l_vec = c(0.5,0.5)`. More generally, the package accommodates
 inference on any scalar parameter of the form
-![\theta = l\_{vec}'\tau\_{post}](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Ctheta%20%3D%20l_%7Bvec%7D%27%5Ctau_%7Bpost%7D "\theta = l_{vec}'\tau_{post}"),
-where
-![\tau\_{post} = (\tau_1,...,\tau\_{\bar{T}})'](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Ctau_%7Bpost%7D%20%3D%20%28%5Ctau_1%2C...%2C%5Ctau_%7B%5Cbar%7BT%7D%7D%29%27 "\tau_{post} = (\tau_1,...,\tau_{\bar{T}})'")
-is the vector of dynamic treatment effects. Thus, for example, setting
+*θ* = *l*<sub>*v**e**c*</sub>′*τ*<sub>*p**o**s**t*</sub>, where
+*τ*<sub>*p**o**s**t*</sub> = (*τ*<sub>1</sub>,…,*τ*<sub>*T̄*</sub>)′ is
+the vector of dynamic treatment effects. Thus, for example, setting
 `l_vec = basisVector(2,numPostPeriods)` allows us to do inference on the
 effect for the second period after treatment.
 
@@ -322,19 +315,15 @@ package [website](https://github.com/pedrohcgs/CS_RR)). We are hoping to
 more formally integrate the did and HonestDiD packages in the future –
 stay tuned!
 
-``` r
-### First, we import the function Pedro Sant'Anna created for 
-##   formatting did output for HonestDiD ####
+First, we import the function Pedro Sant’Anna created for formatting did
+output for HonestDiD:
 
+``` r
 #' @title honest_did
 #'
 #' @description a function to compute a sensitivity analysis
 #'  using the approach of Rambachan and Roth (2021)
-#' @param es an event study
-honest_did <- function(es, ...) {
-  UseMethod("honest_did", es)
-}
-
+honest_did <- function(...) UseMethod("honest_did")
 
 #' @title honest_did.AGGTEobj
 #'
@@ -353,115 +342,94 @@ honest_did <- function(es, ...) {
 #' @inheritParams HonestDiD::createSensitivityResults
 #' @inheritParams HonestDid::createSensitivityResults_relativeMagnitudes
 honest_did.AGGTEobj <- function(es,
-                                e=0,
-                                type=c("smoothness", "relative_magnitude"),
-                                method=NULL,
-                                bound="deviation from parallel trends",
-                                Mvec=NULL,
-                                Mbarvec=NULL,
-                                monotonicityDirection=NULL,
-                                biasDirection=NULL,
-                                alpha=0.05,
-                                parallel=FALSE,
-                                gridPoints=10^3,
-                                grid.ub=NA,
-                                grid.lb=NA,
+                                e          = 0,
+                                type       = c("smoothness", "relative_magnitude"),
+                                gridPoints = 100,
                                 ...) {
-  
-  
-  type <- type[1]
-  
-  # make sure that user is passing in an event study
+
+  type <- match.arg(type)
+
+  # Make sure that user is passing in an event study
   if (es$type != "dynamic") {
     stop("need to pass in an event study")
   }
-  
-  # check if used universal base period and warn otherwise
+
+  # Check if used universal base period and warn otherwise
   if (es$DIDparams$base_period != "universal") {
     stop("Use a universal base period for honest_did")
   }
-  
-  # recover influence function for event study estimates
+
+  # Recover influence function for event study estimates
   es_inf_func <- es$inf.function$dynamic.inf.func.e
-  
-  # recover variance-covariance matrix
+
+  # Recover variance-covariance matrix
   n <- nrow(es_inf_func)
-  V <- t(es_inf_func) %*% es_inf_func / (n*n) 
-  
-  #Remove the coefficient normalized to zero
+  V <- t(es_inf_func) %*% es_inf_func / n / n
+
+  # Remove the coefficient normalized to zero
   referencePeriodIndex <- which(es$egt == -1)
-  V <- V[-referencePeriodIndex,-referencePeriodIndex]
+  V    <- V[-referencePeriodIndex,-referencePeriodIndex]
   beta <- es$att.egt[-referencePeriodIndex]
-  
-  nperiods <- nrow(V) 
-  npre <- sum(1*(es$egt < -1))
-  npost <- nperiods - npre
-  
+
+  nperiods <- nrow(V)
+  npre     <- sum(1*(es$egt < -1))
+  npost    <- nperiods - npre
   baseVec1 <- basisVector(index=(e+1),size=npost)
-  
-  orig_ci <- constructOriginalCS(betahat = beta,
-                                 sigma = V, numPrePeriods = npre,
-                                 numPostPeriods = npost,
-                                 l_vec = baseVec1)
-  
+  orig_ci  <- constructOriginalCS(betahat        = beta,
+                                  sigma          = V,
+                                  numPrePeriods  = npre,
+                                  numPostPeriods = npost,
+                                  l_vec          = baseVec1)
+
   if (type=="relative_magnitude") {
-    if (is.null(method)) method <- "C-LF"
-    robust_ci <- createSensitivityResults_relativeMagnitudes(betahat = beta, sigma = V, 
-                                                             numPrePeriods = npre, 
+    robust_ci <- createSensitivityResults_relativeMagnitudes(betahat        = beta,
+                                                             sigma          = V,
+                                                             numPrePeriods  = npre,
                                                              numPostPeriods = npost,
-                                                             bound=bound,
-                                                             method=method,
-                                                             l_vec = baseVec1,
-                                                             Mbarvec = Mbarvec,
-                                                             monotonicityDirection=monotonicityDirection,
-                                                             biasDirection=biasDirection,
-                                                             alpha=alpha,
-                                                             gridPoints=100,
-                                                             parallel=parallel)
-    
-  } else if (type=="smoothness") {
-    robust_ci <- createSensitivityResults(betahat = beta,
-                                          sigma = V, 
-                                          numPrePeriods = npre, 
+                                                             l_vec          = baseVec1,
+                                                             gridPoints     = gridPoints,
+                                                             ...)
+
+  } else if (type == "smoothness") {
+    robust_ci <- createSensitivityResults(betahat        = beta,
+                                          sigma          = V,
+                                          numPrePeriods  = npre,
                                           numPostPeriods = npost,
-                                          method=method,
-                                          l_vec = baseVec1,
-                                          monotonicityDirection=monotonicityDirection,
-                                          biasDirection=biasDirection,
-                                          alpha=alpha,
-                                          parallel=parallel)
+                                          l_vec          = baseVec1,
+                                          ...)
   }
-  
+
   return(list(robust_ci=robust_ci, orig_ci=orig_ci, type=type))
 }
+```
 
+``` r
 ###
-
 # Run the CS event-study with 'universal' base-period option
 ## Note that universal base period normalizes the event-time minus 1 coef to 0
-cs_results <- att_gt(yname = "dins",
-                     tname = "year",
-                     idname = "stfips", 
-                     gname = "yexp2", 
-                     data = df %>% mutate(yexp2 = ifelse(is.na(yexp2), 3000, yexp2)),
-                     control_group = "notyettreated",
-                     base_period = "universal")
+cs_results <- did::att_gt(yname = "dins",
+                          tname = "year",
+                          idname = "stfips", 
+                          gname = "yexp2", 
+                          data = df %>% mutate(yexp2 = ifelse(is.na(yexp2), 3000, yexp2)),
+                          control_group = "notyettreated",
+                          base_period = "universal")
 
-es <- aggte(cs_results, type = "dynamic", 
-            min_e = -5, max_e = 5)
+es <- did::aggte(cs_results, type = "dynamic", 
+                 min_e = -5, max_e = 5)
 
 #Run sensitivity analysis for relative magnitudes 
 sensitivity_results <-
-  honest_did.AGGTEobj(es,
-                      e =0,
-                      type = "relative_magnitude",
-                      Mbarvec = seq(from = 0.5, to = 2, by = 0.5))
+  honest_did(es,
+             e=0,
+             type="relative_magnitude",
+             Mbarvec=seq(from = 0.5, to = 2, by = 0.5))
 
-createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_ci,
-                                         sensitivity_results$orig_ci)
+HonestDiD::createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_ci,
+                                                    sensitivity_results$orig_ci)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ## Additional options and resources
 

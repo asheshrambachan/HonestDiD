@@ -9,7 +9,6 @@
 #  the confidence sets for Delta^{SDB}(M).
 
 # PRELIMINARIES =======================================================
-library(tidyverse)
 library(TruncatedNormal)
 library(lpSolveAPI)
 library(ROI)
