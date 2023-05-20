@@ -35,13 +35,13 @@ library(purrr)
   # First construct matrix Atilde that takes first diffrences -- (numPrePeriods+numPostPeriods) x (numPrePeriods+numPostPeriods+1)
   # Note Atilde is just the positive moments; is not related to Atilde, the rotate matrix, in the paper
   # Note: Atilde initially includes t = 0. We then drop it.
-  Atilde = matrix(0, nrow = numPrePeriods+numPostPeriods, ncol = numPrePeriods+numPostPeriods+1)
+  Atilde = base::matrix(0, nrow = numPrePeriods+numPostPeriods, ncol = numPrePeriods+numPostPeriods+1)
   for (r in 1:(numPrePeriods+numPostPeriods)) {
-    Atilde[r, r:(r+1)] = c(-1, 1)
+    Atilde[r, r:(r+1)] = base::c(-1, 1)
   }
 
   # Create a vector to extract the max first dif, which corresponds with the first dif for period s, or minus this if max_positive == F
-  v_max_dif <- matrix(0, nrow = 1, ncol = numPrePeriods + numPostPeriods + 1)
+  v_max_dif <- base::matrix(0, nrow = 1, ncol = numPrePeriods + numPostPeriods + 1)
   v_max_dif[(numPrePeriods+s):(numPrePeriods+1+s)] <- c(-1,1)
 
   if (max_positive == F){
@@ -49,14 +49,14 @@ library(purrr)
   }
 
   # The bounds for the first dif starting with period t are 1*v_max_dif if t<=0 and M*v_max_dif if t>0
-  A_UB <- rbind( pracma::repmat(v_max_dif, n=numPrePeriods, m = 1),
-                 pracma::repmat(Mbar*v_max_dif, n=numPostPeriods, m = 1))
+  A_UB <- base::rbind( pracma::repmat(v_max_dif, n=numPrePeriods, m = 1),
+                       pracma::repmat(Mbar*v_max_dif, n=numPostPeriods, m = 1))
 
   # Construct A that imposes |Atilde * delta | <= A_UB * delta
-  A = rbind(Atilde - A_UB, -Atilde - A_UB)
+  A = base::rbind(Atilde - A_UB, -Atilde - A_UB)
 
   # Remove all-zero rows of the matrix Atilde, corresponding with the constraint (delta_s - delta_s-1) - (delta_s - delta_s-1) <= (delta_s - delta_s-1) - (delta_s - delta_s-1)
-  zerorows <- apply(X = A, MARGIN = 1, FUN = function(x) t(x) %*% x) <= 10^-10
+  zerorows <- base::apply(X = A, MARGIN = 1, FUN = function(x) base::t(x) %*% x) <= 10^-10
   A <- A[!zerorows, ]
 
   # Construct the sign restriction matrix
@@ -68,10 +68,10 @@ library(purrr)
     A = A[, -(numPrePeriods+1)]
 
     # Bind rows of A for Delta^{RM}_s with A_B and return
-    return(rbind(A, A_B))
+    base::return(base::rbind(A, A_B))
   } else {
     # Bind rows of A for Delta^{RM}_s with A_B and return
-    return(rbind(A, A_B))
+    base::return(base::rbind(A, A_B))
   }
 }
 
@@ -87,10 +87,10 @@ library(purrr)
 
   A_RM = .create_A_RM(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                       Mbar = 0, s = 0, dropZero = dropZero) # d doesn't depend on Mbar or s; we just use this to get the dims right
-  d_RM = rep(0, NROW(A_RM))
-  d_B = rep(0, numPostPeriods)
-  d = c(d_RM, d_B)
-  return(d)
+  d_RM = base::rep(0, base::NROW(A_RM))
+  d_B = base::rep(0, numPostPeriods)
+  d = base::c(d_RM, d_B)
+  base::return(d)
 }
 
 # DELTA^{RMB}(Mbar) Identified Set Helper Functions --------------------
@@ -103,7 +103,7 @@ library(purrr)
   # the function compute_IDset_DeltaRMB below.
 
   # Create objective function: Wish to min/max l'delta_post
-  fDelta = c(rep(0, numPrePeriods), l_vec)
+  fDelta = base::c(base::rep(0, numPrePeriods), l_vec)
 
   # Create A_RM, d_RM for this choice of s, max_positive
   A_RMB_s = .create_A_RMB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
@@ -111,20 +111,20 @@ library(purrr)
   d_RMB = .create_d_RMB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
 
   # Create vector for direction of inequalities associated with RM
-  dir_RMB = rep("<=", length(d_RMB))
+  dir_RMB = base::rep("<=", base::length(d_RMB))
 
   # Add equality constraint for pre-period coefficients
-  prePeriodEqualityMat = cbind(diag(numPrePeriods),
-                               matrix(data = 0, nrow = numPrePeriods, ncol = numPostPeriods))
-  A_RMB_s = rbind(A_RMB_s, prePeriodEqualityMat)
-  d_RMB = c(d_RMB, trueBeta[1:numPrePeriods])
-  dir_RMB = c(dir_RMB, rep("==", NROW(prePeriodEqualityMat)))
+  prePeriodEqualityMat = base::cbind(base::diag(numPrePeriods),
+                                     base::matrix(data = 0, nrow = numPrePeriods, ncol = numPostPeriods))
+  A_RMB_s = base::rbind(A_RMB_s, prePeriodEqualityMat)
+  d_RMB = base::c(d_RMB, trueBeta[1:numPrePeriods])
+  dir_RMB = base::c(dir_RMB, base::rep("==", base::NROW(prePeriodEqualityMat)))
 
   # Specify variables between (-inf, inf)
-  bounds = list(lower = list(ind = 1:(numPrePeriods + numPostPeriods),
-                             val = rep(-Inf, numPrePeriods+numPostPeriods)),
-                upper = list(ind = 1:(numPrePeriods + numPostPeriods),
-                             val = rep(Inf, numPrePeriods+numPostPeriods)))
+  bounds = base::list(lower = base::list(ind = 1:(numPrePeriods + numPostPeriods),
+                                         val = base::rep(-Inf, numPrePeriods+numPostPeriods)),
+                      upper = base::list(ind = 1:(numPrePeriods + numPostPeriods),
+                                         val = base::rep(Inf, numPrePeriods+numPostPeriods)))
 
   # Create and solve for max
   results.max = Rglpk::Rglpk_solve_LP(obj = fDelta,
@@ -144,15 +144,15 @@ library(purrr)
 
   if (results.max$status != 0 & results.min$status != 0) {
     # If the solver does not return solution, we just return the l_vec'trueBeta.
-    id.ub = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])
-    id.lb = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])
+    id.ub = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])
+    id.lb = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])
   }
   else {
     # Construct upper/lower bound of identified set
-    id.ub = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - results.min$optimum
-    id.lb = (t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - results.max$optimum
+    id.ub = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - results.min$optimum
+    id.lb = (base::t(l_vec) %*% trueBeta[(numPrePeriods+1):(numPrePeriods+numPostPeriods)]) - results.max$optimum
   }
-  return(
+  base::return(
     tibble::tibble(id.lb = id.lb, id.ub = id.ub)
   )
 }
@@ -197,11 +197,11 @@ library(purrr)
   )
 
   # Construct the identified set by taking the max of the upper bound and the min of the lower bound
-  id.lb = min(min(id_bounds_plus$id.lb), min(id_bounds_minus$id.lb))
-  id.ub = max(max(id_bounds_plus$id.ub), max(id_bounds_minus$id.ub))
+  id.lb = base::min(base::min(id_bounds_plus$id.lb), base::min(id_bounds_minus$id.lb))
+  id.ub = base::max(base::max(id_bounds_plus$id.ub), base::max(id_bounds_minus$id.ub))
 
   # Return identified set
-  return(tibble::tibble(
+  base::return(tibble::tibble(
     id.lb = id.lb,
     id.ub = id.ub))
 }
@@ -221,7 +221,7 @@ library(purrr)
   }
 
   # Create hybrid_list object
-  hybrid_list = list(hybrid_kappa = hybrid_kappa)
+  hybrid_list = base::list(hybrid_kappa = hybrid_kappa)
 
   # Create matrix A_RMB_s, and vector d_RMB
   A_RMB_s = .create_A_RMB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
@@ -230,18 +230,18 @@ library(purrr)
 
   # If only use post period moments, construct indices for the post period moments only.
   if (postPeriodMomentsOnly & numPostPeriods > 1){
-    postPeriodIndices <- (numPrePeriods +1):NCOL(A_RMB_s)
-    postPeriodRows <- which( rowSums( A_RMB_s[ , postPeriodIndices] != 0 ) > 0 )
+    postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_RMB_s)
+    postPeriodRows <- base::which( base::rowSums( A_RMB_s[ , postPeriodIndices] != 0 ) > 0 )
     rowsForARP <- postPeriodRows
   } else{
-    rowsForARP <- 1:NROW(A_RMB_s)
+    rowsForARP <- 1:base::NROW(A_RMB_s)
   }
 
   # if there is only one post-period, we use the no-nuisance parameter functions
   if (numPostPeriods == 1) {
     if (hybrid_flag == "LF") {
       # Compute LF CV and store it in hybrid_list
-      lf_cv = .compute_least_favorable_cv(X_T = NULL, sigma = A_RMB_s %*% sigma %*% t(A_RMB_s), hybrid_kappa = hybrid_kappa)
+      lf_cv = .compute_least_favorable_cv(X_T = NULL, sigma = A_RMB_s %*% sigma %*% base::t(A_RMB_s), hybrid_kappa = hybrid_kappa)
       hybrid_list$lf_cv = lf_cv
     }
     # Compute confidence set
@@ -262,7 +262,7 @@ library(purrr)
                         grid.lb = grid.lb, grid.ub = grid.ub,
                         gridPoints = gridPoints, rowsForARP = rowsForARP)
   }
-  return(CI)
+  base::return(CI)
 }
 
 computeConditionalCS_DeltaRMB <- function(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -299,14 +299,14 @@ computeConditionalCS_DeltaRMB <- function(betahat, sigma, numPrePeriods, numPost
 
   # If grid.ub, grid.lb is not specified, we set these bounds to be equal to the id set under parallel trends
   # {0} +- 20*sdTheta (i.e. [-20*sdTheta, 20*sdTheta].
-  sdTheta <- c(sqrt(t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
-  if (is.na(grid.ub)) { grid.ub = 20*sdTheta }
-  if (is.na(grid.lb)) { grid.lb = -20*sdTheta }
+  sdTheta <- base::c(base::sqrt(base::t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
+  if (base::is.na(grid.ub)) { grid.ub = 20*sdTheta }
+  if (base::is.na(grid.lb)) { grid.lb = -20*sdTheta }
 
   # Loop over s values for (+), (-), left join the resulting CIs based on the grid
-  CIs_RMB_plus_allS = matrix(0, nrow = gridPoints, ncol = length(s_indices))
-  CIs_RMB_minus_allS = matrix(0, nrow = gridPoints, ncol = length(s_indices))
-  for (s_i in 1:length(s_indices)) {
+  CIs_RMB_plus_allS = base::matrix(0, nrow = gridPoints, ncol = base::length(s_indices))
+  CIs_RMB_minus_allS = base::matrix(0, nrow = gridPoints, ncol = base::length(s_indices))
+  for (s_i in 1:base::length(s_indices)) {
     # Compute CI for s, (+) and bind it to all CI's for (+)
     CI_s_plus = .computeConditionalCS_DeltaRMB_fixedS(s = s_indices[s_i], max_positive = TRUE, Mbar = Mbar,
                                                       betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods,
@@ -326,18 +326,18 @@ computeConditionalCS_DeltaRMB <- function(betahat, sigma, numPrePeriods, numPost
     CIs_RMB_minus_allS[,s_i] = CI_s_minus$accept
   }
 
-  CIs_RMB_plus_maxS = apply(CIs_RMB_plus_allS, MARGIN = 1, FUN = max)
-  CIs_RMB_minus_maxS = apply(CIs_RMB_minus_allS, MARGIN = 1, FUN = max)
+  CIs_RMB_plus_maxS = base::apply(CIs_RMB_plus_allS, MARGIN = 1, FUN = base::max)
+  CIs_RMB_minus_maxS = base::apply(CIs_RMB_minus_allS, MARGIN = 1, FUN = base::max)
 
   # Take the max between (+), (-) and Construct grid containing theta points and whether any CI accepted
-  CI_RMB = tibble::tibble(grid   = seq(grid.lb, grid.ub, length.out = gridPoints),
-                          accept = pmax(CIs_RMB_plus_maxS, CIs_RMB_minus_maxS))
+  CI_RMB = tibble::tibble(grid   = base::seq(grid.lb, grid.ub, length.out = gridPoints),
+                          accept = base::pmax(CIs_RMB_plus_maxS, CIs_RMB_minus_maxS))
 
   # Compute length if returnLength == T, else return grid
   if (returnLength) {
-    gridLength <- 0.5 * ( c(0, diff(CI_RMB$grid)) + c(diff(CI_RMB$grid), 0 ) )
-    return(sum(CI_RMB$accept*gridLength))
+    gridLength <- 0.5 * ( base::c(0, base::diff(CI_RMB$grid)) + base::c(base::diff(CI_RMB$grid), 0 ) )
+    base::return(base::sum(CI_RMB$accept*gridLength))
   } else {
-    return(CI_RMB)
+    base::return(CI_RMB)
   }
 }

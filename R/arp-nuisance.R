@@ -23,38 +23,38 @@ library(foreach)
   unormalized <- (u-mu)/sd
   qnormalized <- TruncatedNormal::norminvp(p, lnormalized, unormalized)
   q <- mu + qnormalized * sd
-  return(q)
+  base::return(q)
 }
 
 .basisVector <- function(index = 1, size = 1){
   v <- matrix(0, nrow = size, ncol = 1)
   v[index] = 1
-  return(v)
+  base::return(v)
 }
 
 .max_program <- function(s_T, gamma_tilde, sigma, W_T, c) {
   # Define objective and constraints
-  f = s_T + c(t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)*c
-  Aeq = t(W_T)
-  beq = c(1, rep(0, dim(Aeq)[1]-1))
+  f = s_T + base::c(base::t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)*c
+  Aeq = base::t(W_T)
+  beq = base::c(1, base::rep(0, base::dim(Aeq)[1]-1))
 
   # Set up linear program. Note: don't need to provide lower bound because default lb is zero in ROI package.
-  linprog = Rglpk::Rglpk_solve_LP(obj = -c(f),
+  linprog = Rglpk::Rglpk_solve_LP(obj = -base::c(f),
                                   mat = Aeq,
-                                  dir = rep("==", NROW(Aeq)),
+                                  dir = base::rep("==", base::NROW(Aeq)),
                                   rhs = beq)
-  return(linprog)
+  base::return(linprog)
 }
 
 .roundeps <- function(x, eps = .Machine$double.eps^(3/4)) {
-    if ( abs(x) < eps ) return (0) else return(x)
+    if ( base::abs(x) < eps ) base::return (0) else base::return(x)
 }
 
 .check_if_solution_helper <- function(c, tol, s_T, gamma_tilde, sigma, W_T) {
   # Solve linear program and use negative of objective because we want the max.
   linprog = .max_program(s_T, gamma_tilde, sigma, W_T, c)
-  linprog$honestsolution = (abs(c - (-linprog$optimum)) <= tol)
-  return(linprog)
+  linprog$honestsolution = (base::abs(c - (-linprog$optimum)) <= tol)
+  base::return(linprog)
 }
 
 .vlo_vup_dual_fn <- function(eta, s_T, gamma_tilde, sigma, W_T) {
@@ -76,9 +76,9 @@ library(foreach)
   # Options for bisection algorithm
   tol_c        = 1e-6
   tol_equality = 1e-6
-  sigma_B      = sqrt( t(gamma_tilde) %*% sigma %*% gamma_tilde )
-  low_initial  = min(-100, eta-20*sigma_B)
-  high_initial = max(100, eta + 20*sigma_B)
+  sigma_B      = base::sqrt( base::t(gamma_tilde) %*% sigma %*% gamma_tilde )
+  low_initial  = base::min(-100, eta-20*sigma_B)
+  high_initial = base::max(100, eta + 20*sigma_B)
   maxiters     = 10000
   switchiters  = 10
   checksol     = .check_if_solution_helper(eta,
@@ -88,9 +88,9 @@ library(foreach)
                                            sigma,
                                            W_T)$honestsolution
 
-  if (is.na(checksol) || !checksol) {
+  if (base::is.na(checksol) || !checksol) {
     # warning('User-supplied eta is not a solution. Not rejecting automatically')
-    return( list(vlo = eta, vup = Inf) )
+    base::return( list(vlo = eta, vup = Inf) )
   }
 
   ### Compute vup ###
@@ -109,7 +109,7 @@ library(foreach)
     # more precise); however, if it's taking too long we switch to the bisection.
     dif   = 0
     iters = 1
-    b     = c(t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)
+    b     = base::c(base::t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)
     mid   = (.roundeps(linprog$solution %*% s_T) / (1 - linprog$solution %*% b))[1]
     while ( !(linprog = .check_if_solution_helper(mid,
                                                   tol_equality,
@@ -163,7 +163,7 @@ library(foreach)
     # Shortcut: See shortcut notes above
     dif   = 0
     iters = 1
-    b     = c(t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)
+    b     = base::c(base::t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% gamma_tilde)
     mid   = (.roundeps(linprog$solution %*% s_T) / (1 - linprog$solution %*% b))[1]
     while ( !(linprog = .check_if_solution_helper(mid,
                                                   tol_equality,
@@ -205,7 +205,7 @@ library(foreach)
     vlo = mid
   }
 
-  return(list(vlo = vlo, vup = vup))
+  base::return(base::list(vlo = vlo, vup = vup))
 }
 
 .test_delta_lp_fn <- function(y_T, X_T, sigma) {
@@ -229,38 +229,38 @@ library(foreach)
   #     max f' X
   #     s.t. C X \leq b
 
-  dimDelta = dim(X_T)[2] # dimension of delta
-  sdVec = sqrt(diag(sigma)) # standard deviation of y_T elements
+  dimDelta = base::dim(X_T)[2] # dimension of delta
+  sdVec = base::sqrt(base::diag(sigma)) # standard deviation of y_T elements
 
   # Define objective function
-  f = c(1, rep(0, dimDelta))
+  f = base::c(1, base::rep(0, dimDelta))
 
   # Define linear constraint
-  C = -cbind(sdVec, X_T)
+  C = -base::cbind(sdVec, X_T)
   b = -y_T
 
   # Define linear program using lpSolveAPI
-  linprog = lpSolveAPI::make.lp(nrow = 0, ncol = length(f))
+  linprog = lpSolveAPI::make.lp(nrow = 0, ncol = base::length(f))
   lpSolveAPI::set.objfn(linprog, f)
-  for (r in 1:dim(C)[1]) {
-    lpSolveAPI::add.constraint(linprog, xt = c(C[r,]), type = "<=", rhs = b[r])
+  for (r in 1:base::dim(C)[1]) {
+    lpSolveAPI::add.constraint(linprog, xt = base::c(C[r,]), type = "<=", rhs = b[r])
   }
-  lpSolveAPI::set.bounds(linprog, lower = rep(-Inf, length(f)), columns = 1:length(f))
+  lpSolveAPI::set.bounds(linprog, lower = base::rep(-Inf, base::length(f)), columns = 1:base::length(f))
 
   # Solve linear program using dual simplex
   lpSolveAPI::lp.control(linprog, sense = "min", simplextype="dual", pivoting = "dantzig", verbose="neutral")
   error_flag = lpSolveAPI::solve.lpExtPtr(linprog)
   eta = lpSolveAPI::get.objective(linprog)
   primalSoln = lpSolveAPI::get.primal.solution(linprog)
-  delta = primalSoln[(length(primalSoln)-dimDelta+1):length(primalSoln)]
-  dual = -lpSolveAPI::get.sensitivity.rhs(linprog)$duals[1:dim(C)[1]]
+  delta = primalSoln[(base::length(primalSoln)-dimDelta+1):base::length(primalSoln)]
+  dual = -lpSolveAPI::get.sensitivity.rhs(linprog)$duals[1:base::dim(C)[1]]
 
   # Construct results  list
-  results = list(eta_star = eta,
-                 delta_star = delta,
-                 lambda = dual,
-                 error_flag = error_flag)
-  return(results)
+  results = base::list(eta_star = eta,
+                       delta_star = delta,
+                       lambda = dual,
+                       error_flag = error_flag)
+  base::return(results)
 }
 
 .lp_dual_fn <- function(y_T, X_T, eta, gamma_tilde, sigma) {
@@ -273,12 +273,12 @@ library(foreach)
   #   gamma_tilde = vertex of the dual, the output lambda from test_delta_lp_fn
   #   sigma = covariance matrix of y_T.
 
-  sdVec = sqrt(diag(sigma))
-  W_T = cbind(sdVec, X_T)
-  s_T = (diag(length(y_T)) - c(t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% (gamma_tilde %*% t(gamma_tilde)))) %*% y_T
+  sdVec = base::sqrt(base::diag(sigma))
+  W_T = base::cbind(sdVec, X_T)
+  s_T = (base::diag(base::length(y_T)) - base::c(base::t(gamma_tilde) %*% sigma %*% gamma_tilde)^(-1)*(sigma %*% (gamma_tilde %*% base::t(gamma_tilde)))) %*% y_T
   vList = .vlo_vup_dual_fn(eta = eta, s_T = s_T, gamma_tilde = gamma_tilde, sigma = sigma, W_T = W_T)
-  return(list(vlo = vList$vlo, vup = vList$vup,
-              eta = eta, gamma_tilde = gamma_tilde))
+  base::return(base::list(vlo = vList$vlo, vup = vList$vup,
+                          eta = eta, gamma_tilde = gamma_tilde))
 }
 
 # Functon to return column index of leading ones of matrix
@@ -287,7 +287,7 @@ library(foreach)
   while (B[r,i] == 0) {
     i = i+1
   }
-  return(i)
+  base::return(i)
 }
 
 .construct_Gamma <- function(l) {
@@ -303,36 +303,36 @@ library(foreach)
   # This function is used in the change of basis to transform Delta into
   # a MI of the form that can be used by the ARP method.
 
-  barT = length(l) # length of vector
-  B = cbind(l, diag(barT))
+  barT = base::length(l) # length of vector
+  B = base::cbind(l, base::diag(barT))
   rrefB = pracma::rref(B) # compute reduced row echelon form of B.
 
   # Construct gamma and check if invertible
-  leading_ones <- purrr::map_dbl(.x = 1:dim(rrefB)[1], .leading_one, B = rrefB)
-  Gamma = t(B[, leading_ones])
-  if (det(Gamma) == 0) {
-    stop('Something went wrong in RREF algorithm.')
+  leading_ones <- purrr::map_dbl(.x = 1:base::dim(rrefB)[1], .leading_one, B = rrefB)
+  Gamma = base::t(B[, leading_ones])
+  if (base::det(Gamma) == 0) {
+    base::stop('Something went wrong in RREF algorithm.')
   } else{
-    return(Gamma)
+    base::return(Gamma)
   }
 }
 
 # Compute maximum bias of a linear estimator
 .maxBiasFN <- function(v, A, d){
-  delta <- CVXR::Variable(NCOL(A))
-  objective <- CVXR::Maximize(t(v) %*% delta)
-  problem <- CVXR::Problem(objective, constraints = list(A %*% delta - d<= 0) )
+  delta <- CVXR::Variable(base::NCOL(A))
+  objective <- CVXR::Maximize(base::t(v) %*% delta)
+  problem <- CVXR::Problem(objective, constraints = base::list(A %*% delta - d<= 0) )
   soln <- CVXR::solve(problem)
-  return(soln)
+  base::return(soln)
 }
 
 # Compute minimum bias of a linear estimator
 .minBiasFN <- function(v, A, d){
-  delta <- CVXR::Variable(NCOL(A))
-  objective <- CVXR::Minimize(t(v) %*% delta)
-  problem <- CVXR::Problem(objective, constraints = list(A %*% delta - d<= 0) )
+  delta <- CVXR::Variable(base::NCOL(A))
+  objective <- CVXR::Minimize(base::t(v) %*% delta)
+  problem <- CVXR::Problem(objective, constraints = base::list(A %*% delta - d<= 0) )
   soln <- CVXR::solve(problem)
-  return(soln)
+  base::return(soln)
 }
 
 #Create a vector that extrapolates a linear trend to pre-period
@@ -340,11 +340,10 @@ library(foreach)
   relativeTVec <- tVec- referencePeriod
   tPre <- relativeTVec[ relativeTVec < 0 ]
   tPost <- relativeTVec[ relativeTVec > 0 ]
-  slopePre <- solve( t(tPre) %*% (tPre)  ) %*%  tPre
+  slopePre <- base::solve( base::t(tPre) %*% (tPre)  ) %*%  tPre
   l_trend_NI <-
-    c( -as.numeric(t(lVec) %*% tPost) * slopePre ,
-       lVec )
-  return(l_trend_NI)
+    base::c( -base::as.numeric(t(lVec) %*% tPost) * slopePre , lVec )
+  base::return(l_trend_NI)
 }
 
 #Create constraints related to max/min bias of linear estimator using pre-period
@@ -352,9 +351,9 @@ library(foreach)
   v_Trend <- .createV_Linear_NoIntercept(lVec = lVec, tVec = tVec, referencePeriod = referencePeriod)
   maxBias <- .maxBiasFN(v = v_Trend, A = A, d= d)$value
   minBias <- .minBiasFN(v = v_Trend, A = A, d= d)$value
-  A_trend <- rbind(v_Trend, -v_Trend)
-  d_trend <- c(maxBias, -minBias)
-  return( list(A_trend = A_trend, d_trend = d_trend))
+  A_trend <- base::rbind(v_Trend, -v_Trend)
+  d_trend <- base::c(maxBias, -minBias)
+  base::return( base::list(A_trend = A_trend, d_trend = d_trend))
 }
 
 # HYBRID HELPER FUNCTIONS ---------------------------------------------
@@ -369,9 +368,9 @@ library(foreach)
   #   hybrid_kappa = desired size
   #   sims  = number of simulations, default = 10000
 
-  if (!is.null(rowsForARP)) {
-    if (is.vector(X_T)) {
-      X_T = matrix(X_T[rowsForARP], ncol = 1)
+  if (!base::is.null(rowsForARP)) {
+    if (base::is.vector(X_T)) {
+      X_T = base::matrix(X_T[rowsForARP], ncol = 1)
     } else {
       X_T <- X_T[rowsForARP,]
     }
@@ -380,37 +379,37 @@ library(foreach)
 
   .compute_eta <- function(b, f, C) {
     # Define linear program using lpSolveAPI
-    linprog = lpSolveAPI::make.lp(nrow = 0, ncol = length(f))
+    linprog = lpSolveAPI::make.lp(nrow = 0, ncol = base::length(f))
     lpSolveAPI::set.objfn(linprog, f)
-    for (r in 1:dim(C)[1]) {
-      lpSolveAPI::add.constraint(linprog, xt = c(C[r,]), type = "<=", rhs = b[r])
+    for (r in 1:base::dim(C)[1]) {
+      lpSolveAPI::add.constraint(linprog, xt = base::c(C[r,]), type = "<=", rhs = b[r])
     }
-    lpSolveAPI::set.bounds(linprog, lower = rep(-Inf, length(f)), columns = 1:length(f))
+    lpSolveAPI::set.bounds(linprog, lower = base::rep(-Inf, base::length(f)), columns = 1:base::length(f))
     # Solve linear program using dual simplex
     lpSolveAPI::lp.control(linprog, sense = "min", simplextype="dual", pivoting = "dantzig", verbose="neutral", timeout=10)
     error_flag = lpSolveAPI::solve.lpExtPtr(linprog)
     # Return value of eta
-    return(if (error_flag) NA else lpSolveAPI::get.objective(linprog))
+    base::return(if (error_flag) NA else lpSolveAPI::get.objective(linprog))
   }
 
-  set.seed(0)
-  if (is.null(X_T)) { # no nuisance parameter case
-    xi.draws = t( t(mvtnorm::rmvnorm(n = sims, sigma = sigma)) /sqrt(diag(sigma)) )
+  base::set.seed(0)
+  if (base::is.null(X_T)) { # no nuisance parameter case
+    xi.draws = t( t(mvtnorm::rmvnorm(n = sims, sigma = sigma)) /base::sqrt(base::diag(sigma)) )
     eta_vec = matrixStats::rowMaxs(xi.draws)
-    return(quantile(eta_vec, probs = 1 - hybrid_kappa, names = FALSE))
+    base::return(stats::quantile(eta_vec, probs = 1 - hybrid_kappa, names = FALSE))
   } else { # Nuisance parameter case
     # Compute elements for LP that will be re-used
-    sdVec = sqrt(diag(sigma))  # standard deviation of y_T elements
-    dimDelta = dim(X_T)[2]     # dimension of delta
-    f = c(1, rep(0, dimDelta)) # Define objective function
-    C = -cbind(sdVec, X_T)     # Define linear constraint
+    sdVec = base::sqrt(base::diag(sigma))  # standard deviation of y_T elements
+    dimDelta = base::dim(X_T)[2]     # dimension of delta
+    f = base::c(1, base::rep(0, dimDelta)) # Define objective function
+    C = -base::cbind(sdVec, X_T)     # Define linear constraint
     xi.draws = mvtnorm::rmvnorm(n=sims, sigma=sigma)
 
     # Compute eta for each simulation
-    eta_vec = apply(-xi.draws, 1, .compute_eta, f, C)
+    eta_vec = base::apply(-xi.draws, 1, .compute_eta, f, C)
 
     # We compute the 1-kappa quantile of eta_vec and return this value
-    return(quantile(eta_vec, probs=1-hybrid_kappa, names=FALSE, na.rm=T))
+    base::return(stats::quantile(eta_vec, probs=1-hybrid_kappa, names=FALSE, na.rm=T))
   }
 }
 
@@ -420,19 +419,19 @@ library(foreach)
   #   flci_vlo = value of vlo associated with FLCI
   #   flci_vup = value of vup associated with FLCI
   # Compute vbarMat
-  VbarMat = rbind(t(vbar), -t(vbar))
+  VbarMat = base::rbind(t(vbar), -t(vbar))
   # Comptute max_min
   max_or_min = (dbar - (VbarMat %*% S))/(VbarMat %*% c)
   # Compute Vlo, Vup for the FLCI
-  vlo = max(max_or_min[VbarMat %*% c < 0])
-  vup = min(max_or_min[VbarMat %*% c > 0])
+  vlo = base::max(max_or_min[VbarMat %*% c < 0])
+  vup = base::min(max_or_min[VbarMat %*% c > 0])
   # Return Vlo, Vup
-  return(list(vlo = vlo, vup = vup))
+  base::return(base::list(vlo = vlo, vup = vup))
 }
 
 # ARP FUNCTIONS -------------------------------------------------------
 .lp_conditional_test_fn <- function(theta, y_T, X_T, sigma, alpha,
-                                    hybrid_flag, hybrid_list, rowsForARP = 1:length(y_T)) {
+                                    hybrid_flag, hybrid_list, rowsForARP = 1:base::length(y_T)) {
   # Performs ARP test of moment inequality E[y_T - X_T \delta] <= 0.
   # It returns an indicator for whether the test rejects, as
   # as the maximum statistic and delta.
@@ -464,29 +463,29 @@ library(foreach)
   #   lambda = value of lagrange multipliers
 
   y_T_ARP <- y_T[rowsForARP]
-  if (is.vector(X_T)) {
-    X_T = matrix(X_T, ncol = 1)
+  if (base::is.vector(X_T)) {
+    X_T = base::matrix(X_T, ncol = 1)
   }
   X_T_ARP <- X_T[rowsForARP,]
-  if (is.vector(X_T_ARP)) {
-    X_T_ARP = matrix(X_T_ARP, ncol = 1)
+  if (base::is.vector(X_T_ARP)) {
+    X_T_ARP = base::matrix(X_T_ARP, ncol = 1)
   }
 
   sigma_ARP <- sigma[rowsForARP, rowsForARP]
 
   # Dimensions of objects
-  M = dim(sigma_ARP)[1]
-  k = dim(X_T_ARP)[2]
+  M = base::dim(sigma_ARP)[1]
+  k = base::dim(X_T_ARP)[2]
 
   # Compute eta, and the argmin delta
   linSoln = .test_delta_lp_fn(y_T = y_T_ARP, X_T = X_T_ARP, sigma = sigma_ARP)
 
   # Check to see if valid solution to LP obtained
   if (linSoln$error_flag > 0) {
-    warning('LP for eta did not converge properly. Not rejecting');
-    return(list(reject = 0,
-                eta = linSoln$eta_star,
-                delta = linSoln$delta_star))
+    base::warning('LP for eta did not converge properly. Not rejecting');
+    base::return(base::list(reject = 0,
+                            eta = linSoln$eta_star,
+                            delta = linSoln$delta_star))
   }
 
   # HYBRID: Implement first-stage test for hybrid.
@@ -495,41 +494,41 @@ library(foreach)
     # than least favorable critical value. If so, reject immediately.
     mod_size = (alpha - hybrid_list$hybrid_kappa)/(1 - hybrid_list$hybrid_kappa)
     if (linSoln$eta_star > hybrid_list$lf_cv) {
-      return(list(reject = 1,
-                  eta = linSoln$eta_star,
-                  delta = linSoln$delta_star))
+      base::return(base::list(reject = 1,
+                              eta = linSoln$eta_star,
+                              delta = linSoln$delta_star))
     }
   } else if (hybrid_flag == "FLCI") {
     # FLCI hybrid: Test whether parameter of interest falls within FLCI. If not, reject
     mod_size = (alpha - hybrid_list$hybrid_kappa)/(1 - hybrid_list$hybrid_kappa)
-    VbarMat = rbind(t(hybrid_list$vbar), -t(hybrid_list$vbar))
-    if ( (max(VbarMat %*% y_T - hybrid_list$dbar)) > 0 ) {
-      return(list(reject = 1,
-                  eta = linSoln$eta_star,
-                  delta = linSoln$delta_star))
+    VbarMat = base::rbind(base::t(hybrid_list$vbar), -t(hybrid_list$vbar))
+    if ( (base::max(VbarMat %*% y_T - hybrid_list$dbar)) > 0 ) {
+      base::return(base::list(reject = 1,
+                              eta = linSoln$eta_star, 
+                              delta = linSoln$delta_star))
     }
   } else if (hybrid_flag == "ARP") {
     # No hybrid selected
     mod_size = alpha
   } else {
     # if hybrid flag does not equal LF, FLCI or ARP, return error
-    stop("Hybrid flag must equal 'LF', 'FLCI' or 'ARP'")
+    base::stop("Hybrid flag must equal 'LF', 'FLCI' or 'ARP'")
   }
 
   # We now check for conditions under which the primal and dual solutions are equal to one another
   # If these conditions don't hold, we will switch to the dual.
   tol_lambda = 10^(-6)
-  degenerate_flag = (sum(linSoln$lambda > tol_lambda) != (k+1))
+  degenerate_flag = (base::sum(linSoln$lambda > tol_lambda) != (k+1))
 
   # Store which moments are binding: Do so using lambda rather than the moments.
   B_index = (linSoln$lambda > tol_lambda)
   Bc_index = (B_index == F)
-  X_TB = matrix( X_T_ARP[B_index,], ncol = ncol(X_T_ARP) ) # select binding moments
+  X_TB = base::matrix( X_T_ARP[B_index,], ncol = base::ncol(X_T_ARP) ) # select binding moments
   # Check whether binding moments have full rank.
-  if (is.vector(X_TB)) {
+  if (base::is.vector(X_TB)) {
     fullRank_flag = F
   } else {
-    fullRank_flag = (Matrix::rankMatrix(X_TB) == min(dim( X_TB ) ))
+    fullRank_flag = (Matrix::rankMatrix(X_TB) == base::min(base::dim( X_TB ) ))
   }
 
   # If degenerate or binding moments don't have full rank, switch to dual
@@ -540,16 +539,17 @@ library(foreach)
     # We calculate vlo and vup using the bisection approach that conditions on
     # having a gamma_tilde - a vertex of the dual. This is returned as lambda,
     # from the functioon test_delta_lp_fn.
-    lpDualSoln = .lp_dual_fn(y_T = y_T_ARP, X_T = X_T_ARP, eta = linSoln$eta_star, gamma_tilde = linSoln$lambda, sigma = sigma_ARP)
+    lpDualSoln = .lp_dual_fn(y_T = y_T_ARP, X_T = X_T_ARP, eta = linSoln$eta_star,
+                             gamma_tilde = linSoln$lambda, sigma = sigma_ARP)
 
-    sigma_B_dual = sqrt( t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde)
+    sigma_B_dual = base::sqrt( base::t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde)
 
     #If sigma_B_dual is 0 to numerical precision, reject iff eta > 0
     if(sigma_B_dual < 10^(-10)){
-      return(list(reject = ifelse(linSoln$eta_star > 0, 1, 0),
-                  eta = linSoln$eta_star,
-                  delta = linSoln$delta_star,
-                  lambda = linSoln$lambda))
+      base::return(base::list(reject = base::ifelse(linSoln$eta_star > 0, 1, 0),
+                              eta = linSoln$eta_star,
+                              delta = linSoln$delta_star, 
+                              lambda = linSoln$lambda))
     }
 
     maxstat = lpDualSoln$eta/sigma_B_dual
@@ -558,20 +558,20 @@ library(foreach)
     if (hybrid_flag == "LF") {
       # Modify only vup using least-favorable CV for the least-favorable hybrid
       zlo_dual = lpDualSoln$vlo/sigma_B_dual
-      zup_dual = min(lpDualSoln$vup, hybrid_list$lf_cv)/sigma_B_dual
+      zup_dual = base::min(lpDualSoln$vup, hybrid_list$lf_cv)/sigma_B_dual
     } else if (hybrid_flag == "FLCI") {
       # Compute vlo_FLCI, vup_FLCI.
-      gamma_full <- matrix(0, nrow = length(y_T), ncol = 1)
+      gamma_full <- base::matrix(0, nrow = base::length(y_T), ncol = 1)
       gamma_full[rowsForARP] <- lpDualSoln$gamma_tilde
 
-      sigma_gamma = (sigma %*% gamma_full) %*% solve((t(gamma_full) %*% sigma %*% gamma_full))
-      S = y_T - sigma_gamma %*% (t(gamma_full) %*% y_T)
+      sigma_gamma = (sigma %*% gamma_full) %*% base::solve((base::t(gamma_full) %*% sigma %*% gamma_full))
+      S = y_T - sigma_gamma %*% (base::t(gamma_full) %*% y_T)
       vFLCI = .FLCI_computeVloVup(vbar = hybrid_list$vbar, dbar = hybrid_list$dbar,
                                   S = S, c = sigma_gamma)
 
       # Modify vlo, vup using the FLCI vlo, vup values
-      zlo_dual = max(lpDualSoln$vlo, vFLCI$vlo)/sigma_B_dual
-      zup_dual = min(lpDualSoln$vup, vFLCI$vup)/sigma_B_dual
+      zlo_dual = base::max(lpDualSoln$vlo, vFLCI$vlo)/sigma_B_dual
+      zup_dual = base::min(lpDualSoln$vup, vFLCI$vup)/sigma_B_dual
 
     } else if (hybrid_flag == "ARP") {
       # If ARP, don't modify
@@ -579,56 +579,56 @@ library(foreach)
       zup_dual = lpDualSoln$vup/sigma_B_dual
     } else {
       # if hybrid flag does not equal LF, FLCI or ARP, return error
-      stop("Hybrid flag must equal 'LF', 'FLCI' or 'ARP'")
+      base::stop("Hybrid flag must equal 'LF', 'FLCI' or 'ARP'")
     }
 
     if (!(zlo_dual <= maxstat & maxstat <= zup_dual)) {
       # warning(sprintf("max stat (%3f) is not between z_lo (%3f) and z_up (%3f) in the dual approach", maxstat, zlo_dual, zup_dual))
-      return(list(reject = 0,
-                  eta = linSoln$eta_star,
-                  delta = linSoln$delta_star,
-                  lambda = linSoln$lambda))
+      base::return(base::list(reject = 0,
+                              eta = linSoln$eta_star,
+                              delta = linSoln$delta_star,
+                              lambda = linSoln$lambda))
     } else {
       # Per ARP (2021), CV = max(0, c_{1-alpha}), where c_{1-alpha} is the 1-alpha
       # quantile of truncated normal.
-      cval = max(0, .norminvp_generalized(p = 1 - mod_size, l = zlo_dual, u = zup_dual))
-      reject = as.numeric(c(maxstat) > cval)
-      return(list(reject = reject,
-                  eta = linSoln$eta_star,
-                  delta = linSoln$delta_star,
-                  lambda = linSoln$lambda))
+      cval = base::max(0, .norminvp_generalized(p = 1 - mod_size, l = zlo_dual, u = zup_dual))
+      reject = base::as.numeric(c(maxstat) > cval)
+      base::return(base::list(reject = reject,
+                              eta = linSoln$eta_star,
+                              delta = linSoln$delta_star,
+                              lambda = linSoln$lambda))
     }
   } else {
     ### primal approach ###
-    size_B = sum(B_index)
-    size_Bc = sum(1 - B_index)
+    size_B = base::sum(B_index)
+    size_Bc = base::sum(1 - B_index)
 
-    sdVec = sqrt(diag(sigma_ARP))
+    sdVec = base::sqrt(base::diag(sigma_ARP))
     sdVec_B = sdVec[B_index]
     sdVec_Bc = sdVec[Bc_index]
 
     X_TBc = X_T_ARP[Bc_index, ]
-    S_B = diag(M)
+    S_B = base::diag(M)
     S_B = S_B[B_index, ]
-    S_Bc = diag(M)
+    S_Bc = base::diag(M)
     S_Bc = S_Bc[Bc_index, ]
 
-    Gamma_B = cbind(sdVec_Bc, X_TBc) %*% solve(cbind(sdVec_B, X_TB)) %*% S_B - S_Bc
-    e1 = c(1, rep(0, size_B-1))
-    v_B = t( t(e1) %*% solve(cbind(sdVec_B, X_TB)) %*% S_B )
-    sigma2_B = t(v_B) %*% sigma_ARP %*% v_B
-    sigma_B = sqrt(sigma2_B)
-    rho = Gamma_B %*% sigma_ARP %*% v_B %*% solve(sigma2_B)
-    maximand_or_minimand = (-Gamma_B %*% y_T_ARP)/rho + c(t(v_B) %*% y_T_ARP)
+    Gamma_B = base::cbind(sdVec_Bc, X_TBc) %*% base::solve(base::cbind(sdVec_B, X_TB)) %*% S_B - S_Bc
+    e1 = base::c(1, base::rep(0, size_B-1))
+    v_B = base::t( base::t(e1) %*% base::solve(base::cbind(sdVec_B, X_TB)) %*% S_B )
+    sigma2_B = base::t(v_B) %*% sigma_ARP %*% v_B
+    sigma_B = base::sqrt(sigma2_B)
+    rho = Gamma_B %*% sigma_ARP %*% v_B %*% base::solve(sigma2_B)
+    maximand_or_minimand = (-Gamma_B %*% y_T_ARP)/rho + base::c(base::t(v_B) %*% y_T_ARP)
 
     # Compute truncation values
-    if ( sum(rho > 0) > 0) {
-      vlo = max(maximand_or_minimand[rho > 0])
+    if ( base::sum(rho > 0) > 0) {
+      vlo = base::max(maximand_or_minimand[rho > 0])
     } else {
       vlo = -Inf
     }
-    if ( sum(rho < 0) > 0) {
-      vup = min(maximand_or_minimand[rho < 0])
+    if ( base::sum(rho < 0) > 0) {
+      vup = base::min(maximand_or_minimand[rho < 0])
     } else {
       vup = Inf
     }
@@ -637,21 +637,21 @@ library(foreach)
     if (hybrid_flag == "LF") {
       # if LF, modify vup.
       zlo = vlo/sigma_B
-      zup = min(vup, hybrid_list$lf_cv)/sigma_B
+      zup = base::min(vup, hybrid_list$lf_cv)/sigma_B
     } else if (hybrid_flag == "FLCI") {
       # Compute vlo_FLCI, vup_FLCI.
 
-      gamma_full <- matrix(0, nrow = length(y_T), ncol = 1)
+      gamma_full <- base::matrix(0, nrow = base::length(y_T), ncol = 1)
       gamma_full[rowsForARP] <- v_B
 
-      sigma_gamma = (sigma %*% gamma_full) %*% solve((t(gamma_full) %*% sigma %*% gamma_full))
-      S = y_T - sigma_gamma %*% (t(gamma_full) %*% y_T)
+      sigma_gamma = (sigma %*% gamma_full) %*% base::solve((base::t(gamma_full) %*% sigma %*% gamma_full))
+      S = y_T - sigma_gamma %*% (base::t(gamma_full) %*% y_T)
       vFLCI = .FLCI_computeVloVup(vbar = hybrid_list$vbar, dbar = hybrid_list$dbar,
                                   S = S, c = sigma_gamma)
 
       # if FLCI, modify both vlo, vup
-      zlo = max(vlo, vFLCI$vlo)/sigma_B
-      zup = min(vup, vFLCI$vup)/sigma_B
+      zlo = base::max(vlo, vFLCI$vlo)/sigma_B
+      zup = base::min(vup, vFLCI$vup)/sigma_B
 
       # if(vlo < vFLCI$vlo){
       #   ### vlo greater after conditioning
@@ -664,7 +664,7 @@ library(foreach)
       zup = vup/sigma_B
     } else {
       # if hybrid flag does not equal LF, FLCI or ARP, return error
-      stop("Hybrid flag must equal 'LF', 'FLCI' or 'ARP'")
+      base::stop("Hybrid flag must equal 'LF', 'FLCI' or 'ARP'")
     }
 
     # Compute test statistic
@@ -672,19 +672,19 @@ library(foreach)
 
     if ( !(zlo <= maxstat & maxstat <= zup) ) {
       # warning(sprintf("max stat (%3f) is not between z_lo (%3f) and z_up (%3f) in the primal approach", maxstat, zlo, zup))
-      return(list(reject = 0,
-                  eta = linSoln$eta_star,
-                  delta = linSoln$delta_star,
-                  lambda = linSoln$lambda))
+      base::return(base::list(reject = 0,
+                              eta = linSoln$eta_star,
+                              delta = linSoln$delta_star,
+                              lambda = linSoln$lambda))
     } else {
       # Per ARP (2021), CV = max(0, c_{1-alpha}), where c_{1-alpha} is the 1-alpha
       # quantile of truncated normal.
-      cval = max(0, .norminvp_generalized(p = 1 - mod_size, l = zlo, u = zup))
-      reject = as.numeric(c(maxstat) > cval)
-      return(list(reject = reject,
-                  eta = linSoln$eta_star,
-                  delta = linSoln$delta_star,
-                  lambda = linSoln$lambda))
+      cval = base::max(0, .norminvp_generalized(p = 1 - mod_size, l = zlo, u = zup))
+      reject = base::as.numeric(c(maxstat) > cval)
+      base::return(base::list(reject = reject,
+                               eta = linSoln$eta_star,
+                               delta = linSoln$delta_star,
+                               lambda = linSoln$lambda))
     }
   }
 }
@@ -697,7 +697,7 @@ library(foreach)
   # This is used by other functions to construct the ARP CIs.
   results = .lp_conditional_test_fn(theta = theta, y_T = y_T, X_T = X_T, sigma = sigma, alpha = alpha,
                                     hybrid_flag = hybrid_flag, hybrid_list = hybrid_list, rowsForARP = rowsForARP)
-  return(results$reject)
+  base::return(results$reject)
 }
 
 .ARP_computeCI <- function(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -725,29 +725,32 @@ library(foreach)
   #   testResultsGrid
 
   # Construct grid of theta values to test over.
-  thetaGrid <- seq(grid.lb, grid.ub, length.out = gridPoints)
+  thetaGrid <- base::seq(grid.lb, grid.ub, length.out = gridPoints)
 
   # Construct matrix Gamma and A*(Gamma)^{-1}
   Gamma = .construct_Gamma(l_vec)
-  AGammaInv = A[,(numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% solve(Gamma)
+  AGammaInv = A[,(numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% base::solve(Gamma)
   AGammaInv_one = AGammaInv[,1]
   AGammaInv_minusOne = AGammaInv[,-1] # This will be the matrix X_T in ARP functions
 
   # Compute Y = A betahat - d and its variance A*sigma*A'
-  Y = c(A %*% betahat - d)
-  sigmaY = A %*% sigma %*% t(A)
+  Y = base::c(A %*% betahat - d)
+  sigmaY = A %*% sigma %*% base::t(A)
 
   # HYBRID: Check if hybrid is least favorable, then compute least-favorable CV and add it to hybrid list
   if (hybrid_flag == "LF") {
-    hybrid_list$lf_cv = .compute_least_favorable_cv(X_T = AGammaInv_minusOne, sigma = sigmaY, hybrid_kappa = hybrid_list$hybrid_kappa, rowsForARP = rowsForARP)
+    hybrid_list$lf_cv = .compute_least_favorable_cv(X_T = AGammaInv_minusOne,
+                                                    sigma = sigmaY,
+                                                    hybrid_kappa = hybrid_list$hybrid_kappa,
+                                                    rowsForARP = rowsForARP)
   }
 
   # Define helper function to loop over theta grid
   testTheta <- function(theta) {
     # If FLCI Hybrid, compute dbar
     if (hybrid_flag == "FLCI") {
-      hybrid_list$dbar = c(hybrid_list$flci_halflength - (t(hybrid_list$vbar) %*% d) + (1 - t(hybrid_list$vbar) %*% AGammaInv_one)*theta,
-                           hybrid_list$flci_halflength + (t(hybrid_list$vbar) %*% d) - (1 - t(hybrid_list$vbar) %*% AGammaInv_one)*theta)
+      hybrid_list$dbar = base::c(hybrid_list$flci_halflength - (t(hybrid_list$vbar) %*% d) + (1 - t(hybrid_list$vbar) %*% AGammaInv_one)*theta,
+                                 hybrid_list$flci_halflength + (t(hybrid_list$vbar) %*% d) - (1 - t(hybrid_list$vbar) %*% AGammaInv_one)*theta)
     }
 
     # For the FLCI, we compute the modified FLCI vlo, vup inside this function now.
@@ -755,23 +758,23 @@ library(foreach)
                                        sigma = sigmaY, alpha = alpha,
                                        hybrid_flag = hybrid_flag, hybrid_list = hybrid_list, rowsForARP = rowsForARP)
     accept = 1-reject
-    return(accept)
+    base::return(accept)
   }
 
   # Loop over theta grid and store acceptances
   testResultsGrid <- purrr::map_dbl(.x = thetaGrid, .f = testTheta)
   testValsGrid <- thetaGrid
-  resultsGrid <- cbind(testValsGrid, testResultsGrid)
-  if( (resultsGrid[1, 2] == 1 | resultsGrid[NROW(resultsGrid), 2] == 1) & hybrid_flag != "FLCI"){
-    warning("CI is open at one of the endpoints; CI length may not be accurate")
+  resultsGrid <- base::cbind(testValsGrid, testResultsGrid)
+  if( (resultsGrid[1, 2] == 1 | resultsGrid[base::NROW(resultsGrid), 2] == 1) & hybrid_flag != "FLCI"){
+    base::warning("CI is open at one of the endpoints; CI length may not be accurate")
   }
 
   # Compute length, else return grid
   if (returnLength == T) {
-    gridLength <- 0.5 * ( c(0, diff(thetaGrid)) + c(diff(thetaGrid), 0 ) )
-    return(sum(resultsGrid[, 2]*gridLength))
+    gridLength <- 0.5 * ( base::c(0, base::diff(thetaGrid)) + base::c(base::diff(thetaGrid), 0 ) )
+    base::return(base::sum(resultsGrid[, 2]*gridLength))
   } else {
-    return(tibble::tibble(grid   = resultsGrid[, 1],
-                          accept = resultsGrid[,2]))
+    base::return(tibble::tibble(grid   = resultsGrid[, 1],
+                                accept = resultsGrid[,2]))
   }
 }

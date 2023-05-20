@@ -15,9 +15,9 @@
   # delta is increasing/decreasing depending on what direction is specified.
   # This is used to impose monotonicity restrictions on the user's choice of Delta.
 
-  A_M = matrix(0, nrow = numPrePeriods+numPostPeriods, ncol=numPrePeriods+numPostPeriods)
+  A_M = base::matrix(0, nrow = numPrePeriods+numPostPeriods, ncol=numPrePeriods+numPostPeriods)
   for(r in 1:(numPrePeriods-1)){
-    A_M[r, r:(r+1)] <- c(1,-1)
+    A_M[r, r:(r+1)] <- base::c(1,-1)
   }
   A_M[numPrePeriods, numPrePeriods] <- 1
   if(numPostPeriods > 0){
@@ -31,16 +31,16 @@
 
   # If postPeriodMomentsOnly == T, exclude moments that only involve pre-periods
   if(postPeriodMomentsOnly){
-    postPeriodIndices <- (numPrePeriods +1):NCOL(A_M)
-    prePeriodOnlyRows <- which( rowSums( A_I[ , postPeriodIndices] != 0 ) == 0 )
+    postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_M)
+    prePeriodOnlyRows <- base::which( base::rowSums( A_I[ , postPeriodIndices] != 0 ) == 0 )
     A_M <- A_M[-prePeriodOnlyRows , ]
   }
   if (monotonicityDirection == "decreasing") {
     A_M <- -A_M
   } else if(monotonicityDirection != "increasing") {
-    stop("direction must be 'increasing' or 'decreasing'")
+    base::stop("direction must be 'increasing' or 'decreasing'")
   }
-  return(A_M)
+  base::return(A_M)
 }
 
 .create_A_B <- function(numPrePeriods, numPostPeriods, biasDirection) {
@@ -50,13 +50,13 @@
   #   numPrePeriods = number of pre-periods. This is an element of resultsObjects.
   #   numPostPeriods = number of post-periods. This is an element of resultsObjects.
   #   biasDirection = must be "positive" or "negative".
-  A_B = -diag(numPrePeriods + numPostPeriods)
+  A_B = -base::diag(numPrePeriods + numPostPeriods)
   A_B = A_B[(numPrePeriods+1):(numPrePeriods+numPostPeriods), ]
 
   if (biasDirection == "negative"){
     A_B <- -A_B
   } else if(biasDirection != "positive"){
-    stop("Input biasDirection must equal either `positive' or `negative'")
+    base::stop("Input biasDirection must equal either `positive' or `negative'")
   }
-  return(A_B)
+  base::return(A_B)
 }
