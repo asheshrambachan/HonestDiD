@@ -8,16 +8,6 @@
 #  This script contains functions that are used to construct
 #  the confidence sets for Delta^{RM}(Mbar).
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(ROI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-library(purrr)
-
 # Delta^{RM} functions -----------------------------------------------
 .create_A_RM <- function(numPrePeriods, numPostPeriods,
                          Mbar = 1, s, max_positive = T,

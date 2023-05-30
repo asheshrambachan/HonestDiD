@@ -32,7 +32,7 @@
   # If postPeriodMomentsOnly == T, exclude moments that only involve pre-periods
   if(postPeriodMomentsOnly){
     postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_M)
-    prePeriodOnlyRows <- base::which( base::rowSums( A_I[ , postPeriodIndices] != 0 ) == 0 )
+    prePeriodOnlyRows <- base::which( base::rowSums( A_M[ , postPeriodIndices] != 0 ) == 0 )
     A_M <- A_M[-prePeriodOnlyRows , ]
   }
   if (monotonicityDirection == "decreasing") {

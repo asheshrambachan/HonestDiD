@@ -445,7 +445,7 @@ You can also view a video presentation about this paper
 
 - [Ashesh Rambachan](https://asheshrambachan.github.io/)
 
-- [Jonathan Roth](https://jonathandroth.github.io/)
+- [Jonathan Roth](https://www.jonathandroth.com/)
 
 ## Acknowledgements
 

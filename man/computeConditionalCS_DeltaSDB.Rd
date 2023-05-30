@@ -9,11 +9,11 @@ Computes the conditional confidence set and hybridized confidence set for Delta 
 }
 \usage{
 computeConditionalCS_DeltaSDB(betahat, sigma, numPrePeriods, numPostPeriods,
-                         l_vec = .basisVector(index = 1, size=numPostPeriods), M = 0,
-                         alpha = 0.05, hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
-                         returnLength = F, biasDirection = "positive",
-                         postPeriodMomentsOnly = T,
-                         gridPoints = 10^3, grid.lb = NA, grid.ub = NA)
+                              M = 0, l_vec = .basisVector(index = 1, size=numPostPeriods),
+                              alpha = 0.05, hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
+                              returnLength = F, biasDirection = "positive",
+                              postPeriodMomentsOnly = T,
+                              gridPoints = 10^3, grid.lb = NA, grid.ub = NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

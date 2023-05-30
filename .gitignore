@@ -1,4 +1,5 @@
 .Rproj.user
+*.Rcheck
 .Rhistory
 .RData
 .Ruserdata

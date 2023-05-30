@@ -8,15 +8,6 @@
 #  This script contains functions that are used to construct
 #  the confidence sets for Delta^{SDB}(M).
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(ROI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-
 # DELTA^{SDB}(M) FUNCTIONS --------------------------------------------
 # In this section, we implement helper functions to place testing with
 # Delta^{SDB}(M) into the form needed to use the ARP functions.
@@ -118,15 +109,12 @@ library(foreach)
     id.ub = id.ub))
 }
 
-computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPostPeriods, M = 0,
-                                          l_vec = .basisVector(index = 1, size=numPostPeriods),
-                                          alpha = 0.05,
-                                          hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
+computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPostPeriods,
+                                          M = 0, l_vec = .basisVector(index = 1, size=numPostPeriods),
+                                          alpha = 0.05, hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
                                           returnLength = F, biasDirection = "positive",
                                           postPeriodMomentsOnly = T,
-                                          gridPoints = 10^3,
-                                          grid.lb = NA,
-                                          grid.ub = NA) {
+                                          gridPoints = 10^3, grid.lb = NA, grid.ub = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDPB}(M). This functions uses ARP_computeCI for all
   # of its computations.

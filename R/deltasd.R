@@ -8,15 +8,6 @@
 #  This script contains functions that are used to construct
 #  the confidence sets for Delta^{SD}(M).
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(ROI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-
 # DELTA^{SD}(M) FUNCTIONS ---------------------------------------------
 # In this section, we implement helper functions to place testing with
 # Delta^{SD}(M) into the form needed to use the ARP functions.
@@ -136,10 +127,11 @@ library(foreach)
 }
 
 computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostPeriods,
-                                         l_vec = .basisVector(index = 1, size = numPostPeriods), M = 0,
-                                         alpha = 0.05, hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
-                                         returnLength = F, postPeriodMomentsOnly = T,
-                                         gridPoints =10^3, grid.midPoint = NA, grid.ub = NA, grid.lb = NA) {
+                                         l_vec = .basisVector(index = 1, size = numPostPeriods),
+                                         M = 0, alpha = 0.05, hybrid_flag = "FLCI", 
+                                         hybrid_kappa = alpha/10, returnLength = F,
+                                         postPeriodMomentsOnly = T,
+                                         gridPoints =10^3, grid.ub = NA, grid.lb = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SD}(M). This functions uses ARP_computeCI for all
   # of its computations.
