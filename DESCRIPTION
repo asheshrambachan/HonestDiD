@@ -27,8 +27,7 @@ Suggests:
 Author: Ashesh Rambachan <ashesh.a.rambachan@gmail.com>
 Maintainer: Ashesh Rambachan <ashesh.a.rambachan@gmail.com>
 Description:
-    Provides functions to conduct robust inference in difference-in-differences and event study designs by implementing the methods developed in Rambachan & Roth (2021). Inference is conducted under a weaker version of the parallel trends assumption. Uniformly valid confidence sets are constructed based upon conditional confidence sets, fixed-length confidence sets and hybridized confidence sets. See Ashesh Rambachan & Jonathan Roth, "An Honest Approach to Parallel Trends", 2021 for details on the methods.
-License: GPL-3
+    Provides functions to conduct robust inference in difference-in-differences and event study designs by implementing the methods developed in Rambachan & Roth (2023, RESTUD), "A More Credible Approach to Parallel Trends" [Previously titled "An Honest Approach...". Inference is conducted under a weaker version of the parallel trends assumption. Uniformly valid confidence sets are constructed based upon conditional confidence sets, fixed-length confidence sets and hybridized confidence sets.
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder:
