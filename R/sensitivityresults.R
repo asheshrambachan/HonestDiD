@@ -8,15 +8,6 @@
 #  Implements functions to perform sensitivity analysis on event study coefficients
 
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(ROI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-
 # Construct Robust Results Function for Smoothness Restrictions -----------------------------------
 createSensitivityResults <- function(betahat, sigma,
                                      numPrePeriods, numPostPeriods,
@@ -31,7 +22,7 @@ createSensitivityResults <- function(betahat, sigma,
   # If Mvec is null, construct default Mvec
   if (base::is.null(Mvec)) {
     if (numPrePeriods == 1) {
-      Mvec = base::seq(from = 0, to = base::c(base::sqrt(base::sigma[1, 1])), length.out = 10)
+      Mvec = base::seq(from = 0, to = base::c(base::sqrt(sigma[1, 1])), length.out = 10)
     } else {
       Mub = DeltaSD_upperBound_Mpre(betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods, alpha = 0.05)
       Mvec = base::seq(from = 0, to = Mub, length.out = 10)
@@ -420,7 +411,9 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                         monotonicityDirection = NULL,
                                                         biasDirection = NULL,
                                                         alpha = 0.05,
-                                                        gridPoints = 10^3, grid.ub = NA, grid.lb = NA,
+                                                        gridPoints = 10^3,
+                                                        grid.ub = NA,
+                                                        grid.lb = NA,
                                                         parallel = FALSE) {
 
   # If Mbarvec is null, construct default Mbarvec to be 10 values on [0,2].
@@ -681,7 +674,9 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
   base::return(Results)
 }
 
-createSensitivityPlot_relativeMagnitudes <- function(robustResults, originalResults, rescaleFactor = 1, maxMbar = Inf, add_xAxis = TRUE) {
+createSensitivityPlot_relativeMagnitudes <- function(robustResults, originalResults,
+                                                     rescaleFactor = 1, maxMbar = Inf,
+                                                     add_xAxis = TRUE) {
   # Set Mbar for OLS to be the min Mbar in robust results minus the gap between Mbars in robust
   Mbargap <- base::min( base::diff( base::sort( robustResults$Mbar) ) )
   Mbarmin <- base::min( robustResults$Mbar)

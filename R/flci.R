@@ -8,15 +8,6 @@
 #  This script contains functions that are used to construct
 #  the FLCI for a general choice of vector l and Delta = Delta^{SD}(M)
 
-# PRELIMINARIES =======================================================
-library(TruncatedNormal)
-library(lpSolveAPI)
-library(ROI)
-library(Matrix)
-library(pracma)
-library(CVXR)
-library(foreach)
-
 # FLCI HELPER FUNCTIONS -----------------------------------------------
 .createConstraints_AbsoluteValue <- function(sigma, numPrePeriods, UstackW){
   # This function creates linear constraints that help to minimize worst-case bias

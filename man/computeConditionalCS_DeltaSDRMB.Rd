@@ -8,13 +8,11 @@ Computes conditional and hybridized confidence set for Delta = Delta^{SDRMB}(Mba
 Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{SDRMB}(Mbar). The set Delta^{SDRMB}(Mbar) adds an additional sign restriction to Delta^{SDRM}(Mbar) that restricts the sign of the bias to be either positive (delta >= 0) or negative (delta <= 0).
 }
 \usage{
-computeConditionalCS_DeltaSDRMB(betahat, sigma,
-                                numPrePeriods, numPostPeriods,
-                                l_vec = .basisVector(index = 1,
-                                                      size = numPostPeriods),
+computeConditionalCS_DeltaSDRMB(betahat, sigma, numPrePeriods, numPostPeriods,
+                                l_vec = .basisVector(index = 1, size = numPostPeriods),
                                 Mbar = 0, alpha = 0.05, hybrid_flag = "LF",
                                 hybrid_kappa = alpha/10, returnLength = F,
-                                biasDirection = "positive", postPeriodMomentsOnly = T,
+                                postPeriodMomentsOnly = T, biasDirection = "positive",
                                 gridPoints=10^3, grid.ub = NA, grid.lb = NA)
 }
 %- maybe also 'usage' for other objects documented here.
