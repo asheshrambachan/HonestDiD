@@ -177,6 +177,36 @@ originalResults_avg <- HonestDiD::constructOriginalCS(betahat = betahat,
 HonestDiD::createSensitivityPlot_relativeMagnitudes(delta_rm_results_avg, originalResults_avg)
 ```
 
+## Regressions with controls
+
+The parameters `betahat` and `sigma` should be the coefficients and variance-covariance matrix for the **event-study** plot only. Sometimes we may have regression results that contain both the event-study coefficients and coefficients on other auxilliary variables (e.g. controls). In this case, we should subset `betahat` and `sigma` to the relevant coefficients corresponding to the event-study. An example is given below: 
+
+```{r, cache=T}
+
+# CREATE A FAKE CONTROL FOR ILLUSTRATION
+set.seed(0)
+df_nonstaggered$control <- rnorm(NROW(df_nonstaggered), 0, 1)
+
+#Run the TWFE spec with the control added
+# (Note that TWFEs with controls may not yield ATT under het effects; see Abadie 2005)
+twfe_results <- fixest::feols(dins ~ i(year, D, ref = 2013) + control | stfips + year, 
+                              cluster = "stfips",
+                              data = df_nonstaggered)
+
+
+betahat <- summary(twfe_results)$coefficients #save the coefficients
+sigma <- summary(twfe_results)$cov.scaled #save the covariance matrix
+
+#Subset the coefficients to exclude the control, which here is in position 8
+betahat <- betahat[-8]
+sigma <-sigma[-8,-8]
+
+HonestDiD::createSensitivityResults(betahat = betahat,
+                                    sigma = sigma,
+                                    numPrePeriods = 5,
+                                    numPostPeriods = 2,
+                                    Mvec = seq(from = 0, to = 0.05, by =0.01))
+```
 
 ## Staggered timing
 
