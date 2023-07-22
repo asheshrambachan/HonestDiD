@@ -31,3 +31,4 @@ Encoding: UTF-8
 LazyData: true
 VignetteBuilder:
     knitr
+License: MIT + file LICENSE
