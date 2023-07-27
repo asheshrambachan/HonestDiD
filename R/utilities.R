@@ -45,3 +45,14 @@ basisVector <- function(index = 1, size = 1){
   v[index] = 1
   base::return(v)
 }
+
+.stopIfNotSymmPSD <- function (sigma) {
+  # Check that sigma is PSD
+  if ( base::isSymmetric(sigma) ) {
+    if ( base::any(base::eigen(sigma, TRUE, only.values=TRUE)$values < 0) ) {
+      base::stop("sigma must be a positive semi-definite symmetric matrix")
+    }
+  } else {
+    base::stop("sigma must be a symmetric matrix")
+  }
+}
