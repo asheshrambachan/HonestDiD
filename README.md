@@ -122,8 +122,8 @@ head(df,5)
 ```
 
     ## # A tibble: 5 × 5
-    ##   stfips      year         dins yexp2      W
-    ##   <dbl+lbl>   <dbl+lbl>   <dbl> <dbl>  <dbl>
+    ##        stfips        year  dins yexp2      W
+    ##     <dbl+lbl>   <dbl+lbl> <dbl> <dbl>  <dbl>
     ## 1 1 [alabama] 2008 [2008] 0.681    NA 613156
     ## 2 1 [alabama] 2009 [2009] 0.658    NA 613156
     ## 3 1 [alabama] 2010 [2010] 0.631    NA 613156
@@ -303,6 +303,52 @@ HonestDiD::createSensitivityPlot_relativeMagnitudes(delta_rm_results_avg, origin
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
+## Regressions with controls
+
+The parameters `betahat` and `sigma` should be the coefficients and
+variance-covariance matrix for the **event-study** plot only. Sometimes
+we may have regression results that contain both the event-study
+coefficients and coefficients on other auxilliary variables
+(e.g. controls). In this case, we should subset `betahat` and `sigma` to
+the relevant coefficients corresponding to the event-study. An example
+is given below:
+
+``` r
+# CREATE A FAKE CONTROL FOR ILLUSTRATION
+set.seed(0)
+df_nonstaggered$control <- rnorm(NROW(df_nonstaggered), 0, 1)
+
+#Run the TWFE spec with the control added
+# (Note that TWFEs with controls may not yield ATT under het effects; see Abadie 2005)
+twfe_results <- fixest::feols(dins ~ i(year, D, ref = 2013) + control | stfips + year, 
+                              cluster = "stfips",
+                              data = df_nonstaggered)
+
+
+betahat <- summary(twfe_results)$coefficients #save the coefficients
+sigma <- summary(twfe_results)$cov.scaled #save the covariance matrix
+
+#Subset the coefficients to exclude the control, which here is in position 8
+betahat <- betahat[-8]
+sigma <-sigma[-8,-8]
+
+HonestDiD::createSensitivityResults(betahat = betahat,
+                                    sigma = sigma,
+                                    numPrePeriods = 5,
+                                    numPostPeriods = 2,
+                                    Mvec = seq(from = 0, to = 0.05, by =0.01))
+```
+
+    ## # A tibble: 6 × 5
+    ##         lb     ub method Delta       M
+    ##      <dbl>  <dbl> <chr>  <chr>   <dbl>
+    ## 1  0.0264  0.0607 FLCI   DeltaSD  0   
+    ## 2  0.0128  0.0788 FLCI   DeltaSD  0.01
+    ## 3  0.00186 0.0908 FLCI   DeltaSD  0.02
+    ## 4 -0.00814 0.101  FLCI   DeltaSD  0.03
+    ## 5 -0.0181  0.111  FLCI   DeltaSD  0.04
+    ## 6 -0.0281  0.121  FLCI   DeltaSD  0.05
+
 ## Staggered timing
 
 So far we have focused on a simple case without staggered timing.
@@ -429,7 +475,7 @@ HonestDiD::createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_c
                                                     sensitivity_results$orig_ci)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ## Additional options and resources
 
