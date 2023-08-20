@@ -20,6 +20,7 @@ createSensitivityResults <- function(betahat, sigma,
                                      parallel = FALSE) {
 
   .warnIfNotSymmPSD(sigma)
+  m <- NULL
 
   # If Mvec is null, construct default Mvec
   if (base::is.null(Mvec)) {
@@ -388,10 +389,10 @@ createSensitivityPlot <- function(robustResults, originalResults, rescaleFactor 
   df <- df %>% dplyr::mutate_at( c("M", "ub", "lb"), ~ .x * rescaleFactor)
 
   # Filter out observations above maxM (after rescaling)
-  df <- df %>% dplyr::filter(M <= maxM)
+  df <- df %>% dplyr::filter(.data$M <= maxM)
 
-  p <- ggplot2::ggplot(data = df, ggplot2::aes(x=M)) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = lb, ymax = ub, color = base::factor(method)),
+  p <- ggplot2::ggplot(data = df, ggplot2::aes(x=.data$M)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$lb, ymax = .data$ub, color = base::factor(.data$method)),
                            width = Mgap * rescaleFactor / 2) +
     ggplot2::scale_color_manual(values = base::c("red", '#01a2d9')) +
     ggplot2::theme(legend.title=ggplot2::element_blank(), legend.position="bottom") +
@@ -419,6 +420,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                         parallel = FALSE) {
 
   .warnIfNotSymmPSD(sigma)
+  m <- NULL
 
   # If Mbarvec is null, construct default Mbarvec to be 10 values on [0,2].
   if (base::is.null(Mbarvec)) {
@@ -692,10 +694,10 @@ createSensitivityPlot_relativeMagnitudes <- function(robustResults, originalResu
   df <- df %>% dplyr::mutate_at( base::c("Mbar", "ub", "lb"), ~ .x * rescaleFactor)
 
   # Filter out observations above maxM (after rescaling)
-  df <- df %>% dplyr::filter(Mbar <= maxMbar)
+  df <- df %>% dplyr::filter(.data$Mbar <= maxMbar)
 
-  p <- ggplot2::ggplot(data = df, ggplot2::aes(x=Mbar)) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = lb, ymax = ub, color = base::factor(method)),
+  p <- ggplot2::ggplot(data = df, ggplot2::aes(x=.data$Mbar)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = .data$lb, ymax = .data$ub, color = base::factor(.data$method)),
                            width = Mbargap * rescaleFactor / 2) +
     ggplot2::scale_color_manual(values = base::c("red", '#01a2d9')) +
     ggplot2::theme(legend.title=ggplot2::element_blank(), legend.position="bottom") +
@@ -744,7 +746,7 @@ createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
                                                    se   = base::c(stdErrors[1:numPrePeriods], NA, stdErrors[(numPrePeriods+1):(numPrePeriods+numPostPeriods)])),
                                     ggplot2::aes(x = t)) +
     ggplot2::geom_point(ggplot2::aes(y = beta), color = "red") +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = beta - stats::qnorm(1-alpha/2)*se, ymax = beta + stats::qnorm(1-alpha/2)*se), width = 0.5, colour = "#01a2d9") +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = beta - stats::qnorm(1-alpha/2)*.data$se, ymax = beta + stats::qnorm(1-alpha/2)*.data$se), width = 0.5, colour = "#01a2d9") +
     ggplot2::theme(legend.position = "none") + 
     ggplot2::labs(x = "Event time", y = "") +
     ggplot2::scale_x_continuous(breaks = base::seq(from = base::min(timeVec), to = base::max(timeVec), by = 1),
