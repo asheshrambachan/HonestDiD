@@ -56,3 +56,35 @@ basisVector <- function(index = 1, size = 1){
     base::warning("sigma is not a symmetric matrix")
   }
 }
+
+.stopIfNotConformable <- function (betahat, sigma, numPrePeriods, numPostPeriods, l_vec) {
+  betaDim <- c(base::NROW(betahat), base::NCOL(betahat))
+
+  betaL <- base::max(betaDim)
+  beta1 <- base::min(betaDim)
+  if ( beta1 > 1 ) {
+      base::stop(base::sprintf("expected a vector but betahat was %d by %d", betaDim[1], betaDim[2]))
+  }
+
+  sigmaR <- base::NROW(sigma)
+  sigmaC <- base::NCOL(sigma)
+  if ( sigmaR != sigmaC ) {
+      base::stop(base::sprintf("expected a square matrix but sigma was %d by %d", sigmaR, sigmaC))
+  }
+
+  if ( sigmaR != betaL ) {
+      base::stop(base::sprintf("betahat (%d by %d) and sigma (%d by %d) were non-conformable",
+                 betaDim[1], betaDim[2], sigmaR, sigmaC))
+  }
+
+  numPeriods <- numPrePeriods + numPostPeriods
+  if ( numPeriods != betaL ) {
+      base::stop(base::sprintf("betahat (%d by %d) and pre + post periods (%d + %d) were non-conformable",
+                 betaDim[1], betaDim[2], numPrePeriods, numPostPeriods))
+  }
+
+  if ( base::length(l_vec) != numPostPeriods ) {
+      base::stop(base::sprintf("l_vec (length %d) and post periods (%d) were non-conformable",
+                 base::length(l_vec), numPostPeriods))
+  }
+}
