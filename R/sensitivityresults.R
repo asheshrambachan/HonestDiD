@@ -19,6 +19,7 @@ createSensitivityResults <- function(betahat, sigma,
                                      alpha = 0.05,
                                      parallel = FALSE) {
 
+  .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
 
   # If Mvec is null, construct default Mvec
@@ -418,6 +419,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                         grid.lb = NA,
                                                         parallel = FALSE) {
 
+  .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
 
   # If Mbarvec is null, construct default Mbarvec to be 10 values on [0,2].
@@ -712,6 +714,7 @@ constructOriginalCS <- function(betahat, sigma,
                                 numPrePeriods, numPostPeriods,
                                 l_vec = .basisVector(index = 1, size = numPostPeriods),
                                 alpha = 0.05) {
+  .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
   stdError = base::sqrt(base::t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec)
   lb = base::t(l_vec) %*% betahat[(numPrePeriods+1):(numPrePeriods+numPostPeriods)] - stats::qnorm(1-alpha/2)*stdError
