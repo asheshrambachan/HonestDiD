@@ -226,23 +226,23 @@
     hGrid <- base::seq(from = hMin, to = h0, length.out = numPoints)
     biasDF <- purrr::map_dfr(.x = hGrid,
                              .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = T) %>% dplyr::mutate(h = h) } )
-    biasDF <- biasDF %>% dplyr::rename(bias = value)
+    biasDF <- biasDF %>% dplyr::rename(bias = .data$value)
     biasDF <-
       dplyr::left_join(
         biasDF %>% dplyr::mutate(id = 1),
         data.frame(m = M, id = 1),
-        by = "id") %>% dplyr::select(-id)
+        by = "id") %>% dplyr::select(-.data$id)
   
     biasDF <- biasDF %>%
-      dplyr::rename(maxBias = bias) %>% dplyr::filter(maxBias < Inf)
+      dplyr::rename(maxBias = .data$bias) %>% dplyr::filter(.data$maxBias < Inf)
     biasDF <- biasDF %>%
-      dplyr::mutate(maxBias = maxBias * m) %>%
-      dplyr::mutate(CI.halflength = .qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
+      dplyr::mutate(maxBias = .data$maxBias * .data$m) %>%
+      dplyr::mutate(CI.halflength = .qfoldednormal(p = 1-alpha, mu = .data$maxBias/.data$h) * .data$h)
   
     optimalCIDF <- biasDF %>%
-      dplyr::group_by(m) %>%
-      dplyr::filter(status == "optimal" | status == "optimal_inaccurate") %>%
-      dplyr::filter(CI.halflength == min(CI.halflength))
+      dplyr::group_by(.data$m) %>%
+      dplyr::filter(.data$status == "optimal" | .data$status == "optimal_inaccurate") %>%
+      dplyr::filter(.data$CI.halflength == min(.data$CI.halflength))
   } else {
     optimalCIDF <- .findWorstCaseBiasGivenH(hstar, sigma, numPrePeriods, numPostPeriods, l_vec, T)
     optimalCIDF$m <- M

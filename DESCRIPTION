@@ -6,6 +6,7 @@ Depends:
     R (>= 3.6.0)
 Imports:
     stats,
+    rlang,
     foreach (>= 1.4.7),
     matrixStats (>= 0.63.0),
     CVXR (>= 0.99-6),

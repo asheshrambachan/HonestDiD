@@ -1,6 +1,7 @@
 importFrom(dplyr, "%>%")
 importFrom(foreach, "%dopar%")
 importFrom(foreach, "%do%")
+importFrom(rlang, ".data")
 export(computeConditionalCS_DeltaRM)
 export(computeConditionalCS_DeltaRMB)
 export(computeConditionalCS_DeltaRMM)
