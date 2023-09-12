@@ -134,7 +134,7 @@
 }
 
 # FLCI FUNCTIONS ------------------------------------------------------
-.findWorstCaseBiasGivenH <- function(h, sigma, numPrePeriods, numPostPeriods, l_vec, M = 1, returnDF = F) {
+.findWorstCaseBiasGivenH <- function(h, sigma, numPrePeriods, numPostPeriods, l_vec, M = 1, returnDF = FALSE) {
   # This function minimizes worst-case bias over Delta^{SD}(M) subject to the constraint
   # that the SD of the estimator is <= h
   # Note: this function assumes M = 1 unless specified otherwise.
@@ -157,7 +157,7 @@
   optimal.w <- optimal.x[ (base::length(optimal.x)/2 + 1):base::length(optimal.x) ]
   optimal.l <- .wToLFn(optimal.w)
 
-  if(returnDF == F){
+  if(returnDF == FALSE){
     base::return(base::list(status = biasResult$status,
                             value = biasResult$value,
                             optimal.x = optimal.x,
@@ -218,14 +218,14 @@
                                     l_vec, numPoints = 100, alpha){
   h0 <- .findHForMinimumBias(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
   hMin <- .findLowestH(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
-  hstar <- .findOptimalCIDerivativeBisection(hMin, h0, M, numPoints, alpha, sigma, numPrePeriods, numPostPeriods, l_vec, T)
+  hstar <- .findOptimalCIDerivativeBisection(hMin, h0, M, numPoints, alpha, sigma, numPrePeriods, numPostPeriods, l_vec, TRUE)
 
   if ( base::is.na(hstar) ) {
     # Numerical derivatives will occasionally fail; fall back into grid
     # search in that case
     hGrid <- base::seq(from = hMin, to = h0, length.out = numPoints)
     biasDF <- purrr::map_dfr(.x = hGrid,
-                             .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = T) %>% dplyr::mutate(h = h) } )
+                             .f = function(h){ .findWorstCaseBiasGivenH(h, sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec, returnDF = TRUE) %>% dplyr::mutate(h = h) } )
     biasDF <- biasDF %>% dplyr::rename(bias = .data$value)
     biasDF <-
       dplyr::left_join(
@@ -244,7 +244,7 @@
       dplyr::filter(.data$status == "optimal" | .data$status == "optimal_inaccurate") %>%
       dplyr::filter(.data$CI.halflength == min(.data$CI.halflength))
   } else {
-    optimalCIDF <- .findWorstCaseBiasGivenH(hstar, sigma, numPrePeriods, numPostPeriods, l_vec, T)
+    optimalCIDF <- .findWorstCaseBiasGivenH(hstar, sigma, numPrePeriods, numPostPeriods, l_vec, TRUE)
     optimalCIDF$m <- M
     optimalCIDF$CI.halflength <- .qfoldednormal(p = 1-alpha, mu = (M * optimalCIDF$value)/hstar) * hstar
   }

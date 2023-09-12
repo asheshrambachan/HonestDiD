@@ -11,10 +11,10 @@
 
 # Delta^{RMM} functions -----------------------------------------------
 .create_A_RMM <- function(numPrePeriods, numPostPeriods,
-                         Mbar = 1, s, max_positive = T,
-                         dropZero = T, monotonicityDirection) {
+                         Mbar = 1, s, max_positive = TRUE,
+                         dropZero = TRUE, monotonicityDirection) {
   # This function creates a matrix for the linear constraints that
-  # \delta \in Delta^RM_{s,(.)}(Mbar), where (.) is + if max_positve = T and (-) if max_positive = F.
+  # \delta \in Delta^RM_{s,(.)}(Mbar), where (.) is + if max_positve = TRUE and (-) if max_positive = FALSE.
   #
   # Inputs:
   #   numPrePeriods = number of pre-periods. This is an element of resultsObjects.
@@ -29,11 +29,11 @@
     Atilde[r, r:(r+1)] = c(-1, 1)
   }
   
-  # Create a vector to extract the max first dif, which corresponds with the first dif for period s, or minus this if max_positive == F
+  # Create a vector to extract the max first dif, which corresponds with the first dif for period s, or minus this if max_positive == FALSE
   v_max_dif <- base::matrix(0, nrow = 1, ncol = numPrePeriods + numPostPeriods + 1)
   v_max_dif[(numPrePeriods+s):(numPrePeriods+1+s)] <- c(-1,1)
   
-  if (max_positive == F){
+  if (max_positive == FALSE){
     v_max_dif <- -v_max_dif
   }
   
@@ -63,9 +63,9 @@
   }
 }
 
-.create_d_RMM <- function(numPrePeriods, numPostPeriods, dropZero = T){
+.create_d_RMM <- function(numPrePeriods, numPostPeriods, dropZero = TRUE){
   # This function creates a vector for the linear constraints that
-  # delta is in Delta^RM_{s,(.)}(Mbar), where (.) is + if max_positve = T and - if max_positive = F.
+  # delta is in Delta^RM_{s,(.)}(Mbar), where (.) is + if max_positve = TRUE and - if max_positive = FALSE.
   # It implements this using the general characterization of d, NOT the sharp
   # characterization of the identified set.
   #
@@ -257,7 +257,7 @@
 computeConditionalCS_DeltaRMM <- function(betahat, sigma, numPrePeriods, numPostPeriods,
                                          l_vec = .basisVector(index = 1, size = numPostPeriods), Mbar = 0,
                                          alpha = 0.05, hybrid_flag = "LF", hybrid_kappa = alpha/10,
-                                         returnLength = F, postPeriodMomentsOnly = T, monotonicityDirection = "increasing",
+                                         returnLength = FALSE, postPeriodMomentsOnly = TRUE, monotonicityDirection = "increasing",
                                          gridPoints = 10^3, grid.ub = NA, grid.lb = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{RMM}(Mbar). This functions uses ARP_computeCI for all
@@ -320,7 +320,7 @@ computeConditionalCS_DeltaRMM <- function(betahat, sigma, numPrePeriods, numPost
   CI_RMM = tibble::tibble(grid   = base::seq(grid.lb, grid.ub, length.out = gridPoints),
                           accept = base::pmax(CIs_RMM_plus_maxS, CIs_RMM_minus_maxS))
   
-  # Compute length if returnLength == T, else return grid
+  # Compute length if returnLength == TRUE, else return grid
   if (returnLength) {
     gridLength <- 0.5 * ( base::c(0, base::diff(CI_RMM$grid)) + base::c(base::diff(CI_RMM$grid), 0 ) )
     base::return(base::sum(CI_RMM$accept*gridLength))

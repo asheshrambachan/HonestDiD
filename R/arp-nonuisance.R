@@ -70,7 +70,7 @@
 
   # Run the first-stage test
   if (base::max(A_firststage %*% y - d_firststage) > 0) {
-    reject <- T
+    reject <- TRUE
   } else {
     # Per ARP (2021), CV = max(0, c_{1-alpha-tilde}), where alpha-tilde = (alpha - kappa)/(1-kappa)
     # quantile of truncated normal that accounts for failing to reject in the first stage.
@@ -181,7 +181,7 @@
   }
 
   # Compute length, else return grid
-  if (returnLength == T) {
+  if (returnLength == TRUE) {
     gridLength <- 0.5 * ( base::c(0, base::diff(thetaGrid)) + base::c(base::diff(thetaGrid), 0 ) )
     base::return(base::sum(resultsGrid[, 2]*gridLength))
   } else {

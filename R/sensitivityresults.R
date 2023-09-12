@@ -739,7 +739,7 @@ createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
     stdErrors = base::sqrt(base::diag(sigma))
   }
 
-  if (useRelativeEventTime == T) {
+  if (useRelativeEventTime == TRUE) {
     timeVec = timeVec - referencePeriod
     referencePeriod = 0
   }

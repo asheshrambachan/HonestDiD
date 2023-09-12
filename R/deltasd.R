@@ -12,7 +12,7 @@
 # In this section, we implement helper functions to place testing with
 # Delta^{SD}(M) into the form needed to use the ARP functions.
 
-.create_A_SD <- function(numPrePeriods, numPostPeriods, postPeriodMomentsOnly = F) {
+.create_A_SD <- function(numPrePeriods, numPostPeriods, postPeriodMomentsOnly = FALSE) {
   # This function creates a matrix for the linear constraints that \delta \in Delta^SD(M).
   # It implements this using the general characterization of A, NOT the sharp
   # characterization of the identified set.
@@ -31,7 +31,7 @@
   }
   Atilde = Atilde[, -(numPrePeriods+1)]
 
-  # If postPeriodMomentsOnly == T, exclude moments that only involve pre-periods
+  # If postPeriodMomentsOnly == TRUE, exclude moments that only involve pre-periods
   if(postPeriodMomentsOnly){
     postPeriodIndices <- (numPrePeriods +1):base::NCOL(Atilde)
     prePeriodOnlyRows <- base::which( base::rowSums( Atilde[ , postPeriodIndices] != 0 ) == 0 )
@@ -43,7 +43,7 @@
   base::return(A)
 }
 
-.create_d_SD <- function(numPrePeriods, numPostPeriods, M, postPeriodMomentsOnly = F) {
+.create_d_SD <- function(numPrePeriods, numPostPeriods, M, postPeriodMomentsOnly = FALSE) {
   # This function creates a vector for the linear constraints that \delta \in Delta^SD(M).
   # It implements this using the general characterization of d, NOT the sharp
   # characterization of the identified set.
@@ -129,8 +129,8 @@
 computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostPeriods,
                                          l_vec = .basisVector(index = 1, size = numPostPeriods),
                                          M = 0, alpha = 0.05, hybrid_flag = "FLCI", 
-                                         hybrid_kappa = alpha/10, returnLength = F,
-                                         postPeriodMomentsOnly = T,
+                                         hybrid_kappa = alpha/10, returnLength = FALSE,
+                                         postPeriodMomentsOnly = TRUE,
                                          gridPoints =10^3, grid.ub = NA, grid.lb = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SD}(M). This functions uses ARP_computeCI for all
@@ -154,8 +154,8 @@ computeConditionalCS_DeltaSD <- function(betahat, sigma, numPrePeriods, numPostP
   #   data_frame containing upper and lower bounds of CI.
 
   # Construct A_SD, d_SD
-  A_SD = .create_A_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, postPeriodMomentsOnly = F)
-  d_SD = .create_d_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = F)
+  A_SD = .create_A_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, postPeriodMomentsOnly = FALSE)
+  d_SD = .create_d_SD(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = FALSE)
 
   if (postPeriodMomentsOnly & numPostPeriods > 1){
     postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_SD)

@@ -12,7 +12,7 @@
 # In this section, we implement helper functions to place testing with
 # Delta^{SDB}(M) into the form needed to use the ARP functions.
 .create_A_SDB <- function(numPrePeriods, numPostPeriods,
-                          biasDirection = "positive", postPeriodMomentsOnly = F) {
+                          biasDirection = "positive", postPeriodMomentsOnly = FALSE) {
   # This function creates a matrix for the linear constraints that \delta \in Delta^SDB(M).
   # It implements this using the general characterization of A.
   #
@@ -29,7 +29,7 @@
   base::return(A)
 }
 
-.create_d_SDB <- function(numPrePeriods, numPostPeriods, M, postPeriodMomentsOnly = F) {
+.create_d_SDB <- function(numPrePeriods, numPostPeriods, M, postPeriodMomentsOnly = FALSE) {
   # This function creates a vector for the linear constraints that \delta \in Delta^SDB(M).
   # It implements this using the general characterization of d.
   #
@@ -112,8 +112,8 @@
 computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPostPeriods,
                                           M = 0, l_vec = .basisVector(index = 1, size=numPostPeriods),
                                           alpha = 0.05, hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
-                                          returnLength = F, biasDirection = "positive",
-                                          postPeriodMomentsOnly = T,
+                                          returnLength = FALSE, biasDirection = "positive",
+                                          postPeriodMomentsOnly = TRUE,
                                           gridPoints = 10^3, grid.lb = NA, grid.ub = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDPB}(M). This functions uses ARP_computeCI for all
@@ -140,8 +140,8 @@ computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPost
   # Construct A_SDB, d_SDB
   A_SDB = .create_A_SDB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
                         biasDirection = biasDirection,
-                        postPeriodMomentsOnly = F)
-  d_SDB = .create_d_SDB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = F)
+                        postPeriodMomentsOnly = FALSE)
+  d_SDB = .create_d_SDB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = FALSE)
 
   if (postPeriodMomentsOnly  & numPostPeriods > 1) {
     postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_SDB)
