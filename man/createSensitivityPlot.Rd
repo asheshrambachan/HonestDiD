@@ -39,6 +39,7 @@ Returns ggplot object of the sensitivity plot.
   Ashesh Rambachan
 }
 \examples{
+  # Simple use case; see Vignette for more detailed examples
   robustResults <- 
     createSensitivityResults(betahat        = BCdata_EventStudy$betahat,
                              sigma          = BCdata_EventStudy$sigma,
