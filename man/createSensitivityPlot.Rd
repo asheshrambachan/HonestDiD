@@ -38,3 +38,18 @@ Returns ggplot object of the sensitivity plot.
 \author{
   Ashesh Rambachan
 }
+\examples{
+  robustResults <- 
+    createSensitivityResults(betahat        = BCdata_EventStudy$betahat,
+                             sigma          = BCdata_EventStudy$sigma,
+                             numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
+                             numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
+                             alpha          = 0.05)
+  originalResults <- 
+    constructOriginalCS(betahat        = BCdata_EventStudy$betahat,
+                        sigma          = BCdata_EventStudy$sigma,
+                        numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
+                        numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
+                        alpha          = 0.05)
+  createSensitivityPlot(robustResults, originalResults)
+}

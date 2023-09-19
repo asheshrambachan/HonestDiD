@@ -98,3 +98,11 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 \author{
 Ashesh Rambachan
 }
+\examples{
+  # Simple use case; see Vignette for more detailed examples
+  createSensitivityResults_relativeMagnitudes(betahat        = BCdata_EventStudy$betahat,
+                                              sigma          = BCdata_EventStudy$sigma,
+                                              numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
+                                              numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
+                                              alpha          = 0.05)
+}

@@ -49,3 +49,11 @@ Returns a dataframe with columns
   The set Delta that was specified; set to NA.
   }
 }
+\examples{
+  # Simple use case; see Vignette for more detailed examples
+  constructOriginalCS(betahat        = BCdata_EventStudy$betahat,
+                      sigma          = BCdata_EventStudy$sigma,
+                      numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
+                      numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
+                      alpha          = 0.05)
+}
