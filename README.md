@@ -122,8 +122,8 @@ head(df,5)
 ```
 
     ## # A tibble: 5 × 5
-    ##        stfips        year  dins yexp2      W
-    ##     <dbl+lbl>   <dbl+lbl> <dbl> <dbl>  <dbl>
+    ##   stfips      year         dins yexp2      W
+    ##   <dbl+lbl>   <dbl+lbl>   <dbl> <dbl>  <dbl>
     ## 1 1 [alabama] 2008 [2008] 0.681    NA 613156
     ## 2 1 [alabama] 2009 [2009] 0.658    NA 613156
     ## 3 1 [alabama] 2010 [2010] 0.631    NA 613156
@@ -391,6 +391,7 @@ honest_did.AGGTEobj <- function(es,
                                 e          = 0,
                                 type       = c("smoothness", "relative_magnitude"),
                                 gridPoints = 100,
+                                referencePeriod = -1,
                                 ...) {
 
   type <- match.arg(type)
@@ -413,12 +414,12 @@ honest_did.AGGTEobj <- function(es,
   V <- t(es_inf_func) %*% es_inf_func / n / n
 
   # Remove the coefficient normalized to zero
-  referencePeriodIndex <- which(es$egt == -1)
+  referencePeriodIndex <- which(es$egt == referencePeriod)
   V    <- V[-referencePeriodIndex,-referencePeriodIndex]
   beta <- es$att.egt[-referencePeriodIndex]
 
   nperiods <- nrow(V)
-  npre     <- sum(1*(es$egt < -1))
+  npre     <- sum(1*(es$egt < referencePeriod))
   npost    <- nperiods - npre
   baseVec1 <- basisVector(index=(e+1),size=npost)
   orig_ci  <- constructOriginalCS(betahat        = beta,

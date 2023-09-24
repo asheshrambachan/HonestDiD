@@ -24,6 +24,7 @@ honest_did.AGGTEobj <- function(es,
                                 e          = 0,
                                 type       = c("smoothness", "relative_magnitude"),
                                 gridPoints = 100,
+                                referencePeriod = -1,
                                 ...) {
 
   type <- match.arg(type)
@@ -46,12 +47,12 @@ honest_did.AGGTEobj <- function(es,
   V <- t(es_inf_func) %*% es_inf_func / n / n
 
   # Remove the coefficient normalized to zero
-  referencePeriodIndex <- which(es$egt == -1)
+  referencePeriodIndex <- which(es$egt == referencePeriod)
   V    <- V[-referencePeriodIndex,-referencePeriodIndex]
   beta <- es$att.egt[-referencePeriodIndex]
 
   nperiods <- nrow(V)
-  npre     <- sum(1*(es$egt < -1))
+  npre     <- sum(1*(es$egt < referencePeriod))
   npost    <- nperiods - npre
   baseVec1 <- basisVector(index=(e+1),size=npost)
   orig_ci  <- constructOriginalCS(betahat        = beta,
