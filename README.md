@@ -441,7 +441,7 @@ honest_did.AGGTEobj <- function(es,
     } else {
       msg <- "not enough pre-periods "
     }
-    msg <- paste0(msg, "; check your time vector is coded to have -1 as the reference")
+    msg <- paste0(msg, " (is your time vector is coded to have -1 as the reference?)")
     stop(msg)
   }
 
