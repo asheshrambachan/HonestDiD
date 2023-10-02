@@ -24,7 +24,6 @@ honest_did.AGGTEobj <- function(es,
                                 e          = 0,
                                 type       = c("smoothness", "relative_magnitude"),
                                 gridPoints = 100,
-                                referencePeriod = -1,
                                 ...) {
 
   type <- match.arg(type)
@@ -46,14 +45,39 @@ honest_did.AGGTEobj <- function(es,
   n <- nrow(es_inf_func)
   V <- t(es_inf_func) %*% es_inf_func / n / n
 
+  # Check time vector is consecutive with referencePeriod = -1
+  referencePeriod <- -1
+  consecutivePre  <- !all(diff(es$egt[es$egt <= referencePeriod]) == 1)
+  consecutivePost <- !all(diff(es$egt[es$egt => referencePeriod]) == 1)
+  if ( consecutivePre | consecutivePost ) {
+    msg <- "honest_did expects a time vector with consecutive time periods;"
+    msg <- paste(msg, "please re-code your event study and interpret the results accordingly.", sep="\n")
+    stop(msg)
+  }
+
   # Remove the coefficient normalized to zero
-  referencePeriodIndex <- which(es$egt == referencePeriod)
-  V    <- V[-referencePeriodIndex,-referencePeriodIndex]
-  beta <- es$att.egt[-referencePeriodIndex]
+  hasReference <- any(es$egt == referencePeriod)
+  if ( hasReference ) {
+    referencePeriodIndex <- which(es$egt == referencePeriod)
+    V    <- V[-referencePeriodIndex,-referencePeriodIndex]
+    beta <- es$att.egt[-referencePeriodIndex]
+  } else {
+    beta <- es$att.egt
+  }
 
   nperiods <- nrow(V)
   npre     <- sum(1*(es$egt < referencePeriod))
   npost    <- nperiods - npre
+  if ( !hasReference & (min(c(npost, npre)) <= 0) ) {
+    if ( npost <= 0 ) {
+      msg <- "not enough post-periods "
+    } else {
+      msg <- "not enough pre-periods "
+    }
+    msg <- paste0(msg, "; check your time vector is coded to have -1 as the reference")
+    stop(msg)
+  }
+
   baseVec1 <- basisVector(index=(e+1),size=npost)
   orig_ci  <- constructOriginalCS(betahat        = beta,
                                   sigma          = V,
