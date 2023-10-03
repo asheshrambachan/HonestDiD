@@ -48,7 +48,7 @@ honest_did.AGGTEobj <- function(es,
   # Check time vector is consecutive with referencePeriod = -1
   referencePeriod <- -1
   consecutivePre  <- !all(diff(es$egt[es$egt <= referencePeriod]) == 1)
-  consecutivePost <- !all(diff(es$egt[es$egt => referencePeriod]) == 1)
+  consecutivePost <- !all(diff(es$egt[es$egt >= referencePeriod]) == 1)
   if ( consecutivePre | consecutivePost ) {
     msg <- "honest_did expects a time vector with consecutive time periods;"
     msg <- paste(msg, "please re-code your event study and interpret the results accordingly.", sep="\n")
