@@ -14,9 +14,9 @@
 # In this section, we implement helper functions to place testing with
 # Delta^{SDRMB}(Mbar) into the form needed to use the ARP functions.
 .create_A_SDRMB <- function(numPrePeriods, numPostPeriods,
-                           Mbar = 1, s, max_positive = T,
-                           dropZero = T, biasDirection) {
-  # This function creates a matrix for the linear constraints that \delta \in Delta^SDRMB_{s,.}(Mbar), where . is + if max_positve = T and - if max_positive = F.
+                           Mbar = 1, s, max_positive = TRUE,
+                           dropZero = TRUE, biasDirection) {
+  # This function creates a matrix for the linear constraints that \delta \in Delta^SDRMB_{s,.}(Mbar), where . is + if max_positve = TRUE and - if max_positive = FALSE.
   #
   # Inputs:
   #   numPrePeriods = number of pre-periods. This is an element of resultsObjects.
@@ -31,11 +31,11 @@
     Atilde[r, r:(r+2)] = c(1, -2, 1)
   }
 
-  # Create a vector to extract the max second dif, which corresponds with the second dif for period s, or minus this if max_positive == F
+  # Create a vector to extract the max second dif, which corresponds with the second dif for period s, or minus this if max_positive == FALSE
   v_max_dif <- base::matrix(0, nrow = 1, ncol = numPrePeriods + numPostPeriods + 1)
   v_max_dif[(numPrePeriods+1+s-2):(numPrePeriods+1+s)] <- c(1,-2, 1)
 
-  if(max_positive == F){
+  if(max_positive == FALSE){
     v_max_dif <- -v_max_dif
   }
 
@@ -64,8 +64,8 @@
   }
 }
 
-.create_d_SDRMB <- function(numPrePeriods, numPostPeriods, dropZero = T){
-  # This function creates a vector for the linear constraints that delt is in Delta^SDRM_{s,.}(Mbar), where . is + if max_positve = T and - if max_positive = F.
+.create_d_SDRMB <- function(numPrePeriods, numPostPeriods, dropZero = TRUE){
+  # This function creates a vector for the linear constraints that delt is in Delta^SDRM_{s,.}(Mbar), where . is + if max_positve = TRUE and - if max_positive = FALSE.
   # It implements this using the general characterization of d, NOT the sharp
   # characterization of the identified set.
   #
@@ -252,8 +252,8 @@
 computeConditionalCS_DeltaSDRMB <- function(betahat, sigma, numPrePeriods, numPostPeriods,
                                             l_vec = .basisVector(index = 1, size = numPostPeriods),
                                             Mbar = 0, alpha = 0.05, hybrid_flag = "LF",
-                                            hybrid_kappa = alpha/10, returnLength = F,
-                                            postPeriodMomentsOnly = T, biasDirection = "positive",
+                                            hybrid_kappa = alpha/10, returnLength = FALSE,
+                                            postPeriodMomentsOnly = TRUE, biasDirection = "positive",
                                             gridPoints = 10^3, grid.ub = NA, grid.lb = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDRMB}(Mbar). This functions uses ARP_computeCI for all
@@ -298,7 +298,7 @@ computeConditionalCS_DeltaSDRMB <- function(betahat, sigma, numPrePeriods, numPo
   CIs_SDRMB_minus_allS = base::matrix(0, nrow = gridPoints, ncol = base::length(s_indices))
   for (s_i in 1:base::length(s_indices)) {
     # Compute CI for s, (+) and bind it to all CI's for (+)
-    CI_s_plus = .computeConditionalCS_DeltaSDRMB_fixedS(s = s_indices[s_i], max_positive = T, Mbar = Mbar,
+    CI_s_plus = .computeConditionalCS_DeltaSDRMB_fixedS(s = s_indices[s_i], max_positive = TRUE, Mbar = Mbar,
                                                         betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods,
                                                         numPostPeriods = numPostPeriods, l_vec = l_vec,
                                                         alpha = alpha, hybrid_flag = hybrid_flag, hybrid_kappa = hybrid_kappa,
@@ -307,7 +307,7 @@ computeConditionalCS_DeltaSDRMB <- function(betahat, sigma, numPrePeriods, numPo
     CIs_SDRMB_plus_allS[,s_i] = CI_s_plus$accept
 
     # Compute CI for s, (-) and bind it to all CI's for (-)
-    CI_s_minus = .computeConditionalCS_DeltaSDRMB_fixedS(s = s_indices[s_i], max_positive = F, Mbar = Mbar,
+    CI_s_minus = .computeConditionalCS_DeltaSDRMB_fixedS(s = s_indices[s_i], max_positive = FALSE, Mbar = Mbar,
                                                         betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods,
                                                         numPostPeriods = numPostPeriods, l_vec = l_vec,
                                                         alpha = alpha, hybrid_flag = hybrid_flag, hybrid_kappa = hybrid_kappa,
@@ -323,7 +323,7 @@ computeConditionalCS_DeltaSDRMB <- function(betahat, sigma, numPrePeriods, numPo
                             accept = base::pmax(CIs_SDRMB_plus_maxS, CIs_SDRMB_minus_maxS))
 
   # Compute length, else return grid
-  if (returnLength == T) {
+  if (returnLength == TRUE) {
     gridLength <- 0.5 * ( base::c(0, base::diff(CI_SDRMB$grid)) + base::c(base::diff(CI_SDRMB$grid), 0 ) )
     base::return(base::sum(CI_SDRMB$accept*gridLength))
   } else {

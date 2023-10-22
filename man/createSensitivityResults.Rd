@@ -74,7 +74,11 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 \author{
 Ashesh Rambachan
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-% \keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-% \keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\examples{
+  # Simple use case; for more detailed examples, see <https://github.com/asheshrambachan/HonestDiD#honestdid>
+  createSensitivityResults(betahat        = BCdata_EventStudy$betahat,
+                           sigma          = BCdata_EventStudy$sigma,
+                           numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
+                           numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
+                           alpha          = 0.05)
+}

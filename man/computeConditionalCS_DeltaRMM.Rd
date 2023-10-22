@@ -13,7 +13,7 @@ computeConditionalCS_DeltaRMM(betahat, sigma, numPrePeriods, numPostPeriods,
                                               size = numPostPeriods),
                                               Mbar = 0,
                          alpha = 0.05, hybrid_flag = "LF", hybrid_kappa = alpha/10,
-                         returnLength = F, postPeriodMomentsOnly = T,
+                         returnLength = FALSE, postPeriodMomentsOnly = TRUE,
                          monotonicityDirection = "increasing",
                          gridPoints=10^3, grid.ub = NA, grid.lb = NA)
 }

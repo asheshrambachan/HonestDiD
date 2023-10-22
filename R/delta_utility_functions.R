@@ -29,7 +29,7 @@
     }
   }
 
-  # If postPeriodMomentsOnly == T, exclude moments that only involve pre-periods
+  # If postPeriodMomentsOnly == TRUE, exclude moments that only involve pre-periods
   if(postPeriodMomentsOnly){
     postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_M)
     prePeriodOnlyRows <- base::which( base::rowSums( A_M[ , postPeriodIndices] != 0 ) == 0 )

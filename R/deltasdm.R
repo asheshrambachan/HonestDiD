@@ -13,7 +13,7 @@
 # Delta^{SDM}(M) into the form needed to use the ARP functions.
 
 .create_A_SDM <- function(numPrePeriods, numPostPeriods,
-                          monotonicityDirection = "increasing", postPeriodMomentsOnly = F) {
+                          monotonicityDirection = "increasing", postPeriodMomentsOnly = FALSE) {
   # This function creates a matrix for the linear constraints that \delta \in Delta^SDI(M).
   # It implements this using the general characterization of A.
   #
@@ -28,7 +28,7 @@
   base::return(A)
 }
 
-.create_d_SDM <- function(numPrePeriods, numPostPeriods, M, postPeriodMomentsOnly = F) {
+.create_d_SDM <- function(numPrePeriods, numPostPeriods, M, postPeriodMomentsOnly = FALSE) {
   # This function creates a vector for the linear constraints that \delta \in Delta^SDI(M).
   # It implements this using the general characterization of d.
   #
@@ -102,7 +102,7 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
                                           M = 0, l_vec = .basisVector(index = 1, size = numPostPeriods),
                                           alpha = 0.05, monotonicityDirection = "increasing",
                                           hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
-                                          returnLength = F, postPeriodMomentsOnly = T,
+                                          returnLength = FALSE, postPeriodMomentsOnly = TRUE,
                                           gridPoints=10^3, grid.lb = NA, grid.ub = NA) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDI}(M). This functions uses ARP_computeCI for all
@@ -127,8 +127,8 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
 
   # Construct A_SDM, d_SDM
   A_SDM = .create_A_SDM(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                        monotonicityDirection = monotonicityDirection, postPeriodMomentsOnly = F)
-  d_SDM = .create_d_SDM(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = F)
+                        monotonicityDirection = monotonicityDirection, postPeriodMomentsOnly = FALSE)
+  d_SDM = .create_d_SDM(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, M = M, postPeriodMomentsOnly = FALSE)
 
   if (postPeriodMomentsOnly & numPostPeriods > 1) {
     postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_SDM)

@@ -400,7 +400,7 @@
     eta_vec = base::apply(-xi.draws, 1, .compute_eta, f, C)
 
     # We compute the 1-kappa quantile of eta_vec and return this value
-    base::return(stats::quantile(eta_vec, probs=1-hybrid_kappa, names=FALSE, na.rm=T))
+    base::return(stats::quantile(eta_vec, probs=1-hybrid_kappa, names=FALSE, na.rm=TRUE))
   }
 }
 
@@ -513,11 +513,11 @@
 
   # Store which moments are binding: Do so using lambda rather than the moments.
   B_index = (linSoln$lambda > tol_lambda)
-  Bc_index = (B_index == F)
+  Bc_index = (B_index == FALSE)
   X_TB = base::matrix( X_T_ARP[B_index,], ncol = base::ncol(X_T_ARP) ) # select binding moments
   # Check whether binding moments have full rank.
   if (base::is.vector(X_TB)) {
-    fullRank_flag = F
+    fullRank_flag = FALSE
   } else {
     fullRank_flag = (Matrix::rankMatrix(X_TB) == base::min(base::dim( X_TB ) ))
   }
@@ -761,7 +761,7 @@
   }
 
   # Compute length, else return grid
-  if (returnLength == T) {
+  if (returnLength == TRUE) {
     gridLength <- 0.5 * ( base::c(0, base::diff(thetaGrid)) + base::c(base::diff(thetaGrid), 0 ) )
     base::return(base::sum(resultsGrid[, 2]*gridLength))
   } else {

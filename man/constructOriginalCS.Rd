@@ -34,7 +34,26 @@ constructOriginalCS(betahat, sigma,
   Desired size of the robust confidence sets. Default equals 0.05 (corresponding to 95\% confidence interval)
   }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-% \keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
-% \keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+\value{
+Returns a dataframe with columns
+  \item{lb}{
+  Lower bound of original confidence set (based on asymptotic normality).
+  }
+  \item{ub}{
+  Upper bound of original confidence set (based on asymptotic normality).
+  }
+  \item{method}{
+  Method for constructing confidence set; set to "Original".
+  }
+  \item{Delta}{
+  The set Delta that was specified; set to NA.
+  }
+}
+\examples{
+  # Simple use case; for more detailed examples, see <https://github.com/asheshrambachan/HonestDiD#honestdid>
+  constructOriginalCS(betahat        = BCdata_EventStudy$betahat,
+                      sigma          = BCdata_EventStudy$sigma,
+                      numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
+                      numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
+                      alpha          = 0.05)
+}
