@@ -50,7 +50,7 @@ Returns a dataframe with columns
   }
 }
 \examples{
-  # Simple use case; for more detailed examples, see vignette("HonestDiD_Example")
+  # Simple use case; for more detailed examples, see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   constructOriginalCS(betahat        = BCdata_EventStudy$betahat,
                       sigma          = BCdata_EventStudy$sigma,
                       numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
