@@ -122,8 +122,8 @@ head(df,5)
 ```
 
     ## # A tibble: 5 × 5
-    ##        stfips        year  dins yexp2      W
-    ##     <dbl+lbl>   <dbl+lbl> <dbl> <dbl>  <dbl>
+    ##   stfips      year         dins yexp2      W
+    ##   <dbl+lbl>   <dbl+lbl>   <dbl> <dbl>  <dbl>
     ## 1 1 [alabama] 2008 [2008] 0.681    NA 613156
     ## 2 1 [alabama] 2009 [2009] 0.658    NA 613156
     ## 3 1 [alabama] 2010 [2010] 0.631    NA 613156
@@ -412,14 +412,39 @@ honest_did.AGGTEobj <- function(es,
   n <- nrow(es_inf_func)
   V <- t(es_inf_func) %*% es_inf_func / n / n
 
+  # Check time vector is consecutive with referencePeriod = -1
+  referencePeriod <- -1
+  consecutivePre  <- !all(diff(es$egt[es$egt <= referencePeriod]) == 1)
+  consecutivePost <- !all(diff(es$egt[es$egt >= referencePeriod]) == 1)
+  if ( consecutivePre | consecutivePost ) {
+    msg <- "honest_did expects a time vector with consecutive time periods;"
+    msg <- paste(msg, "please re-code your event study and interpret the results accordingly.", sep="\n")
+    stop(msg)
+  }
+
   # Remove the coefficient normalized to zero
-  referencePeriodIndex <- which(es$egt == -1)
-  V    <- V[-referencePeriodIndex,-referencePeriodIndex]
-  beta <- es$att.egt[-referencePeriodIndex]
+  hasReference <- any(es$egt == referencePeriod)
+  if ( hasReference ) {
+    referencePeriodIndex <- which(es$egt == referencePeriod)
+    V    <- V[-referencePeriodIndex,-referencePeriodIndex]
+    beta <- es$att.egt[-referencePeriodIndex]
+  } else {
+    beta <- es$att.egt
+  }
 
   nperiods <- nrow(V)
-  npre     <- sum(1*(es$egt < -1))
+  npre     <- sum(1*(es$egt < referencePeriod))
   npost    <- nperiods - npre
+  if ( !hasReference & (min(c(npost, npre)) <= 0) ) {
+    if ( npost <= 0 ) {
+      msg <- "not enough post-periods"
+    } else {
+      msg <- "not enough pre-periods"
+    }
+    msg <- paste0(msg, " (check your time vector; note honest_did takes -1 as the reference period)")
+    stop(msg)
+  }
+
   baseVec1 <- basisVector(index=(e+1),size=npost)
   orig_ci  <- constructOriginalCS(betahat        = beta,
                                   sigma          = V,
