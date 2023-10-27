@@ -437,11 +437,11 @@ honest_did.AGGTEobj <- function(es,
   npost    <- nperiods - npre
   if ( !hasReference & (min(c(npost, npre)) <= 0) ) {
     if ( npost <= 0 ) {
-      msg <- "not enough post-periods "
+      msg <- "not enough post-periods"
     } else {
-      msg <- "not enough pre-periods "
+      msg <- "not enough pre-periods"
     }
-    msg <- paste0(msg, " (is your time vector is coded to have -1 as the reference?)")
+    msg <- paste0(msg, " (check your time vector; note honest_did takes -1 as the reference period)")
     stop(msg)
   }
 
