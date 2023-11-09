@@ -515,11 +515,12 @@
   B_index = (linSoln$lambda > tol_lambda)
   Bc_index = (B_index == FALSE)
   X_TB = base::matrix( X_T_ARP[B_index,], ncol = base::ncol(X_T_ARP) ) # select binding moments
+  Xdim = base::min(base::dim(X_TB))
   # Check whether binding moments have full rank.
-  if (base::is.vector(X_TB)) {
+  if (base::is.vector(X_TB) | (Xdim == 0)) {
     fullRank_flag = FALSE
   } else {
-    fullRank_flag = (Matrix::rankMatrix(X_TB) == base::min(base::dim( X_TB ) ))
+    fullRank_flag = (Matrix::rankMatrix(X_TB) == Xdim)
   }
 
   # If degenerate or binding moments don't have full rank, switch to dual
