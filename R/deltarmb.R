@@ -219,10 +219,17 @@
   d_RMB = .create_d_RMB(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
 
   # If only use post period moments, construct indices for the post period moments only.
-  if (postPeriodMomentsOnly & numPostPeriods > 1){
-    postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_RMB_s)
-    postPeriodRows <- base::which( base::rowSums( A_RMB_s[ , postPeriodIndices] != 0 ) > 0 )
-    rowsForARP <- postPeriodRows
+  if (postPeriodMomentsOnly){
+    if(numPostPeriods > 1){
+      postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_RMB_s)
+      postPeriodRows <- base::which( base::rowSums( A_RMB_s[ , postPeriodIndices] != 0 ) > 0 )
+      rowsForARP <- postPeriodRows
+    }else{
+      #If only one post-period, then it is the last column
+      postPeriodRows <- base::which(A_RMB_s[ ,NCOL(A_RMB_s)] != 0 )
+      A_RMB_s <- A_RMB_s[postPeriodRows, ]
+      d_RMB <- d_RMB[postPeriodRows]
+    }
   } else{
     rowsForARP <- 1:base::NROW(A_RMB_s)
   }
