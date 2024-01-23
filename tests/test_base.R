@@ -4,6 +4,7 @@
 
 install.packages("lfe", repos="http://cran.us.r-project.org")
 library(lfe)
+library(haven)
 library(testthat)
 library(HonestDiD)
 data(BCdata_EventStudy)

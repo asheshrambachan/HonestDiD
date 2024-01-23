@@ -24,6 +24,7 @@ Imports:
 Suggests:
     knitr,
     testthat,
+    haven,
     rmarkdown
 Authors@R:
     c(person(given = "Ashesh",
