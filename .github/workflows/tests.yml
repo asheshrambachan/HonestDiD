@@ -36,10 +36,12 @@ jobs:
           any::knitr
           any::formatR
           any::haven
+          any::testthat
         needs: |
           devtools
           knitr
           rmarkdown
+          testthat
 
     - name: Setup pandoc
       uses: r-lib/actions/setup-pandoc@v2
