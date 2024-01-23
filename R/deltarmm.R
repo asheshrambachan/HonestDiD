@@ -31,7 +31,7 @@
 
   # Create a vector to extract the max first dif, which corresponds with the first dif for period s, or minus this if max_positive == FALSE
   v_max_dif <- base::matrix(0, nrow = 1, ncol = numPrePeriods + numPostPeriods + 1)
-  v_max_dif[(numPrePe@jonathandroth Just checking in!riods+s):(numPrePeriods+1+s)] <- c(-1,1)
+  v_max_dif[(numPrePeriods+s):(numPrePeriods+1+s)] <- c(-1,1)
 
   if (max_positive == FALSE){
     v_max_dif <- -v_max_dif
