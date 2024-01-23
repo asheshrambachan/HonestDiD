@@ -23,6 +23,9 @@ Imports:
     TruncatedNormal (>= 1.0)
 Suggests:
     knitr,
+    testthat,
+    haven,
+    lfe,
     rmarkdown
 Authors@R:
     c(person(given = "Ashesh",

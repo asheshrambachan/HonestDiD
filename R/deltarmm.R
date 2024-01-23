@@ -31,7 +31,7 @@
 
   # Create a vector to extract the max first dif, which corresponds with the first dif for period s, or minus this if max_positive == FALSE
   v_max_dif <- base::matrix(0, nrow = 1, ncol = numPrePeriods + numPostPeriods + 1)
-  v_max_dif[(numPrePeriods+s):(numPrePeriods+1+s)] <- c(-1,1)
+  v_max_dif[(numPrePe@jonathandroth Just checking in!riods+s):(numPrePeriods+1+s)] <- c(-1,1)
 
   if (max_positive == FALSE){
     v_max_dif <- -v_max_dif
@@ -310,7 +310,7 @@ computeConditionalCS_DeltaRMM <- function(betahat, sigma, numPrePeriods, numPost
                                                      postPeriodMomentsOnly = postPeriodMomentsOnly, monotonicityDirection = monotonicityDirection,
                                                      gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
     CIs_RMM_plus_allS[,s_i] = CI_s_plus$accept
-
+    
     # Compute CI for s, (-) and bind it to all CI's for (-)
     CI_s_minus = .computeConditionalCS_DeltaRMM_fixedS(s = s_indices[s_i], max_positive = FALSE, Mbar = Mbar,
                                                       betahat = betahat, sigma = sigma, numPrePeriods = numPrePeriods,

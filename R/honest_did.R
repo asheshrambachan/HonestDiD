@@ -2,6 +2,8 @@
 #'
 #' @description a function to compute a sensitivity analysis
 #'  using the approach of Rambachan and Roth (2021)
+#'
+#' @param ... Parameters to pass to the relevant method.
 honest_did <- function(...) UseMethod("honest_did")
 
 #' @title honest_did.AGGTEobj
@@ -10,6 +12,7 @@ honest_did <- function(...) UseMethod("honest_did")
 #'  using the approach of Rambachan and Roth (2021) when
 #'  the event study is estimating using the `did` package
 #'
+#' @param es Result from aggte (object of class AGGTEobj).
 #' @param e event time to compute the sensitivity analysis for.
 #'  The default value is `e=0` corresponding to the "on impact"
 #'  effect of participating in the treatment.
@@ -18,6 +21,11 @@ honest_did <- function(...) UseMethod("honest_did")
 #'  in pre-treatment periods) or "relative_magnitude" (which
 #'  conducts a sensitivity analysis based on the relative magnitudes
 #'  of deviations from parallel trends in pre-treatment periods).
+#' @param gridPoints Number of grid points used for the underlying test
+#'  inversion. Default equals 100. User may wish to change the number of grid
+#'  points for computational reasons.
+#' @param ... Parameters to pass to `createSensitivityResults` or
+#'  `createSensitivityResults_relativeMagnitudes`.
 #' @inheritParams HonestDiD::createSensitivityResults
 #' @inheritParams HonestDid::createSensitivityResults_relativeMagnitudes
 honest_did.AGGTEobj <- function(es,
