@@ -9,7 +9,7 @@ Constructs event study plot using the estimated event study coefficients and sta
 }
 \usage{
 createEventStudyPlot(betahat, stdErrors = NULL, sigma = NULL,
-                     numPrePeriods, numPostPeriods, alpha, timeVec,
+                     numPrePeriods, numPostPeriods, alpha = 0.05, timeVec,
                      referencePeriod, useRelativeEventTime = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.

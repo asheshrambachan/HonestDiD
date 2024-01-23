@@ -732,7 +732,7 @@ constructOriginalCS <- function(betahat, sigma,
 createEventStudyPlot <- function(betahat, stdErrors = NULL, sigma = NULL,
                                  numPrePeriods, numPostPeriods, alpha = 0.05,
                                  timeVec, referencePeriod,
-                                 useRelativeEventTime = F) {
+                                 useRelativeEventTime = FALSE) {
   if (base::is.null(stdErrors) & base::is.null(sigma)) {
     base::stop("User must specify either vector of standard errors or vcv matrix!")
   } else if (base::is.null(stdErrors) & !is.null(sigma)) {

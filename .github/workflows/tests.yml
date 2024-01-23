@@ -31,8 +31,16 @@ jobs:
     - name: Install dependencies
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
-        extra-packages: any::devtools, any::lfe, any::knitr, any::formatR
-        needs: devtools, lfe, knitr, formatR
+        extra-packages: |
+          any::devtools
+          any::lfe
+          any::knitr
+          any::formatR
+          any::haven
+        needs: |
+          devtools
+          knitr
+          rmarkdown
 
     - name: Setup pandoc
       uses: r-lib/actions/setup-pandoc@v2

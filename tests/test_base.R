@@ -64,7 +64,7 @@ test_that("HonestDiD base run with no errors", {
   expect_silent(BC_DeltaSDNB_RobustResultsConditional)
   expect_silent(BC_DeltaSDNB_RobustResultsCF)
   expect_silent(BC_DeltaSDNB_RobustResultsCLF)
-  expect_silent(BC_DriginalResults)
+  expect_silent(BC_OriginalResults)
   expect_silent(BC_DeltaSDNB_SensitivityPlot)
 })
 
