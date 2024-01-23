@@ -2,6 +2,7 @@
 # install.packages(".", repos=NULL, type="source")
 # testthat::test_dir("tests")
 
+install.packages("lfe")
 library(lfe)
 library(HonestDiD)
 data(BCdata_EventStudy)

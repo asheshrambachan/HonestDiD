@@ -33,7 +33,6 @@ jobs:
       with:
         extra-packages: |
           any::devtools
-          any::lfe
           any::knitr
           any::formatR
           any::haven
