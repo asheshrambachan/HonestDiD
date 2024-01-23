@@ -215,13 +215,22 @@
   d_SDRMM = .create_d_SDRMM(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
 
   # If only use post period moments, construct indices for the post period moments only.
-  if (postPeriodMomentsOnly & numPostPeriods > 1){
-    postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_SDRMM_s)
-    postPeriodRows <- base::which( base::rowSums( A_SDRMM_s[ , postPeriodIndices] != 0 ) > 0 )
-    rowsForARP <- postPeriodRows
+  if (postPeriodMomentsOnly){
+    if(numPostPeriods > 1){
+      postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_SDRMM_s)
+      postPeriodRows <- base::which( base::rowSums( A_SDRMM_s[ , postPeriodIndices] != 0 ) > 0 )
+      rowsForARP <- postPeriodRows
+    }else{
+      #If only one post-period, then it is the last column
+      postPeriodRows <- base::which(A_SDRMM_s[ ,NCOL(A_SDRMM_s)] != 0 )
+      A_SDRMM_s <- A_SDRMM_s[postPeriodRows, ]
+      d_SDRMM <- d_SDRMM[postPeriodRows]
+
+    }
   } else{
     rowsForARP <- 1:base::NROW(A_SDRMM_s)
   }
+
 
   # if there is only one post-period, we use the no-nuisance parameter functions
   if (numPostPeriods == 1) {
