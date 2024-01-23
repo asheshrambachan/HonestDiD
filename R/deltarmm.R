@@ -301,7 +301,7 @@ computeConditionalCS_DeltaRMM <- function(betahat, sigma, numPrePeriods, numPost
                                                      alpha = alpha, hybrid_flag = hybrid_flag, hybrid_kappa = hybrid_kappa,
                                                      postPeriodMomentsOnly = postPeriodMomentsOnly, monotonicityDirection = monotonicityDirection,
                                                      gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
-    CIs_RM_plus_allS[,s_i] = CI_s_plus$accept
+    CIs_RMM_plus_allS[,s_i] = CI_s_plus$accept
     
     # Compute CI for s, (-) and bind it to all CI's for (-)
     CI_s_minus = .computeConditionalCS_DeltaRMM_fixedS(s = s_indices[s_i], max_positive = FALSE, Mbar = Mbar,
