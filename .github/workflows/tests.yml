@@ -34,8 +34,10 @@ jobs:
         extra-packages: any::devtools, any::lfe, any::knitr
         needs: devtools, lfe, knitr
 
+    - name: Setup pandoc
+      uses: r-lib/actions/setup-padoc@v2
+
     - name: Check build
-      uses: docker://pandoc/core:2.9
       run: |
         devtools::document()
         devtools::check()
