@@ -25,6 +25,7 @@ Suggests:
     knitr,
     testthat,
     haven,
+    lfe,
     rmarkdown
 Authors@R:
     c(person(given = "Ashesh",
