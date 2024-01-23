@@ -2,7 +2,6 @@
 # install.packages(".", repos=NULL, type="source")
 # testthat::test_dir("tests")
 
-install.packages("lfe", repos="http://cran.us.r-project.org")
 library(lfe)
 library(haven)
 library(testthat)
