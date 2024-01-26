@@ -91,7 +91,7 @@
   dir_RM = base::rep("<=", base::length(d_RM))
 
   # Add equality constraint for pre-period coefficients
-  prePeriodEqualityMat = base::cbind(base::diag(numPrePeriods), 
+  prePeriodEqualityMat = base::cbind(base::diag(numPrePeriods),
                                      base::matrix(data = 0, nrow = numPrePeriods, ncol = numPostPeriods))
   A_RM_s = base::rbind(A_RM_s, prePeriodEqualityMat)
   d_RM = base::c(d_RM, trueBeta[1:numPrePeriods])
@@ -203,10 +203,18 @@
   d_RM = .create_d_RM(numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods)
 
   # If only use post period moments, construct indices for the post period moments only.
-  if (postPeriodMomentsOnly & numPostPeriods > 1){
-    postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_RM_s)
-    postPeriodRows <- base::which( base::rowSums( A_RM_s[ , postPeriodIndices] != 0 ) > 0 )
-    rowsForARP <- postPeriodRows
+  if (postPeriodMomentsOnly){
+    if(numPostPeriods > 1){
+      postPeriodIndices <- (numPrePeriods +1):base::NCOL(A_RM_s)
+      postPeriodRows <- base::which( base::rowSums( A_RM_s[ , postPeriodIndices] != 0 ) > 0 )
+      rowsForARP <- postPeriodRows
+    }else{
+      #If only one post-period, then it is the last column
+      postPeriodRows <- base::which(A_RM_s[ ,NCOL(A_RM_s)] != 0 )
+      A_RM_s <- A_RM_s[postPeriodRows, ]
+      d_RM <- d_RM[postPeriodRows]
+
+    }
   } else{
     rowsForARP <- 1:base::NROW(A_RM_s)
   }
