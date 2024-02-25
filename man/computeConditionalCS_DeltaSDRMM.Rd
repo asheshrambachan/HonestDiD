@@ -9,11 +9,11 @@ Computes the conditional confidence set and hybridized confidence set for Delta 
 }
 \usage{
 computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
-                         l_vec = .basisVector(index = 1,
-                                              size = numPostPeriods),
+                         l_vec = .basisVector(index = 1, size = numPostPeriods),
                          Mbar = 0, alpha = 0.05, hybrid_flag = "LF",
                          hybrid_kappa = alpha/10, returnLength = FALSE,
-                         postPeriodMomentsOnly = TRUE, monotonicityDirection = "increasing",
+                         postPeriodMomentsOnly = TRUE,
+                         monotonicityDirection = "increasing",
                          gridPoints=10^3, grid.ub = NA, grid.lb = NA)
 }
 %- maybe also 'usage' for other objects documented here.
