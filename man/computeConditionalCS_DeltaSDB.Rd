@@ -2,10 +2,10 @@
 \alias{computeConditionalCS_DeltaSDB}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Computes conditional and hybridized confidence set for Delta = Delta^{SDB}(M).
+Computes conditional and hybridized confidence set for Delta = DeltaSDB(M).
 }
 \description{
-Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{SDB}(M). The set Delta^{SDB}(M) adds an additional sign restriction to Delta^{SD}(M) that restricts the sign of the bias to be either positive (delta >= 0) or negative (delta <= 0).
+Computes the conditional confidence set and hybridized confidence set for Delta = DeltaSDB(M). The set DeltaSDB(M) adds an additional sign restriction to DeltaSD(M) that restricts the sign of the bias to be either positive (delta >= 0) or negative (delta <= 0).
 }
 \usage{
 computeConditionalCS_DeltaSDB(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -33,7 +33,7 @@ computeConditionalCS_DeltaSDB(betahat, sigma, numPrePeriods, numPostPeriods,
   Vector of length numPostPeriods that describes the scalar parameter of interest, theta = l_vec'tau. Default equals to first basis vector, (1, 0, ..., 0)
   }
   \item{M}{
-  Tuning parameter for Delta^{SD}(M) that governs the degree of non-linearity allowed in the violation of parallel trends. Default equals 0
+  Tuning parameter for DeltaSD(M) that governs the degree of non-linearity allowed in the violation of parallel trends. Default equals 0
   }
   \item{alpha}{
   Desired size of the confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)
@@ -51,7 +51,7 @@ Logical value. If TRUE, function only returns the length of the robust confidenc
   Specifies direction of bias restriction. If "positive", bias is restricted to be positive, delta >= 0. If "negative", bias is restricted to be negative, delta <= 0. Default equals "positive".
   }
   \item{postPeriodMomentsOnly}{
-  Logical value. If TRUE, function excludes moments for Delta^{SD}(M) that only include pre-period coefficients. Default equals TRUE.
+  Logical value. If TRUE, function excludes moments for DeltaSD(M) that only include pre-period coefficients. Default equals TRUE.
   }
   \item{gridPoints}{
   Number of grid points used in test inversion step. Default equals 1000.

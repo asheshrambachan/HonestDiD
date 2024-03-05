@@ -2,10 +2,10 @@
 \alias{createSensitivityPlot}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Constructs sensitivity plot for Delta = Delta^{SD}(M), Delta^{SDB}(M) and Delta^{SDM}(M)
+Constructs sensitivity plot for Delta = DeltaSD(M), DeltaSDB(M) and DeltaSDM(M)
 }
 \description{
-  This function constructs sensitivity plots that examine how the robust confidence sets change as the parameter M varies for Delta = Delta^{SD}(M), Delta^{SDB}(M) and Delta^{SDM}(M). Similar plots are constructed in Section 6 of Rambachan & Roth (2021).
+  This function constructs sensitivity plots that examine how the robust confidence sets change as the parameter M varies for Delta = DeltaSD(M), DeltaSDB(M) and DeltaSDM(M). Similar plots are constructed in Section 6 of Rambachan & Roth (2021).
 }
 \usage{
 createSensitivityPlot(robustResults, originalResults,

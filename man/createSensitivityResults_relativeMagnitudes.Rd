@@ -99,12 +99,14 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 Ashesh Rambachan
 }
 \examples{
-  # Simple use case; for more detailed examples,
-  # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
+  # Simple use case. For more detailed examples,
+  # see <https://github.com/asheshrambachan/HonestDiD#honestdid>;
+  # for additional precision, increase the number of gridPoints.
   kwargs <- list(betahat        = BCdata_EventStudy$betahat,
                  sigma          = BCdata_EventStudy$sigma,
                  numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
                  numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
-                 alpha          = 0.05)
+                 alpha          = 0.05,
+                 gridPoints     = 100)
   do.call(createSensitivityResults_relativeMagnitudes, kwargs)
 }
