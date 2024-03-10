@@ -2,10 +2,10 @@
 \alias{createSensitivityResults}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-  Constructs robust confidence intervals for Delta = Delta^{SD}(M), Delta^{SDB}(M) and Delta^{SDM}(M) for vector of possible M values.
+  Constructs robust confidence intervals for \eqn{\Delta = \Delta^{SD}(M)}, \eqn{\Delta^{SDB}(M)} and \eqn{\Delta^{SDM}(M)} for vector of possible M values.
 }
 \description{
-  Constructs robust confidence intervals for a choice Delta = Delta^{SD}(M), Delta^{SDB}(M) and Delta^{SDM}(M) for vector of possible M values. By default, the function constructs robust confidence intervals for Delta^{SD}(M).
+  Constructs robust confidence intervals for a choice \eqn{\Delta = \Delta^{SD}(M)}, \eqn{\Delta^{SDB}(M)} and \eqn{\Delta^{SDM}(M)} for vector of possible M values. By default, the function constructs robust confidence intervals for \eqn{\Delta^{SD}(M)}.
 }
 \usage{
 createSensitivityResults(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -38,10 +38,10 @@ createSensitivityResults(betahat, sigma, numPrePeriods, numPostPeriods,
   Vector of length numPostPeriods that describes the scalar parameter of interest, theta = l_vec'tau. Default equals to first basis vector, (1, 0, ..., 0)
   }
   \item{biasDirection}{
-  This must be specified if the user wishes to add an additional bias restriction to Delta^{SD}(M). If "positive", bias is restricted to be positive, delta >= 0. If "negative", bias is restricted to be negative, delta <= 0. Default equals NULL.
+  This must be specified if the user wishes to add an additional bias restriction to \eqn{\Delta^{SD}(M)}. If "positive", bias is restricted to be positive, \eqn{\delta \ge 0}. If "negative", bias is restricted to be negative, \eqn{\delta \le 0}. Default equals NULL.
   }
   \item{monotonicityDirection}{
-  This must be specified if the user wishes to add an additional monotonicity restriction to Delta^{SD}(M). If "increasing", underlying trend specified to be increasing, delta_t >= delta_{t-1}. If "decreasing", underlying trend specified to be decreasing delta_t <= delta_{t-1}. Default equals NULL
+  This must be specified if the user wishes to add an additional monotonicity restriction to \eqn{\Delta^{SD}(M)}. If "increasing", underlying trend specified to be increasing, \eqn{\delta_t \ge \delta_{t-1}}. If "decreasing", underlying trend specified to be decreasing \eqn{\delta_t \le \delta_{t-1}}. Default equals NULL
   }
   \item{alpha}{
   Desired size of the robust confidence sets. Default equals 0.05 (corresponding to 95\% confidence interval)
@@ -75,7 +75,8 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 Ashesh Rambachan
 }
 \examples{
-  # Simple use case; for more detailed examples, see <https://github.com/asheshrambachan/HonestDiD#honestdid>
+  # Simple use case; for more detailed examples,
+  # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   createSensitivityResults(betahat        = BCdata_EventStudy$betahat,
                            sigma          = BCdata_EventStudy$sigma,
                            numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),

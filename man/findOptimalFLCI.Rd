@@ -2,10 +2,10 @@
 \alias{findOptimalFLCI}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Constructs optimal fixed length confidence interval for Delta = Delta^{SD}(M).
+Constructs optimal fixed length confidence interval for \eqn{\Delta = \Delta^{SD}(M)}.
 }
 \description{
-  Computes the optimal FLCI for the scalar parameter of interest under Delta = Delta^{SD}(M).
+  Computes the optimal FLCI for the scalar parameter of interest under \eqn{\Delta = \Delta^{SD}(M)}.
 }
 \usage{
 findOptimalFLCI(betahat, sigma, M = 0,
@@ -31,7 +31,7 @@ findOptimalFLCI(betahat, sigma, M = 0,
   Vector of length numPostPeriods that describes the scalar parameter of interest, theta = l_vec'tau. Default equals to first basis vector, (1, 0, ..., 0)
   }
   \item{M}{
-  Tuning parameter for Delta^{SD}(M) that governs the degree of non-linearity allowed in the violation of parallel trends. Default equals 0
+  Tuning parameter for \eqn{\Delta^{SD}(M)} that governs the degree of non-linearity allowed in the violation of parallel trends. Default equals 0
   }
   \item{numPoints}{
   Number of possible values when optimizing the FLCI. Default equals 100.
