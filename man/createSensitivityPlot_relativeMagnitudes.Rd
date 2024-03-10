@@ -49,7 +49,7 @@ Returns ggplot object of the sensitivity plot.
                  numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
                  alpha          = 0.05)
   robustResults   <- do.call(createSensitivityResults_relativeMagnitudes,
-                             c(kwargs, list(gridPoints=100))
+                             c(kwargs, list(gridPoints=100)))
   originalResults <- do.call(constructOriginalCS, kwargs)
   createSensitivityPlot_relativeMagnitudes(robustResults, originalResults)
 }
