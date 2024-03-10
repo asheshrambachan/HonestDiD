@@ -26,8 +26,6 @@ honest_did <- function(...) UseMethod("honest_did")
 #'  points for computational reasons.
 #' @param ... Parameters to pass to `createSensitivityResults` or
 #'  `createSensitivityResults_relativeMagnitudes`.
-#' @inheritParams HonestDiD::createSensitivityResults
-#' @inheritParams HonestDid::createSensitivityResults_relativeMagnitudes
 honest_did.AGGTEobj <- function(es,
                                 e          = 0,
                                 type       = c("smoothness", "relative_magnitude"),
