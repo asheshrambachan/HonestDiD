@@ -40,14 +40,15 @@ Returns ggplot object of the sensitivity plot.
   Ashesh Rambachan
 }
 \examples{
-  # Simple use case; for more detailed examples, see <https://github.com/asheshrambachan/HonestDiD#honestdid>
-  robustResults <- 
-    createSensitivityResults_relativeMagnitudes(betahat        = BCdata_EventStudy$betahat,
-                                                sigma          = BCdata_EventStudy$sigma,
-                                                numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
-                                                numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
-                                                alpha          = 0.05)
-  originalResults <- 
+  # Simple use case; for more detailed examples,
+  # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
+  robustResults <- createSensitivityResults_relativeMagnitudes(
+                                      betahat = BCdata_EventStudy$betahat,
+                                      sigma = BCdata_EventStudy$sigma,
+                                      numPrePeriods = length(BCdata_EventStudy$prePeriodIndices),
+                                      numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
+                                      alpha = 0.05)
+  originalResults <-
     constructOriginalCS(betahat        = BCdata_EventStudy$betahat,
                         sigma          = BCdata_EventStudy$sigma,
                         numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),

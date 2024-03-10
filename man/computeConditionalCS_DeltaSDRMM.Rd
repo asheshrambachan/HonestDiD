@@ -5,7 +5,11 @@
 Computes conditional and hybridized confidence set for Delta = Delta^{SDRMM}(Mbar).
 }
 \description{
-Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{SDRMM}(Mbar). The set Delta^{SDRMM}(Mbar) adds an additional shape restriction to Delta^{SDRM}(Mbar) that restricts the underlying trend to be monotone. It may either be increasing (delta_t >= delta_{t-1}) or decreasing (delta_t <= delta_{t-1}).
+Computes the conditional confidence set and hybridized confidence set
+for Delta = Delta^{SDRMM}(Mbar). The set Delta^{SDRMM}(Mbar) adds an
+additional shape restriction to Delta^{SDRM}(Mbar) that restricts the
+underlying trend to be monotone. It may either be increasing
+(delta_t >= delta_{t-1}) or decreasing (delta_t <= delta_{t-1}).
 }
 \usage{
 computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -13,7 +17,8 @@ computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
                                               size = numPostPeriods),
                          Mbar = 0, alpha = 0.05, hybrid_flag = "LF",
                          hybrid_kappa = alpha/10, returnLength = FALSE,
-                         postPeriodMomentsOnly = TRUE, monotonicityDirection = "increasing",
+                         postPeriodMomentsOnly = TRUE,
+                         monotonicityDirection = "increasing",
                          gridPoints=10^3, grid.ub = NA, grid.lb = NA)
 }
 %- maybe also 'usage' for other objects documented here.
