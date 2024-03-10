@@ -2,10 +2,10 @@
 \alias{computeConditionalCS_DeltaSDRMM}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Computes conditional and hybridized confidence set for Delta = Delta^{SDRMM}(Mbar).
+Computes conditional and hybridized confidence set for \eqn{\Delta = \Delta^{SDRMM}(Mbar)}.
 }
 \description{
-Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{SDRMM}(Mbar). The set Delta^{SDRMM}(Mbar) adds an additional shape restriction to Delta^{SDRM}(Mbar) that restricts the underlying trend to be monotone. It may either be increasing (delta_t >= delta_{t-1}) or decreasing (delta_t <= delta_{t-1}).
+Computes the conditional confidence set and hybridized confidence set for \eqn{\Delta = \Delta^{SDRMM}(Mbar)}. The set \eqn{\Delta^{SDRMM}(Mbar)} adds an additional shape restriction to \eqn{\Delta^{SDRM}(Mbar)} that restricts the underlying trend to be monotone. It may either be increasing (\eqn{\delta_t \ge \delta_{t-1}}) or decreasing (\eqn{\delta_t \le \delta_{t-1}}).
 }
 \usage{
 computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -34,13 +34,13 @@ computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
   Vector of length numPostPeriods that describes the scalar parameter of interest, theta = l_vec'tau. Default equals to first basis vector, (1, 0, ..., 0)
   }
   \item{Mbar}{
-  Tuning parameter Mbar for Delta^{SDRM}(Mbar) that governs how different the maximal pre-period deviation from a linear trend may be from the maximal deviation from a linear trend in the post-treatment period the post-treatment period. Default sets Mbar = 0. See Section 2.3.2 of Rambachan & Roth (2021) for more details.
+  Tuning parameter Mbar for \eqn{\Delta^{SDRM}(Mbar)} that governs how different the maximal pre-period deviation from a linear trend may be from the maximal deviation from a linear trend in the post-treatment period the post-treatment period. Default sets Mbar = 0. See Section 2.3.2 of Rambachan & Roth (2021) for more details.
   }
   \item{alpha}{
   Desired level of the confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)
   }
   \item{hybrid_flag}{
-  Flag for whether user wishes to compute a hybridized confidence set. "ARP" specifies the conditional confidence set "LF" specifies the conditional least-favorable confidence set. The conditional FLCI hybrid confidence set is not available for Delta^{SDRM}(Mbar) since the FLCI is infinite length for this choice of Delta. See Section 3.3 and Section 5.3 of Rambachan & Roth (2021) for details. Default equals "LF".
+  Flag for whether user wishes to compute a hybridized confidence set. "ARP" specifies the conditional confidence set "LF" specifies the conditional least-favorable confidence set. The conditional FLCI hybrid confidence set is not available for \eqn{\Delta^{SDRM}(Mbar)} since the FLCI is infinite length for this choice of \eqn{\Delta}. See Section 3.3 and Section 5.3 of Rambachan & Roth (2021) for details. Default equals "LF".
   }
   \item{hybrid_kappa}{
   Desired first-stage size of hybridized confidence set. Only specify this value if the user wishes to compute a hybridized confidence set. Default equals alpha/10. If user specifies hybrid_flag = "ARP", set this value to NULL.
@@ -49,10 +49,10 @@ computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
 Logical value. If TRUE, function only returns the length of the robust confidence. If FALSE, function returns dataframe that contains a grid of possible parameter values and a vector of zeros and ones associated with each value in the grid (one denotes that the grid value lies in the confidence set and zero denotes that the grid value does not fall within the confidence set.) Default equals FALSE.
   }
   \item{postPeriodMomentsOnly}{
-  Logical value. If TRUE, function excludes moments for Delta^{SDRM}(Mbar) that only include pre-period coefficients. Default equals TRUE.
+  Logical value. If TRUE, function excludes moments for \eqn{\Delta^{SDRM}(Mbar)} that only include pre-period coefficients. Default equals TRUE.
   }
   \item{monotonicityDirection}{
-Specifies direction of monotonicity restriction. If "increasing", underlying trend specified to be increasing, delta_t >= delta_{t-1}. If "decreasing", underlying trend specified to be decreasing delta_t <= delta_{t-1}. Default equals "increasing."
+Specifies direction of monotonicity restriction. If "increasing", underlying trend specified to be increasing, \eqn{\delta_t \ge \delta_{t-1}}. If "decreasing", underlying trend specified to be decreasing \eqn{\delta_t \le \delta_{t-1}}. Default equals "increasing."
 }
   \item{gridPoints}{
   Number of grid points used in test inversion step. Default equals 1000.
@@ -65,7 +65,7 @@ Specifies direction of monotonicity restriction. If "increasing", underlying tre
   }
 }
 \details{
-The choice Delta^{SDRMM} adds an additional shape restriction to Delta^{SDRM}(Mbar) that restricts the underlying trend to be monotone. For this choice Delta^{SDRMM}, \code{numPrePeriods} must be greater than one. As discussed in Section 2.3.2 of Rambachan & Roth (2021), Delta^{SDRM} uses observed non-linearities in the pre-treatment difference in trends to bound the possible non-linearities in the post-treatment difference in trends. This is only possible if there are multiple pre-treatment periods (i.e., \code{numPrePeriods} > 1).
+The choice \eqn{\Delta^{SDRMM}} adds an additional shape restriction to \eqn{\Delta^{SDRM}(Mbar)} that restricts the underlying trend to be monotone. For this choice \eqn{\Delta^{SDRMM}}, \code{numPrePeriods} must be greater than one. As discussed in Section 2.3.2 of Rambachan & Roth (2021), \eqn{\Delta^{SDRM}} uses observed non-linearities in the pre-treatment difference in trends to bound the possible non-linearities in the post-treatment difference in trends. This is only possible if there are multiple pre-treatment periods (i.e., \code{numPrePeriods} > 1).
 }
 \value{
 If \code{returnLength} equals TRUE, function returns a scalar that equals the length of the confidence interval. If \code{returnLength} equals FALSE, function returns a dataframe with columns

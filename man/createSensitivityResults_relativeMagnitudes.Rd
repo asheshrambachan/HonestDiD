@@ -2,10 +2,10 @@
 \alias{createSensitivityResults_relativeMagnitudes}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-  Constructs robust confidence intervals for Delta = Delta^{RM}(Mbar), Delta^{SDRM}(Mbar) and their variants that incorporate shape or sign restrictions for a vector of possible Mbar values.
+  Constructs robust confidence intervals for \eqn{\Delta = \Delta^{RM}(Mbar)}, \eqn{\Delta^{SDRM}(Mbar)} and their variants that incorporate shape or sign restrictions for a vector of possible Mbar values.
 }
 \description{
-  Constructs robust confidence intervals for Delta = Delta^{RM}(Mbar), Delta^{SDRM}(Mbar) and their variants that incorporate shape or sign restrictions for a vector of possible Mbar values. By default, the function constructs sensitivity results for Delta^{RM}(Mbar) and its variants. The confidence sets are constructed through test inversion.
+  Constructs robust confidence intervals for \eqn{\Delta = \Delta^{RM}(Mbar)}, \eqn{\Delta^{SDRM}(Mbar)} and their variants that incorporate shape or sign restrictions for a vector of possible Mbar values. By default, the function constructs sensitivity results for \eqn{\Delta^{RM}(Mbar)} and its variants. The confidence sets are constructed through test inversion.
 }
 \usage{
 createSensitivityResults_relativeMagnitudes(betahat, sigma,
@@ -38,7 +38,7 @@ createSensitivityResults_relativeMagnitudes(betahat, sigma,
   Number of post-periods.
   }
   \item{bound}{
-  String that specifies the base choice of Delta (to which additional sign and shape restrictions will be incorporated if specified by the user). This must be either "deviation from parallel trends" or "deviation from linear trend". If bound equals "deviation from parallel trends", then the function will select Delta^{RM}(Mbar) as the base choice of Delta. If bound equals "deviation from linear trends", then the function will select Delta^{SDRM} as the base choice of Delta. By default, this is set to "deviation from parallel trends". See Section 2.3.1 and 2.3.2 of Rambachan & Roth (2021) for a discussion of these choices of Delta.
+  String that specifies the base choice of Delta (to which additional sign and shape restrictions will be incorporated if specified by the user). This must be either "deviation from parallel trends" or "deviation from linear trend". If bound equals "deviation from parallel trends", then the function will select \eqn{\Delta^{RM}(Mbar)} as the base choice of \eqn{\Delta}. If bound equals "deviation from linear trends", then the function will select \eqn{\Delta^{SDRM}} as the base choice of \eqn{\Delta}. By default, this is set to "deviation from parallel trends". See Section 2.3.1 and 2.3.2 of Rambachan & Roth (2021) for a discussion of these choices of \eqn{\Delta}.
   }
   \item{method}{
   String that specifies the choice of method for constructing robust confidence intervals. This must be either "Conditional", or "C-LF" (conditional least-favorable hybrid). Default equals "C-LF" and the function automatically sets method to be "C-LF" based on the recommendations in Rambachan & Roth (2021).
@@ -53,7 +53,7 @@ createSensitivityResults_relativeMagnitudes(betahat, sigma,
   This must be specified if the user wishes to add an additional bias restriction to base choice of Delta. If "positive", bias is restricted to be positive, delta >= 0. If "negative", bias is restricted to be negative, delta <= 0. Default equals NULL.
   }
   \item{monotonicityDirection}{
-  This must be specified if the user wishes to add an additional monotonicity restriction to base choice of Delta. If "increasing", underlying trend specified to be increasing, delta_t >= delta_{t-1}. If "decreasing", underlying trend specified to be decreasing delta_t <= delta_{t-1}. Default equals NULL.
+  This must be specified if the user wishes to add an additional monotonicity restriction to base choice of Delta. If "increasing", underlying trend specified to be increasing, \eqn{\delta_t \ge \delta_{t-1}}. If "decreasing", underlying trend specified to be decreasing \eqn{\delta_t \le \delta_{t-1}}. Default equals NULL.
   }
   \item{alpha}{
   Desired size of the robust confidence sets. Default equals 0.05 (corresponding to 95\% confidence interval)
@@ -72,7 +72,7 @@ createSensitivityResults_relativeMagnitudes(betahat, sigma,
   }
 }
 \details{
-Note: If the user specifies bound = "deviation from linear trends", then numPrePeriods must be greater than one. By specifying bound = "deviation from linear trends", then the function selects Delta^{SDRM} as the base choice of Delta. As discussed in Section 2.3.2 of Rambachan & Roth (2021), Delta^{SDRM} uses observed non-linearities in the pre-treatment difference in trends to bound the possible non-linearities in the post-treatment difference in trends. This is only possible if there are multiple pre-treatment periods (i.e., numPrePeriods > 1).
+Note: If the user specifies bound = "deviation from linear trends", then numPrePeriods must be greater than one. By specifying bound = "deviation from linear trends", then the function selects \eqn{\Delta^{SDRM}} as the base choice of \eqn{\Delta}. As discussed in Section 2.3.2 of Rambachan & Roth (2021), \eqn{\Delta^{SDRM}} uses observed non-linearities in the pre-treatment difference in trends to bound the possible non-linearities in the post-treatment difference in trends. This is only possible if there are multiple pre-treatment periods (i.e., numPrePeriods > 1).
 }
 \value{
 Returns a dataframe with columns

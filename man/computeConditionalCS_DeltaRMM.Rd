@@ -2,10 +2,10 @@
 \alias{computeConditionalCS_DeltaRMM}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Computes conditional and hybridized confidence set for Delta = Delta^{RMM}(Mbar).
+Computes conditional and hybridized confidence set for \eqn{\Delta = \Delta^{RMM}(Mbar)}.
 }
 \description{
-Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{RMM}(Mbar). The set Delta^{RMM}(Mbar) adds an additional shape restriction to Delta^{RM}(Mbar) that restricts the underlying trend to be monotone. It may either be increasing (delta_t >= delta_{t-1}) or decreasing (delta_t <= delta_{t-1}).
+Computes the conditional confidence set and hybridized confidence set for \eqn{\Delta = \Delta^{RMM}(Mbar)}. The set \eqn{\Delta^{RMM}(Mbar)} adds an additional shape restriction to \eqn{\Delta^{RM}(Mbar)} that restricts the underlying trend to be monotone. It may either be increasing (\eqn{\delta_t \ge \delta_{t-1}}) or decreasing (\eqn{\delta_t \le \delta_{t-1}}).
 }
 \usage{
 computeConditionalCS_DeltaRMM(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -35,13 +35,13 @@ computeConditionalCS_DeltaRMM(betahat, sigma, numPrePeriods, numPostPeriods,
   Vector of length numPostPeriods that describes the scalar parameter of interest, theta = l_vec'tau. Default equals to first basis vector, (1, 0, ..., 0)
   }
   \item{Mbar}{
-  Tuning parameter Mbar for Delta^{RM}(Mbar) that governs how different the maximal pre-period violation of parallel trends may be from the post-period differential trend. Default sets Mbar = 0. See Section 2.3.2 of Rambachan & Roth (2021) for more details.
+  Tuning parameter Mbar for \eqn{\Delta^{RM}(Mbar)} that governs how different the maximal pre-period violation of parallel trends may be from the post-period differential trend. Default sets Mbar = 0. See Section 2.3.2 of Rambachan & Roth (2021) for more details.
   }
   \item{alpha}{
   Desired level of the confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)
   }
   \item{hybrid_flag}{
-  Flag for whether user wishes to compute a hybridized confidence set. "ARP" specifies the conditional confidence set "LF" specifies the conditional least-favorable confidence set. The conditional FLCI hybrid confidence set is not available for Delta^{RM}(Mbar) since the FLCI is infinite length for this choice of Delta. See Section 3.3 and Section 5.3 of Rambachan & Roth (2021) for details. Default equals "LF".
+  Flag for whether user wishes to compute a hybridized confidence set. "ARP" specifies the conditional confidence set "LF" specifies the conditional least-favorable confidence set. The conditional FLCI hybrid confidence set is not available for \eqn{\Delta^{RM}(Mbar)} since the FLCI is infinite length for this choice of \eqn{\Delta}. See Section 3.3 and Section 5.3 of Rambachan & Roth (2021) for details. Default equals "LF".
   }
   \item{hybrid_kappa}{
   Desired first-stage size of hybridized confidence set. Only specify this value if the user wishes to compute a hybridized confidence set. Default equals alpha/10. If user specifies hybrid_flag = "ARP", set this value to NULL.
@@ -50,10 +50,10 @@ computeConditionalCS_DeltaRMM(betahat, sigma, numPrePeriods, numPostPeriods,
 Logical value. If TRUE, function only returns the length of the robust confidence. If FALSE, function returns dataframe that contains a grid of possible parameter values and a vector of zeros and ones associated with each value in the grid (one denotes that the grid value lies in the confidence set and zero denotes that the grid value does not fall within the confidence set.) Default equals FALSE.
   }
   \item{postPeriodMomentsOnly}{
-  Logical value. If TRUE, function excludes moments for Delta^{RM}(Mbar) that only include pre-period coefficients. Default equals TRUE.
+  Logical value. If TRUE, function excludes moments for \eqn{\Delta^{RM}(Mbar)} that only include pre-period coefficients. Default equals TRUE.
   }
   \item{monotonicityDirection}{
-Specifies direction of monotonicity restriction. If "increasing", underlying trend specified to be increasing, delta_t >= delta_{t-1}. If "decreasing", underlying trend specified to be decreasing delta_t <= delta_{t-1}. Default equals "increasing."
+Specifies direction of monotonicity restriction. If "increasing", underlying trend specified to be increasing, \eqn{\delta_t \ge \delta_{t-1}}. If "decreasing", underlying trend specified to be decreasing \eqn{\delta_t \le \delta_{t-1}}. Default equals "increasing."
   }
   \item{gridPoints}{
   Number of grid points used in test inversion step. Default equals 1000.

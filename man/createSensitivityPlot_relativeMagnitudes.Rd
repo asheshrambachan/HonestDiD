@@ -2,10 +2,10 @@
 \alias{createSensitivityPlot_relativeMagnitudes}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Constructs sensitivity plot for Delta = Delta^{RM}(Mbar), Delta^{SDRM}(Mbar) and their variants that incorporate additional shape or sign restrictions.
+Constructs sensitivity plot for \eqn{\Delta = \Delta^{RM}(Mbar)}, \eqn{\Delta^{SDRM}{Mbar}} and their variants that incorporate additional shape or sign restrictions.
 }
 \description{
-  This function constructs sensitivity plots that examine how the robust confidence sets change as the parameter Mbar varies for Delta = Delta^{RM}(Mbar), Delta^{SDRM}(Mbar) and their variants that incorporate additional shape or sign restrictions. Similar plots are constructed in Section 6 of Rambachan & Roth (2021).
+  This function constructs sensitivity plots that examine how the robust confidence sets change as the parameter Mbar varies for \eqn{\Delta = \Delta^{RM}(Mbar)}, \eqn{\Delta^{SDRM}(Mbar)} and their variants that incorporate additional shape or sign restrictions. Similar plots are constructed in Section 6 of Rambachan & Roth (2021).
 }
 \usage{
 createSensitivityPlot_relativeMagnitudes(robustResults, originalResults,
