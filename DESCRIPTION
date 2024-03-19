@@ -1,7 +1,7 @@
 Package: HonestDiD
 Type: Package
 Title: Robust Inference in Difference-in-Differences and Event Study Designs
-Version: 0.2.5
+Version: 0.2.6
 Depends:
     R (>= 3.6.0)
 Imports:

@@ -2,10 +2,10 @@
 \alias{computeConditionalCS_DeltaSDM}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Computes conditional and hybridized confidence set for Delta = Delta^{SDM}(M).
+Computes conditional and hybridized confidence set for \eqn{\Delta = \Delta^{SDM}(M)}.
 }
 \description{
-Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{SDM}(M). The set Delta^{SDB}(M) adds an additional shape restriction to Delta^{SD}(M) that restricts the underlying trend to be monotone. It may either be increasing (delta_t >= delta_{t-1}) or decreasing (delta_t <= delta_{t-1}).
+Computes the conditional confidence set and hybridized confidence set for \eqn{\Delta = \Delta^{SDM}(M)}. The set \eqn{\Delta^{SDB}(M)} adds an additional shape restriction to \eqn{\Delta^{SD}(M)} that restricts the underlying trend to be monotone. It may either be increasing (\eqn{\delta_t \ge \delta_{t-1}}) or decreasing (\eqn{\delta_t \le \delta_{t-1}}).
 }
 \usage{
 computeConditionalCS_DeltaSDM(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -33,7 +33,7 @@ computeConditionalCS_DeltaSDM(betahat, sigma, numPrePeriods, numPostPeriods,
   Vector of length numPostPeriods that describes the scalar parameter of interest, theta = l_vec'tau. Default equals to first basis vector, (1, 0, ..., 0)
   }
   \item{M}{
-  Tuning parameter for Delta^{SD}(M) that governs the degree of non-linearity allowed in the violation of parallel trends. Default equals 0
+  Tuning parameter for \eqn{\Delta^{SD}(M)} that governs the degree of non-linearity allowed in the violation of parallel trends. Default equals 0
   }
   \item{alpha}{
   Desired size of the confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)
@@ -48,10 +48,10 @@ computeConditionalCS_DeltaSDM(betahat, sigma, numPrePeriods, numPostPeriods,
 Logical value. If TRUE, function only returns the length of the robust confidence. If FALSE, function returns dataframe that contains a grid of possible parameter values and a vector of zeros and ones associated with each value in the grid (one denotes that the grid value lies in the confidence set and zero denotes that the grid value does not fall within the confidence set.) Default equals FALSE.
   }
   \item{monotonicityDirection}{
-Specifies direction of monotonicity restriction. If "increasing", underlying trend specified to be increasing, delta_t >= delta_{t-1}. If "decreasing", underlying trend specified to be decreasing delta_t <= delta_{t-1}. Default equals "increasing."
+Specifies direction of monotonicity restriction. If "increasing", underlying trend specified to be increasing, \eqn{\delta_t \ge \delta_{t-1}}. If "decreasing", underlying trend specified to be decreasing \eqn{\delta_t \le \delta_{t-1}}. Default equals "increasing."
   }
   \item{postPeriodMomentsOnly}{
-  Logical value. If TRUE, function excludes moments for Delta^{SD}(M) that only include pre-period coefficients. Default equals TRUE.
+  Logical value. If TRUE, function excludes moments for \eqn{\Delta^{SD}(M)} that only include pre-period coefficients. Default equals TRUE.
   }
   \item{gridPoints}{
   Number of grid points used in test inversion step. Default equals 1000.

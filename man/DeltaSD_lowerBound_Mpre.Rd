@@ -2,7 +2,7 @@
 \alias{DeltaSD_lowerBound_Mpre}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Construct lower bound for M for Delta = Delta^{SD}(M) based on observed pre-period coefficients.
+Construct lower bound for M for \eqn{\Delta = \Delta^{SD}(M)} based on observed pre-period coefficients.
 }
 \description{
   Constructs a lower bound for M using the observed pre-period coefficients. It constructs a one-sided confidence interval for the maximal second difference of the observed pre-period using the conditional test developed in Andrews, Roth & Pakes (2019). The number of pre-periods (not including the reference period) must be larger than or equal to two.

@@ -2,10 +2,10 @@
 \alias{computeConditionalCS_DeltaRMB}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Computes conditional and hybridized confidence set for Delta = Delta^{RMB}(Mbar).
+Computes conditional and hybridized confidence set for \eqn{Delta = Delta^{RMB}(Mbar)}.
 }
 \description{
-Computes the conditional confidence set and hybridized confidence set for Delta = Delta^{RMB}(Mbar). The set Delta^{RMB}(Mbar) adds an additional sign restriction to Delta^{RM}(Mbar) that restricts the sign of the bias to be either positive (delta >= 0) or negative (delta <= 0).
+Computes the conditional confidence set and hybridized confidence set for \eqn{Delta = Delta^{RMB}(Mbar)}. The set \eqn{Delta^{RMB}(Mbar)} adds an additional sign restriction to \eqn{Delta^{RM}(Mbar)} that restricts the sign of the bias to be either positive (\eqn{delta \ge 0}) or negative (\eqn{delta \le 0}).
 }
 \usage{
 computeConditionalCS_DeltaRMB(betahat, sigma, numPrePeriods, numPostPeriods,
@@ -34,13 +34,13 @@ computeConditionalCS_DeltaRMB(betahat, sigma, numPrePeriods, numPostPeriods,
   Vector of length numPostPeriods that describes the scalar parameter of interest, theta = l_vec'tau. Default equals to first basis vector, (1, 0, ..., 0)
   }
   \item{Mbar}{
-  Tuning parameter Mbar for Delta^{RM}(Mbar) that governs how different the maximal pre-period violation of parallel trends may be from the post-period differential trend. Default sets Mbar = 0. See Section 2.3.2 of Rambachan & Roth (2021) for more details.
+  Tuning parameter Mbar for \eqn{\Delta^{RM}(Mbar)} that governs how different the maximal pre-period violation of parallel trends may be from the post-period differential trend. Default sets Mbar = 0. See Section 2.3.2 of Rambachan & Roth (2021) for more details.
   }
   \item{alpha}{
   Desired level of the confidence set. Default equals 0.05 (corresponding to 95\% confidence interval)
   }
   \item{hybrid_flag}{
-  Flag for whether user wishes to compute a hybridized confidence set. "ARP" specifies the conditional confidence set "LF" specifies the conditional least-favorable confidence set. The conditional FLCI hybrid confidence set is not available for Delta^{RMB}(Mbar) since the FLCI is infinite length for this choice of Delta. See Section 3.3 and Section 5.3 of Rambachan & Roth (2021) for details. Default equals "LF".
+  Flag for whether user wishes to compute a hybridized confidence set. "ARP" specifies the conditional confidence set "LF" specifies the conditional least-favorable confidence set. The conditional FLCI hybrid confidence set is not available for \eqn{\Delta^{RMB}(Mbar)} since the FLCI is infinite length for this choice of \eqn{\Delta}. See Section 3.3 and Section 5.3 of Rambachan & Roth (2021) for details. Default equals "LF".
   }
   \item{hybrid_kappa}{
   Desired first-stage size of hybridized confidence set. Only specify this value if the user wishes to compute a hybridized confidence set. Default equals alpha/10. If user specifies hybrid_flag = "ARP", set this value to NULL.
@@ -49,10 +49,10 @@ computeConditionalCS_DeltaRMB(betahat, sigma, numPrePeriods, numPostPeriods,
 Logical value. If TRUE, function only returns the length of the robust confidence. If FALSE, function returns dataframe that contains a grid of possible parameter values and a vector of zeros and ones associated with each value in the grid (one denotes that the grid value lies in the confidence set and zero denotes that the grid value does not fall within the confidence set.) Default equals FALSE.
   }
   \item{biasDirection}{
-  Specifies direction of bias restriction. If "positive", bias is restricted to be positive, delta >= 0. If "negative", bias is restricted to be negative, delta <= 0. Default equals "positive".
+  Specifies direction of bias restriction. If "positive", bias is restricted to be positive, \eqn{\delta \ge 0}. If "negative", bias is restricted to be negative, \eqn{\delta \le 0}. Default equals "positive".
   }
   \item{postPeriodMomentsOnly}{
-  Logical value. If TRUE, function excludes moments for Delta^{RMB}(Mbar) that only include pre-period coefficients. Default equals TRUE.
+  Logical value. If TRUE, function excludes moments for \eqn{\Delta^{RMB}(Mbar)} that only include pre-period coefficients. Default equals TRUE.
   }
   \item{gridPoints}{
   Number of grid points used in test inversion step. Default equals 1000.
