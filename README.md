@@ -409,9 +409,15 @@ function(sunab_fixest){
 
 ``` r
 # Run fixest with sunab
-formula_sunab <- y ~ x1 + sunab(year_treated, year) | id + year
-res_sunab <- fixest::feols(formula_sunab, base_stagg)
+df$year_treated <- ifelse(is.na(df$yexp2), Inf, df$yexp2)
+formula_sunab <- dins ~ sunab(year_treated, year) | stfips + year
+res_sunab <- fixest::feols(formula_sunab, cluster="stfips", data=df)
+fixest::iplot(res_sunab)
+```
 
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
 # Extract the beta and vcv
 beta_vcv <- sunab_beta_vcv(res_sunab)
 
@@ -442,7 +448,7 @@ HonestDiD::createSensitivityPlot_relativeMagnitudes(sensitivity_results,
                                                     original_results)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
 
 ### Callaway and Sant’Anna
 

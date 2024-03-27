@@ -221,8 +221,10 @@ First, we import the function we created for extracting the full-variance covari
 
 ```{r, cache = TRUE}
 # Run fixest with sunab
-formula_sunab <- y ~ x1 + sunab(year_treated, year) | id + year
-res_sunab <- fixest::feols(formula_sunab, base_stagg)
+df$year_treated <- ifelse(is.na(df$yexp2), Inf, df$yexp2)
+formula_sunab <- dins ~ sunab(year_treated, year) | stfips + year
+res_sunab <- fixest::feols(formula_sunab, cluster="stfips", data=df)
+fixest::iplot(res_sunab)
 
 # Extract the beta and vcv
 beta_vcv <- sunab_beta_vcv(res_sunab)
