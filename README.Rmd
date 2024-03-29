@@ -229,15 +229,6 @@ fixest::iplot(res_sunab)
 # Extract the beta and vcv
 beta_vcv <- sunab_beta_vcv(res_sunab)
 
-# Check the coefs and diagonal
-sunab_check <- cbind(beta_vcv$beta, sqrt(diag(beta_vcv$sigma)))
-sunab_info  <- res_sunab$model_matrix_info$sunab$agg
-sunab_names <- attr(sunab_info, "model_matrix_info")$coef_names_full
-res_names   <- rownames(res_sunab$coeftable)
-res_check   <- res_sunab$coeftable[res_names %in% sunab_names,1:2]
-stopifnot(max(abs(res_check - sunab_check)) < 1e-12)
-stopifnot(beta_vcv$cohorts != -1)
-
 # Run sensitivity analysis for relative magnitudes
 kwargs <- list(betahat        = beta_vcv$beta,
                sigma          = beta_vcv$sigma,
