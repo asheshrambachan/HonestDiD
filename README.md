@@ -89,7 +89,7 @@ from the `remotes` package:
 ## Installation
 
 # Install remotes package if not installed
-install.packages("remotes") 
+install.packages("remotes")
 
 # Turn off warning-error-conversion, because the tiniest warning stops installation
 Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
@@ -157,15 +157,15 @@ where D is 1 if a unit is first treated in 2014 and 0 otherwise.
 df <- read_dta("https://raw.githubusercontent.com/Mixtape-Sessions/Advanced-DID/main/Exercises/Data/ehec_data.dta")
 
 #Keep years before 2016. Drop the 2016 cohort
-df_nonstaggered <- df %>% filter(year < 2016 & 
+df_nonstaggered <- df %>% filter(year < 2016 &
                                  (is.na(yexp2)| yexp2 != 2015) )
 
 #Create a treatment dummy
 df_nonstaggered <- df_nonstaggered %>% mutate(D = case_when( yexp2 == 2014 ~ 1,
-                                                             T ~ 0)) 
+                                                             T ~ 0))
 
 #Run the TWFE spec
-twfe_results <- fixest::feols(dins ~ i(year, D, ref = 2013) | stfips + year, 
+twfe_results <- fixest::feols(dins ~ i(year, D, ref = 2013) | stfips + year,
                         cluster = "stfips",
                         data = df_nonstaggered)
 
@@ -186,7 +186,7 @@ analysis. Suppose we’re interested in assessing the sensitivity of the
 estimate for 2014, the first year after treatment.
 
 ``` r
-delta_rm_results <- 
+delta_rm_results <-
 HonestDiD::createSensitivityResults_relativeMagnitudes(
                                     betahat = betahat, #coefficients
                                     sigma = sigma, #covariance matrix
@@ -199,12 +199,12 @@ delta_rm_results
 ```
 
     ## # A tibble: 4 × 5
-    ##          lb     ub method Delta    Mbar
-    ##       <dbl>  <dbl> <chr>  <chr>   <dbl>
-    ## 1  0.0240   0.0672 C-LF   DeltaRM   0.5
-    ## 2  0.0170   0.0720 C-LF   DeltaRM   1  
-    ## 3  0.00824  0.0797 C-LF   DeltaRM   1.5
-    ## 4 -0.000916 0.0881 C-LF   DeltaRM   2
+    ##         lb     ub method Delta    Mbar
+    ##      <dbl>  <dbl> <chr>  <chr>   <dbl>
+    ## 1  0.0241  0.0673 C-LF   DeltaRM   0.5
+    ## 2  0.0171  0.0720 C-LF   DeltaRM   1  
+    ## 3  0.00859 0.0796 C-LF   DeltaRM   1.5
+    ## 4 -0.00107 0.0883 C-LF   DeltaRM   2
 
 The output of the previous command shows a robust confidence interval
 for different values of
@@ -240,7 +240,7 @@ i.e. imposing that the slope of the difference in trends changes by no
 more than *M* between periods.
 
 ``` r
-delta_sd_results <- 
+delta_sd_results <-
   HonestDiD::createSensitivityResults(betahat = betahat,
                                       sigma = sigma,
                                       numPrePeriods = 5,
@@ -285,7 +285,7 @@ the vector of dynamic treatment effects. Thus, for example, setting
 effect for the second period after treatment.
 
 ``` r
-delta_rm_results_avg <- 
+delta_rm_results_avg <-
 HonestDiD::createSensitivityResults_relativeMagnitudes(betahat = betahat,
                                     sigma = sigma,
                                     numPrePeriods = 5,
@@ -320,7 +320,7 @@ df_nonstaggered$control <- rnorm(NROW(df_nonstaggered), 0, 1)
 
 #Run the TWFE spec with the control added
 # (Note that TWFEs with controls may not yield ATT under het effects; see Abadie 2005)
-twfe_results <- fixest::feols(dins ~ i(year, D, ref = 2013) + control | stfips + year, 
+twfe_results <- fixest::feols(dins ~ i(year, D, ref = 2013) + control | stfips + year,
                               cluster = "stfips",
                               data = df_nonstaggered)
 
@@ -354,12 +354,94 @@ HonestDiD::createSensitivityResults(betahat = betahat,
 So far we have focused on a simple case without staggered timing.
 Fortunately, the HonestDiD approach works well with recently-introduced
 methods for DiD under staggered treatment timing. Below, we show how the
-package can be used with the [did
+package can be used with the [fixest
+package](https://lrberge.github.io/fixest/reference/sunab.html)
+implementing Sun and Abraham or with the [did
 package](https://github.com/bcallaway11/did#difference-in-differences-)
 implementing Callaway and Sant’Anna. (See, also, the example on the did
-package [website](https://github.com/pedrohcgs/CS_RR)). We are hoping to
+package [website](https://github.com/pedrohcgs/CS_RR).) We are hoping to
 more formally integrate the did and HonestDiD packages in the future –
 stay tuned!
+
+### Sun and Abraham
+
+First, we import the function we created for extracting the
+full-variance covariance matrix from `fixest` with `sunab`:
+
+``` r
+#' @description
+#' This function takes a regression estimated using fixest with the sunab option
+#' and extracts the aggregated event-study coefficients and their variance-covariance matrix
+#' @param sunab_fixest The result of a fixest call using the sunab option
+#' @returns A list containing beta (the event-study coefficients),
+#'          sigma (the variance-covariance matrix), and
+#'          cohorts (the relative times corresponding to beta, sigma)
+
+sunab_beta_vcv <-
+function(sunab_fixest){
+
+  ## The following code block extracts the weights on individual coefs used in
+  # the fixest aggregation ##
+  sunab_agg   <- sunab_fixest$model_matrix_info$sunab$agg_period
+  sunab_names <- names(sunab_fixest$coefficients)
+  sunab_sel   <- grepl(sunab_agg, sunab_names, perl=TRUE)
+  sunab_names <- sunab_names[sunab_sel]
+  if(!is.null(sunab_fixest$weights)){
+    sunab_wgt <- colSums(sunab_fixest$weights * sign(model.matrix(sunab_fixest)[, sunab_names, drop=FALSE]))
+  } else {
+    sunab_wgt <- colSums(sign(model.matrix(sunab_fixest)[, sunab_names, drop=FALSE]))
+  }
+
+  #Construct matrix sunab_trans such that sunab_trans %*% non-aggregated coefs = aggregated coefs,
+  sunab_cohorts <- as.numeric(gsub(paste0(".*", sunab_agg, ".*"), "\\2", sunab_names, perl=TRUE))
+  sunab_mat     <- model.matrix(~ 0 + factor(sunab_cohorts))
+  sunab_trans   <- solve(t(sunab_mat) %*% (sunab_wgt * sunab_mat)) %*% t(sunab_wgt * sunab_mat)
+
+  #Get the coefs and vcv
+  sunab_coefs   <- sunab_trans %*% cbind(sunab_fixest$coefficients[sunab_sel])
+  sunab_vcov    <- sunab_trans %*% sunab_fixest$cov.scaled[sunab_sel, sunab_sel] %*% t(sunab_trans)
+
+  return(list(beta    = sunab_coefs,
+              sigma   = sunab_vcov,
+              cohorts = sort(unique(sunab_cohorts))))
+}
+```
+
+``` r
+# Run fixest with sunab
+df$year_treated <- ifelse(is.na(df$yexp2), Inf, df$yexp2)
+formula_sunab <- dins ~ sunab(year_treated, year) | stfips + year
+res_sunab <- fixest::feols(formula_sunab, cluster="stfips", data=df)
+fixest::iplot(res_sunab)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+``` r
+# Extract the beta and vcv
+beta_vcv <- sunab_beta_vcv(res_sunab)
+
+# Run sensitivity analysis for relative magnitudes
+kwargs <- list(betahat        = beta_vcv$beta,
+               sigma          = beta_vcv$sigma,
+               numPrePeriods  = sum(beta_vcv$cohorts < 0),
+               numPostPeriods = sum(beta_vcv$cohorts > -1))
+extra <- list(Mbarvec=seq(from = 0.5, to = 2, by = 0.5), gridPoints=100)
+
+original_results <-
+  do.call(HonestDiD::constructOriginalCS, kwargs)
+
+sensitivity_results <-
+  do.call(HonestDiD::createSensitivityResults_relativeMagnitudes,
+          c(kwargs, extra))
+
+HonestDiD::createSensitivityPlot_relativeMagnitudes(sensitivity_results,
+                                                    original_results)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
+
+### Callaway and Sant’Anna
 
 First, we import the function Pedro Sant’Anna created for formatting did
 output for HonestDiD:
@@ -369,6 +451,8 @@ output for HonestDiD:
 #'
 #' @description a function to compute a sensitivity analysis
 #'  using the approach of Rambachan and Roth (2021)
+#'
+#' @param ... Parameters to pass to the relevant method.
 honest_did <- function(...) UseMethod("honest_did")
 
 #' @title honest_did.AGGTEobj
@@ -377,6 +461,7 @@ honest_did <- function(...) UseMethod("honest_did")
 #'  using the approach of Rambachan and Roth (2021) when
 #'  the event study is estimating using the `did` package
 #'
+#' @param es Result from aggte (object of class AGGTEobj).
 #' @param e event time to compute the sensitivity analysis for.
 #'  The default value is `e=0` corresponding to the "on impact"
 #'  effect of participating in the treatment.
@@ -385,6 +470,11 @@ honest_did <- function(...) UseMethod("honest_did")
 #'  in pre-treatment periods) or "relative_magnitude" (which
 #'  conducts a sensitivity analysis based on the relative magnitudes
 #'  of deviations from parallel trends in pre-treatment periods).
+#' @param gridPoints Number of grid points used for the underlying test
+#'  inversion. Default equals 100. User may wish to change the number of grid
+#'  points for computational reasons.
+#' @param ... Parameters to pass to `createSensitivityResults` or
+#'  `createSensitivityResults_relativeMagnitudes`.
 #' @inheritParams HonestDiD::createSensitivityResults
 #' @inheritParams HonestDid::createSensitivityResults_relativeMagnitudes
 honest_did.AGGTEobj <- function(es,
@@ -480,16 +570,16 @@ honest_did.AGGTEobj <- function(es,
 ## Note that universal base period normalizes the event-time minus 1 coef to 0
 cs_results <- did::att_gt(yname = "dins",
                           tname = "year",
-                          idname = "stfips", 
-                          gname = "yexp2", 
+                          idname = "stfips",
+                          gname = "yexp2",
                           data = df %>% mutate(yexp2 = ifelse(is.na(yexp2), 3000, yexp2)),
                           control_group = "notyettreated",
                           base_period = "universal")
 
-es <- did::aggte(cs_results, type = "dynamic", 
+es <- did::aggte(cs_results, type = "dynamic",
                  min_e = -5, max_e = 5)
 
-#Run sensitivity analysis for relative magnitudes 
+#Run sensitivity analysis for relative magnitudes
 sensitivity_results <-
   honest_did(es,
              e=0,
@@ -500,7 +590,7 @@ HonestDiD::createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_c
                                                     sensitivity_results$orig_ci)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ## Additional options and resources
 
