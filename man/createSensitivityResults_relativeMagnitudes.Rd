@@ -32,7 +32,7 @@ createSensitivityResults_relativeMagnitudes(betahat, sigma,
   Covariance matrix of event study coefficients.
   }
   \item{numPrePeriods}{
-  Number of pre-periods. If user selects bound = "deviation from linear trends" (Delta^{SDRM} as base choice of Delta), then numPrePeriods must be greater than one. See details for further explanation.
+  Number of pre-periods. If user selects bound = "deviation from linear trends" (\eqn{Delta^{SDRM}} as base choice of Delta), then numPrePeriods must be greater than one. See details for further explanation.
   }
   \item{numPostPeriods}{
   Number of post-periods.
