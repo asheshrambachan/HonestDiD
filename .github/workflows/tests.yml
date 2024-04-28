@@ -52,7 +52,9 @@ jobs:
     - name: Setup LaTeX
       uses: r-lib/actions/setup-tinytex@v2
 
-    - name: Check build
+    - nams: Check build
+      env:
+        HONESTDID_RUN_TESTS: '1'
       run: |
         devtools::document()
         devtools::check()
