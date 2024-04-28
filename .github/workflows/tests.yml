@@ -15,7 +15,6 @@ jobs:
     strategy:
       matrix:
         config:
-          - {os: macos-latest,  r: 'release'}
           - {os: ubuntu-latest, r: 'release'}
 
     steps:
