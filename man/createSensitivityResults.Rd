@@ -75,6 +75,7 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 Ashesh Rambachan
 }
 \examples{
+\dontrun{
   # Simple use case; for more detailed examples,
   # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   createSensitivityResults(betahat        = BCdata_EventStudy$betahat,
@@ -82,4 +83,5 @@ Ashesh Rambachan
                            numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
                            numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
                            alpha          = 0.05)
+}
 }
