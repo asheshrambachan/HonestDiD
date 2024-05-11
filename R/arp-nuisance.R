@@ -536,6 +536,13 @@
 
     sigma_B_dual = base::sqrt( base::t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde)
 
+    if is.na(sigma_B_dual) {
+      print( base::t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde)
+      print(sigma_ARP)
+      print(lpDualSoln$gamma_tilde)
+      stop("HELP")
+    }
+
     #If sigma_B_dual is 0 to numerical precision, reject iff eta > 0
     if(sigma_B_dual < 10^(-10)){
       base::return(base::list(reject = base::ifelse(linSoln$eta_star > 0, 1, 0),
