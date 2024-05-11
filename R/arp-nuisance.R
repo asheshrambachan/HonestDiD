@@ -534,23 +534,19 @@
     lpDualSoln = .lp_dual_fn(y_T = y_T_ARP, X_T = X_T_ARP, eta = linSoln$eta_star,
                              gamma_tilde = linSoln$lambda, sigma = sigma_ARP)
 
-    sigma_B_dual = base::sqrt( base::t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde)
-
-    if ( is.na(sigma_B_dual) ) {
-      print( base::t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde)
-      print(sigma_ARP)
-      print(lpDualSoln$gamma_tilde)
-      stop("HELP")
-    }
+    sigma_B_dual2 = base::t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde
 
     #If sigma_B_dual is 0 to numerical precision, reject iff eta > 0
-    if(sigma_B_dual < 10^(-10)){
+    if ( base::abs(sigma_B_dual2) < .Machine$double.eps ) {
       base::return(base::list(reject = base::ifelse(linSoln$eta_star > 0, 1, 0),
                               eta = linSoln$eta_star,
                               delta = linSoln$delta_star, 
                               lambda = linSoln$lambda))
+    } else if ( sigma_B_dual2 < 0 ) {
+      base::stop(".vlo_vup_dual_fn returned a negative variance")
     }
 
+    sigma_B_dual = base::sqrt(sigma_B_dual2)
     maxstat = lpDualSoln$eta/sigma_B_dual
 
     # HYBRID: Modify vlo, vup for the hybrid test
