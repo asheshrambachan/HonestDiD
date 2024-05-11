@@ -536,7 +536,7 @@
 
     sigma_B_dual = base::sqrt( base::t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde)
 
-    if is.na(sigma_B_dual) {
+    if ( is.na(sigma_B_dual) ) {
       print( base::t(lpDualSoln$gamma_tilde) %*% sigma_ARP %*% lpDualSoln$gamma_tilde)
       print(sigma_ARP)
       print(lpDualSoln$gamma_tilde)
