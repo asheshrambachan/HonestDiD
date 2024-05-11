@@ -1,13 +1,15 @@
+#' @title sunab_beta_vcv
+#'
 #' @description
 #' This function takes a regression estimated using fixest with the sunab option
 #' and extracts the aggregated event-study coefficients and their variance-covariance matrix
+#'
 #' @param sunab_fixest The result of a fixest call using the sunab option
+#'
 #' @returns A list containing beta (the event-study coefficients),
 #'          sigma (the variance-covariance matrix), and
 #'          cohorts (the relative times corresponding to beta, sigma)
-
-sunab_beta_vcv <-
-function(sunab_fixest){
+sunab_beta_vcv <- function(sunab_fixest) {
 
   ## The following code block extracts the weights on individual coefs used in
   # the fixest aggregation ##
