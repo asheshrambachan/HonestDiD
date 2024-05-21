@@ -592,7 +592,7 @@ HonestDiD::createSensitivityPlot_relativeMagnitudes(sensitivity_results$robust_c
 
 ## Additional options and resources
 
-See the previous package \[vignette\] for additional examples and
+See the previous package [vignette](https://github.com/asheshrambachan/HonestDiD/blob/fdadae33428a024df204c210da48cc5362966e89/vignettes/HonestDiD_Example.pdf) for additional examples and
 package options, including incorporating sign and monotonicity
 restrictions, and combining relative magnitudes and smoothness
 restrictions.
