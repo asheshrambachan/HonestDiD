@@ -39,6 +39,7 @@ Returns ggplot object of the sensitivity plot.
   Ashesh Rambachan
 }
 \examples{
+\dontrun{
   # Simple use case; for more detailed examples,
   # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   robustResults <-
@@ -54,4 +55,5 @@ Returns ggplot object of the sensitivity plot.
                         numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
                         alpha          = 0.05)
   createSensitivityPlot(robustResults, originalResults)
+}
 }

@@ -383,27 +383,27 @@ function(sunab_fixest){
   ## The following code block extracts the weights on individual coefs used in
   # the fixest aggregation ##
   sunab_agg   <- sunab_fixest$model_matrix_info$sunab$agg_period
-  sunab_names <- names(sunab_fixest$coefficients)
-  sunab_sel   <- grepl(sunab_agg, sunab_names, perl=TRUE)
+  sunab_names <- base::names(sunab_fixest$coefficients)
+  sunab_sel   <- base::grepl(sunab_agg, sunab_names, perl=TRUE)
   sunab_names <- sunab_names[sunab_sel]
-  if(!is.null(sunab_fixest$weights)){
-    sunab_wgt <- colSums(sunab_fixest$weights * sign(model.matrix(sunab_fixest)[, sunab_names, drop=FALSE]))
+  if(!base::is.null(sunab_fixest$weights)){
+    sunab_wgt <- base::colSums(sunab_fixest$weights * base::sign(stats::model.matrix(sunab_fixest)[, sunab_names, drop=FALSE]))
   } else {
-    sunab_wgt <- colSums(sign(model.matrix(sunab_fixest)[, sunab_names, drop=FALSE]))
+    sunab_wgt <- base::colSums(base::sign(stats::model.matrix(sunab_fixest)[, sunab_names, drop=FALSE]))
   }
 
   #Construct matrix sunab_trans such that sunab_trans %*% non-aggregated coefs = aggregated coefs,
-  sunab_cohorts <- as.numeric(gsub(paste0(".*", sunab_agg, ".*"), "\\2", sunab_names, perl=TRUE))
-  sunab_mat     <- model.matrix(~ 0 + factor(sunab_cohorts))
-  sunab_trans   <- solve(t(sunab_mat) %*% (sunab_wgt * sunab_mat)) %*% t(sunab_wgt * sunab_mat)
+  sunab_cohorts <- base::as.numeric(base::gsub(base::paste0(".*", sunab_agg, ".*"), "\\2", sunab_names, perl=TRUE))
+  sunab_mat     <- stats::model.matrix(~ 0 + base::factor(sunab_cohorts))
+  sunab_trans   <- base::solve(base::t(sunab_mat) %*% (sunab_wgt * sunab_mat)) %*% base::t(sunab_wgt * sunab_mat)
 
   #Get the coefs and vcv
-  sunab_coefs   <- sunab_trans %*% cbind(sunab_fixest$coefficients[sunab_sel])
-  sunab_vcov    <- sunab_trans %*% sunab_fixest$cov.scaled[sunab_sel, sunab_sel] %*% t(sunab_trans)
+  sunab_coefs   <- sunab_trans %*% base::cbind(sunab_fixest$coefficients[sunab_sel])
+  sunab_vcov    <- sunab_trans %*% sunab_fixest$cov.scaled[sunab_sel, sunab_sel] %*% base::t(sunab_trans)
 
-  return(list(beta    = sunab_coefs,
-              sigma   = sunab_vcov,
-              cohorts = sort(unique(sunab_cohorts))))
+  base::return(base::list(beta    = sunab_coefs,
+                          sigma   = sunab_vcov,
+                          cohorts = base::sort(base::unique(sunab_cohorts))))
 }
 ```
 
@@ -475,8 +475,6 @@ honest_did <- function(...) UseMethod("honest_did")
 #'  points for computational reasons.
 #' @param ... Parameters to pass to `createSensitivityResults` or
 #'  `createSensitivityResults_relativeMagnitudes`.
-#' @inheritParams HonestDiD::createSensitivityResults
-#' @inheritParams HonestDid::createSensitivityResults_relativeMagnitudes
 honest_did.AGGTEobj <- function(es,
                                 e          = 0,
                                 type       = c("smoothness", "relative_magnitude"),

@@ -40,16 +40,16 @@ Returns ggplot object of the sensitivity plot.
   Ashesh Rambachan
 }
 \examples{
+\dontrun{
   # Simple use case. For more detailed examples,
-  # see <https://github.com/asheshrambachan/HonestDiD#honestdid>;
-  # for additional precision, increase the number of gridPoints.
+  # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   kwargs <- list(betahat        = BCdata_EventStudy$betahat,
                  sigma          = BCdata_EventStudy$sigma,
                  numPrePeriods  = length(BCdata_EventStudy$prePeriodIndices),
                  numPostPeriods = length(BCdata_EventStudy$postPeriodIndices),
                  alpha          = 0.05)
-  robustResults   <- do.call(createSensitivityResults_relativeMagnitudes,
-                             c(kwargs, list(gridPoints=100)))
+  robustResults   <- do.call(createSensitivityResults_relativeMagnitudes, kwargs)
   originalResults <- do.call(constructOriginalCS, kwargs)
   createSensitivityPlot_relativeMagnitudes(robustResults, originalResults)
+}
 }

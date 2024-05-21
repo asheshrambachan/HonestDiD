@@ -15,8 +15,8 @@ jobs:
     strategy:
       matrix:
         config:
-          - {os: macos-latest,  r: 'release'}
           - {os: ubuntu-latest, r: 'release'}
+          - {os: macos-latest,  r: 'release'}
 
     steps:
     - name: Checkout code
@@ -53,6 +53,8 @@ jobs:
       uses: r-lib/actions/setup-tinytex@v2
 
     - name: Check build
+      env:
+        HONESTDID_RUN_TESTS: '1'
       run: |
         devtools::document()
         devtools::check()

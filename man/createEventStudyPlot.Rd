@@ -52,6 +52,7 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 Ashesh Rambachan
 }
 \examples{
+\dontrun{
   # Simple use case; for more detailed examples,
   # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   createEventStudyPlot(betahat         = BCdata_EventStudy$betahat,
@@ -61,4 +62,5 @@ Ashesh Rambachan
                        alpha           = 0.05,
                        timeVec         = BCdata_EventStudy$timeVec,
                        referencePeriod = BCdata_EventStudy$referencePeriod)
+}
 }
