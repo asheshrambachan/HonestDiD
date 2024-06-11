@@ -4,4 +4,3 @@ README
 deltaSD.png
 ^LICENSE\.md$
 .github
-vignettes/precompute.R
