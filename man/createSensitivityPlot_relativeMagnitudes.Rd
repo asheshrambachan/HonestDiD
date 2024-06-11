@@ -40,7 +40,7 @@ Returns ggplot object of the sensitivity plot.
   Ashesh Rambachan
 }
 \examples{
-\dontrun{
+\donttest{
   # Simple use case. For more detailed examples,
   # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   kwargs <- list(betahat        = BCdata_EventStudy$betahat,
