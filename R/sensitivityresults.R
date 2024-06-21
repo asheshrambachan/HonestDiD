@@ -18,6 +18,9 @@ createSensitivityResults <- function(betahat, sigma,
                                      biasDirection = NULL,
                                      alpha = 0.05,
                                      parallel = FALSE) {
+  if ( !base::exists(".Random.seed", .GlobalEnv) ) stats::runif(1)
+  rseed.cached <- base::get(".Random.seed", .GlobalEnv)
+  base::on.exit({base::assign(".Random.seed", rseed.cached, .GlobalEnv)})
 
   .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
@@ -419,6 +422,9 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                         grid.ub = NA,
                                                         grid.lb = NA,
                                                         parallel = FALSE) {
+  if ( !base::exists(".Random.seed", .GlobalEnv) ) stats::runif(1)
+  rseed.cached <- base::get(".Random.seed", .GlobalEnv)
+  base::on.exit({base::assign(".Random.seed", rseed.cached, .GlobalEnv)})
 
   .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
