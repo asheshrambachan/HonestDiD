@@ -75,7 +75,7 @@ Rambachan, Ashesh and Jonathan Roth. "An Honest Approach to Parallel Trends." 20
 Ashesh Rambachan
 }
 \examples{
-\dontrun{
+\donttest{
   # Simple use case; for more detailed examples,
   # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   createSensitivityResults(betahat        = BCdata_EventStudy$betahat,

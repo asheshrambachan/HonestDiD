@@ -39,7 +39,7 @@ Returns ggplot object of the sensitivity plot.
   Ashesh Rambachan
 }
 \examples{
-\dontrun{
+\donttest{
   # Simple use case; for more detailed examples,
   # see <https://github.com/asheshrambachan/HonestDiD#honestdid>
   robustResults <-
