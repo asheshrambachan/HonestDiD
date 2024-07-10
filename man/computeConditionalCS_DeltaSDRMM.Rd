@@ -63,6 +63,9 @@ Specifies direction of monotonicity restriction. If "increasing", underlying tre
   \item{grid.lb}{
   Lower bound of grid for test inversion. The user should only specify this if she wishes to manually specify the upper bound of the grid. Default equals NA sets grid lower bound to equal the lower bound of the identified set under parallel trends minus 20*standard deviation of the point estimate, l_vec'betahat.
   }
+  \item{seed}{
+  Random seed for internal computations; included for reproducibility.
+  }
 }
 \details{
 The choice \eqn{\Delta^{SDRMM}} adds an additional shape restriction to \eqn{\Delta^{SDRM}(Mbar)} that restricts the underlying trend to be monotone. For this choice \eqn{\Delta^{SDRMM}}, \code{numPrePeriods} must be greater than one. As discussed in Section 2.3.2 of Rambachan & Roth (2021), \eqn{\Delta^{SDRM}} uses observed non-linearities in the pre-treatment difference in trends to bound the possible non-linearities in the post-treatment difference in trends. This is only possible if there are multiple pre-treatment periods (i.e., \code{numPrePeriods} > 1).
