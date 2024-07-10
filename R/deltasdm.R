@@ -103,7 +103,7 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
                                           alpha = 0.05, monotonicityDirection = "increasing",
                                           hybrid_flag = "FLCI", hybrid_kappa = alpha/10,
                                           returnLength = FALSE, postPeriodMomentsOnly = TRUE,
-                                          gridPoints=10^3, grid.lb = NA, grid.ub = NA) {
+                                          gridPoints=10^3, grid.lb = NA, grid.ub = NA, seed = 0) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDI}(M). This functions uses ARP_computeCI for all
   # of its computations.
@@ -164,7 +164,7 @@ computeConditionalCS_DeltaSDM <- function(betahat, sigma, numPrePeriods, numPost
       }
     } else if (hybrid_flag == "LF") {
       # Compute LF CV
-      lf_cv = .compute_least_favorable_cv(X_T = NULL, sigma = A_SDM %*% sigma %*% t(A_SDM), hybrid_kappa = hybrid_kappa)
+      lf_cv = .compute_least_favorable_cv(X_T = NULL, sigma = A_SDM %*% sigma %*% t(A_SDM), hybrid_kappa = hybrid_kappa, seed = seed)
 
       # Store lf cv
       hybrid_list$lf_cv = lf_cv

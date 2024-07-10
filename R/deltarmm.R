@@ -200,7 +200,7 @@
                                                  betahat, sigma, numPrePeriods, numPostPeriods, l_vec,
                                                  alpha, hybrid_flag, hybrid_kappa,
                                                  postPeriodMomentsOnly, monotonicityDirection,
-                                                 gridPoints, grid.ub, grid.lb) {
+                                                 gridPoints, grid.ub, grid.lb, seed = 0) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{RMM}(Mbar) for a fixed s and (+),(-). This functions uses ARP_computeCI for all
   # of its computations. It is used as a helper function in computeConditionalCS_DeltaRM below.
@@ -239,7 +239,7 @@
   if (numPostPeriods == 1) {
     if (hybrid_flag == "LF") {
       # Compute LF CV and store it in hybrid_list
-      lf_cv = .compute_least_favorable_cv(X_T = NULL, sigma = A_RMM_s %*% sigma %*% base::t(A_RMM_s), hybrid_kappa = hybrid_kappa)
+      lf_cv = .compute_least_favorable_cv(X_T = NULL, sigma = A_RMM_s %*% sigma %*% base::t(A_RMM_s), hybrid_kappa = hybrid_kappa, seed = seed)
       hybrid_list$lf_cv = lf_cv
     }
     # Compute confidence set
@@ -266,7 +266,7 @@ computeConditionalCS_DeltaRMM <- function(betahat, sigma, numPrePeriods, numPost
                                          l_vec = .basisVector(index = 1, size = numPostPeriods), Mbar = 0,
                                          alpha = 0.05, hybrid_flag = "LF", hybrid_kappa = alpha/10,
                                          returnLength = FALSE, postPeriodMomentsOnly = TRUE, monotonicityDirection = "increasing",
-                                         gridPoints = 10^3, grid.ub = NA, grid.lb = NA) {
+                                         gridPoints = 10^3, grid.ub = NA, grid.lb = NA, seed = 0) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{RMM}(Mbar). This functions uses ARP_computeCI for all
   # of its computations.
@@ -308,7 +308,7 @@ computeConditionalCS_DeltaRMM <- function(betahat, sigma, numPrePeriods, numPost
                                                      numPostPeriods = numPostPeriods, l_vec = l_vec,
                                                      alpha = alpha, hybrid_flag = hybrid_flag, hybrid_kappa = hybrid_kappa,
                                                      postPeriodMomentsOnly = postPeriodMomentsOnly, monotonicityDirection = monotonicityDirection,
-                                                     gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                     gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
     CIs_RMM_plus_allS[,s_i] = CI_s_plus$accept
     
     # Compute CI for s, (-) and bind it to all CI's for (-)
@@ -317,7 +317,7 @@ computeConditionalCS_DeltaRMM <- function(betahat, sigma, numPrePeriods, numPost
                                                       numPostPeriods = numPostPeriods, l_vec = l_vec,
                                                       alpha = alpha, hybrid_flag = hybrid_flag, hybrid_kappa = hybrid_kappa,
                                                       postPeriodMomentsOnly = postPeriodMomentsOnly, monotonicityDirection = monotonicityDirection,
-                                                      gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                      gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
     CIs_RMM_minus_allS[,s_i] = CI_s_minus$accept
   }
 

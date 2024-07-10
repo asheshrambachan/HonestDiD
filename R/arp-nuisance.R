@@ -349,7 +349,7 @@
 
 # HYBRID HELPER FUNCTIONS ---------------------------------------------
 .compute_least_favorable_cv <- function(X_T, sigma, hybrid_kappa, sims = 1000,
-                                        rowsForARP = NULL) {
+                                        rowsForARP = NULL, seed = 0) {
   # Computes the least favorable critical value following the algorithm in
   # Section 6.2 of Andrews, Roth, Pakes (2019).
   #
@@ -383,7 +383,7 @@
     base::return(if (error_flag) NA else lpSolveAPI::get.objective(linprog))
   }
 
-  base::set.seed(0)
+  base::set.seed(seed)
   if (base::is.null(X_T)) { # no nuisance parameter case
     xi.draws = t( t(mvtnorm::rmvnorm(n = sims, sigma = sigma)) /base::sqrt(base::diag(sigma)) )
     eta_vec = matrixStats::rowMaxs(xi.draws)

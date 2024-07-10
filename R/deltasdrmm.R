@@ -195,7 +195,7 @@
                                                     betahat, sigma, numPrePeriods, numPostPeriods, l_vec,
                                                     alpha, hybrid_flag, hybrid_kappa,
                                                     postPeriodMomentsOnly, monotonicityDirection,
-                                                    gridPoints, grid.ub, grid.lb) {
+                                                    gridPoints, grid.ub, grid.lb, seed = 0) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDRMM}(Mbar) for a fixed s and (+),(-). This functions uses ARP_computeCI for all
   # of its computations. It is used as a helper function in computeConditionalCS_DeltaSDRMM below.
@@ -236,7 +236,7 @@
   if (numPostPeriods == 1) {
     if (hybrid_flag == "LF") {
       # Compute LF CV and store it in hybrid_list
-      lf_cv = .compute_least_favorable_cv(X_T = NULL, sigma = A_SDRMM_s %*% sigma %*% base::t(A_SDRMM_s), hybrid_kappa = hybrid_kappa)
+      lf_cv = .compute_least_favorable_cv(X_T = NULL, sigma = A_SDRMM_s %*% sigma %*% base::t(A_SDRMM_s), hybrid_kappa = hybrid_kappa, seed = seed)
       hybrid_list$lf_cv = lf_cv
     }
     # Compute confidence set
@@ -266,7 +266,7 @@ computeConditionalCS_DeltaSDRMM <- function(betahat, sigma, numPrePeriods, numPo
                                             hybrid_kappa = alpha/10, returnLength = FALSE,
                                             postPeriodMomentsOnly = TRUE,
                                             monotonicityDirection = "increasing",
-                                            gridPoints = 10^3, grid.ub = NA, grid.lb = NA) {
+                                            gridPoints = 10^3, grid.ub = NA, grid.lb = NA, seed = 0) {
   # This function computes the ARP CI that includes nuisance parameters
   # for Delta^{SDRMM}(Mbar). This functions uses ARP_computeCI for all
   # of its computations.
@@ -315,7 +315,7 @@ computeConditionalCS_DeltaSDRMM <- function(betahat, sigma, numPrePeriods, numPo
                                                        numPostPeriods = numPostPeriods, l_vec = l_vec,
                                                        alpha = alpha, hybrid_flag = hybrid_flag, hybrid_kappa = hybrid_kappa,
                                                        postPeriodMomentsOnly = postPeriodMomentsOnly, monotonicityDirection = monotonicityDirection,
-                                                       gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                       gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
     CIs_SDRMM_plus_allS[,s_i] = CI_s_plus$accept
 
     # Compute CI for s, (-) and bind it to all CI's for (-)
@@ -324,7 +324,7 @@ computeConditionalCS_DeltaSDRMM <- function(betahat, sigma, numPrePeriods, numPo
                                                         numPostPeriods = numPostPeriods, l_vec = l_vec,
                                                         alpha = alpha, hybrid_flag = hybrid_flag, hybrid_kappa = hybrid_kappa,
                                                         postPeriodMomentsOnly = postPeriodMomentsOnly, monotonicityDirection = monotonicityDirection,
-                                                        gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                        gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
     CIs_SDRMM_minus_allS[,s_i] = CI_s_minus$accept
   }
   CIs_SDRMM_plus_maxS = base::apply(CIs_SDRMM_plus_allS, MARGIN = 1, FUN = base::max)

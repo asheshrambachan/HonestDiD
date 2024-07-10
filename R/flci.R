@@ -215,10 +215,10 @@
 
 .findOptimalFLCI_helper <- function(sigma, M,
                                     numPrePeriods, numPostPeriods,
-                                    l_vec, numPoints = 100, alpha){
+                                    l_vec, numPoints = 100, alpha, seed = 0){
   h0 <- .findHForMinimumBias(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
   hMin <- .findLowestH(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, l_vec = l_vec)
-  hstar <- .findOptimalCIDerivativeBisection(hMin, h0, M, numPoints, alpha, sigma, numPrePeriods, numPostPeriods, l_vec, TRUE)
+  hstar <- .findOptimalCIDerivativeBisection(hMin, h0, M, numPoints, alpha, sigma, numPrePeriods, numPostPeriods, l_vec, TRUE, seed=seed)
 
   if ( base::is.na(hstar) ) {
     # Numerical derivatives will occasionally fail; fall back into grid
@@ -260,14 +260,14 @@
 }
 
 .findOptimalCIDerivativeBisection <-  function(a, b, M, numPoints, alpha, sigma,
-                                               numPrePeriods, numPostPeriods, l_vec, returnDF) {
+                                               numPrePeriods, numPostPeriods, l_vec, returnDF, seed=0) {
 
   # Function of h, which is convex (returns CI half length)
   .f <- function(h, ...) {
     biasDF <- .findWorstCaseBiasGivenH(h, sigma, numPrePeriods, numPostPeriods, l_vec, returnDF)
     maxBias <- M * biasDF$value
     if (biasDF$value < Inf) {
-      base::return(.qfoldednormal(p = 1-alpha, mu = maxBias/h) * h)
+      base::return(.qfoldednormal(p = 1-alpha, mu = maxBias/h, seed=seed) * h)
     } else {
       base::return(NaN)
     }
@@ -319,14 +319,15 @@
 findOptimalFLCI <- function(betahat, sigma, M = 0,
                             numPrePeriods, numPostPeriods,
                             l_vec = .basisVector(index = 1, size = numPostPeriods),
-                            numPoints = 100, alpha = 0.05) {
+                            numPoints = 100, alpha = 0.05, seed = 0) {
   FLCI_Results = .findOptimalFLCI_helper(sigma = sigma,
                                          M = M,
                                          numPrePeriods = numPrePeriods,
                                          numPostPeriods = numPostPeriods,
                                          l_vec = l_vec,
                                          numPoints = numPoints,
-                                         alpha = alpha)
+                                         alpha = alpha,
+                                         seed = seed)
   FLCI = base::c(base::t(FLCI_Results$optimalVec) %*% betahat - FLCI_Results$optimalHalfLength,
                  base::t(FLCI_Results$optimalVec) %*% betahat + FLCI_Results$optimalHalfLength)
 
