@@ -14,7 +14,7 @@ computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
                          hybrid_kappa = alpha/10, returnLength = FALSE,
                          postPeriodMomentsOnly = TRUE,
                          monotonicityDirection = "increasing",
-                         gridPoints=10^3, grid.ub = NA, grid.lb = NA)
+                         gridPoints=10^3, grid.ub = NA, grid.lb = NA, seed = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
