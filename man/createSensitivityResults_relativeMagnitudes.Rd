@@ -21,7 +21,8 @@ createSensitivityResults_relativeMagnitudes(betahat, sigma,
                                             gridPoints = 10^3,
                                             grid.ub = NA,
                                             grid.lb = NA,
-                                            parallel = FALSE)
+                                            parallel = FALSE,
+                                            seed = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -69,6 +70,9 @@ createSensitivityResults_relativeMagnitudes(betahat, sigma,
   }
   \item{grid.lb}{
   Lower bound of grid used for underlying test inversion. Default sets grid.lb to be equal to negative twenty times the standard deviation of the estimated target parameter, l_vec * betahat. User may wish to change the lower bound of the grid to suit their application.
+  }
+  \item{seed}{
+  Random seed for internal computations; included for reproducibility.
   }
 }
 \details{

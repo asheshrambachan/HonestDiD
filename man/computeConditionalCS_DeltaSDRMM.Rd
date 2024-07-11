@@ -14,7 +14,7 @@ computeConditionalCS_DeltaSDRMM(betahat, sigma, numPrePeriods, numPostPeriods,
                          hybrid_kappa = alpha/10, returnLength = FALSE,
                          postPeriodMomentsOnly = TRUE,
                          monotonicityDirection = "increasing",
-                         gridPoints=10^3, grid.ub = NA, grid.lb = NA)
+                         gridPoints=10^3, grid.ub = NA, grid.lb = NA, seed = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -62,6 +62,9 @@ Specifies direction of monotonicity restriction. If "increasing", underlying tre
   }
   \item{grid.lb}{
   Lower bound of grid for test inversion. The user should only specify this if she wishes to manually specify the upper bound of the grid. Default equals NA sets grid lower bound to equal the lower bound of the identified set under parallel trends minus 20*standard deviation of the point estimate, l_vec'betahat.
+  }
+  \item{seed}{
+  Random seed for internal computations; included for reproducibility.
   }
 }
 \details{

@@ -8,11 +8,16 @@
   Constructs robust confidence intervals for a choice \eqn{\Delta = \Delta^{SD}(M)}, \eqn{\Delta^{SDB}(M)} and \eqn{\Delta^{SDM}(M)} for vector of possible M values. By default, the function constructs robust confidence intervals for \eqn{\Delta^{SD}(M)}.
 }
 \usage{
-createSensitivityResults(betahat, sigma, numPrePeriods, numPostPeriods,
-                  method = NULL, Mvec = NULL,
-                  l_vec = .basisVector(index = 1, size = numPostPeriods),
-                  monotonicityDirection = NULL,
-                  biasDirection = NULL, alpha = 0.05, parallel = FALSE)
+createSensitivityResults(betahat, sigma,
+                         numPrePeriods, numPostPeriods,
+                         method = NULL,
+                         Mvec = NULL,
+                         l_vec = .basisVector(index = 1, size = numPostPeriods),
+                         monotonicityDirection = NULL,
+                         biasDirection = NULL,
+                         alpha = 0.05,
+                         parallel = FALSE,
+                         seed = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -48,6 +53,9 @@ createSensitivityResults(betahat, sigma, numPrePeriods, numPostPeriods,
   }
   \item{parallel}{
   Logical to indicate whether the user would like to construct the robust confidence intervals in parallel. This uses the Foreach package and doParallel package. Default equals FALSE.
+  }
+  \item{seed}{
+  Random seed for internal computations; included for reproducibility.
   }
 }
 \value{

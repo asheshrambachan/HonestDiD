@@ -11,7 +11,7 @@ Constructs optimal fixed length confidence interval for \eqn{\Delta = \Delta^{SD
 findOptimalFLCI(betahat, sigma, M = 0,
                 numPrePeriods, numPostPeriods,
                 l_vec = .basisVector(index = 1, size = numPostPeriods),
-                numPoints = 100, alpha = 0.05)
+                numPoints = 100, alpha = 0.05, seed = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -38,6 +38,9 @@ findOptimalFLCI(betahat, sigma, M = 0,
   }
   \item{alpha}{
   Desired size of the FLCI. Default equals 0.05 (corresponding to 95\% confidence interval)
+  }
+  \item{seed}{
+  Random seed for internal computations; included for reproducibility.
   }
 }
 \value{

@@ -12,7 +12,7 @@ computeConditionalCS_DeltaRM(betahat, sigma, numPrePeriods, numPostPeriods,
                          l_vec = .basisVector(index = 1, size = numPostPeriods), Mbar = 0,
                          alpha = 0.05, hybrid_flag = "LF", hybrid_kappa = alpha/10,
                          returnLength = FALSE, postPeriodMomentsOnly = TRUE,
-                         gridPoints=10^3, grid.ub = NA, grid.lb = NA)
+                         gridPoints=10^3, grid.ub = NA, grid.lb = NA, seed = 0)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -57,6 +57,9 @@ Logical value. If TRUE, function only returns the length of the robust confidenc
   }
   \item{grid.lb}{
   Lower bound of grid for test inversion. The user should only specify this if she wishes to manually specify the upper bound of the grid. Default equals NA sets grid lower bound to equal the lower bound of the identified set under parallel trends minus 20*standard deviation of the point estimate, l_vec'betahat.
+  }
+  \item{seed}{
+  Random seed for internal computations; included for reproducibility.
   }
 }
 \value{

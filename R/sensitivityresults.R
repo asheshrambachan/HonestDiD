@@ -17,7 +17,8 @@ createSensitivityResults <- function(betahat, sigma,
                                      monotonicityDirection = NULL,
                                      biasDirection = NULL,
                                      alpha = 0.05,
-                                     parallel = FALSE) {
+                                     parallel = FALSE,
+                                     seed = 0) {
 
   .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
@@ -44,7 +45,7 @@ createSensitivityResults <- function(betahat, sigma,
         Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                                 l_vec = l_vec, M = Mvec[m], alpha = alpha)
+                                 l_vec = l_vec, M = Mvec[m], alpha = alpha, seed = seed)
           tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
                          method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
         }
@@ -52,7 +53,7 @@ createSensitivityResults <- function(betahat, sigma,
         Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                                 l_vec = l_vec, M = Mvec[m], alpha = alpha)
+                                 l_vec = l_vec, M = Mvec[m], alpha = alpha, seed = seed)
           tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
                          method = "FLCI", Delta = "DeltaSD", M = Mvec[m])
         }
@@ -64,7 +65,7 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
-                                              hybrid_flag = "ARP")
+                                              hybrid_flag = "ARP", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
@@ -76,7 +77,7 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
-                                              hybrid_flag = "ARP")
+                                              hybrid_flag = "ARP", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
@@ -90,7 +91,7 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
-                                              hybrid_flag = "FLCI")
+                                              hybrid_flag = "FLCI", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
@@ -102,7 +103,7 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
-                                              hybrid_flag = "FLCI")
+                                              hybrid_flag = "FLCI", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
@@ -116,7 +117,7 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
-                                              hybrid_flag = "LF")
+                                              hybrid_flag = "LF", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
@@ -128,7 +129,7 @@ createSensitivityResults <- function(betahat, sigma,
                                               numPrePeriods = numPrePeriods,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, M = Mvec[m],
-                                              hybrid_flag = "LF")
+                                              hybrid_flag = "LF", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
@@ -155,7 +156,7 @@ createSensitivityResults <- function(betahat, sigma,
         Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                                 l_vec = l_vec, M = Mvec[m], alpha = alpha)
+                                 l_vec = l_vec, M = Mvec[m], alpha = alpha, seed = seed)
           tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
                          method = "FLCI", Delta = Delta, M = Mvec[m])
         }
@@ -163,7 +164,7 @@ createSensitivityResults <- function(betahat, sigma,
         Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                                 l_vec = l_vec, M = Mvec[m], alpha = alpha)
+                                 l_vec = l_vec, M = Mvec[m], alpha = alpha, seed = seed)
           tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
                          method = "FLCI", Delta = Delta, M = Mvec[m])
         }
@@ -176,7 +177,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
-                                               hybrid_flag = "ARP")
+                                               hybrid_flag = "ARP", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
@@ -189,7 +190,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
-                                               hybrid_flag = "ARP")
+                                               hybrid_flag = "ARP", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
@@ -204,7 +205,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
-                                               hybrid_flag = "FLCI")
+                                               hybrid_flag = "FLCI", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
@@ -217,7 +218,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
-                                               hybrid_flag = "FLCI")
+                                               hybrid_flag = "FLCI", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
@@ -232,7 +233,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
-                                               hybrid_flag = "LF")
+                                               hybrid_flag = "LF", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
@@ -245,7 +246,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                biasDirection = biasDirection,
-                                               hybrid_flag = "LF")
+                                               hybrid_flag = "LF", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
@@ -272,7 +273,7 @@ createSensitivityResults <- function(betahat, sigma,
         Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %do% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                                 l_vec = l_vec, M = Mvec[m], alpha = alpha)
+                                 l_vec = l_vec, M = Mvec[m], alpha = alpha, seed = seed)
           tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
                          method = "FLCI", Delta = Delta, M = Mvec[m])
         }
@@ -280,7 +281,7 @@ createSensitivityResults <- function(betahat, sigma,
         Results = foreach::foreach(m = 1:base::length(Mvec), .combine = 'rbind') %dopar% {
           temp = findOptimalFLCI(betahat = betahat, sigma = sigma,
                                  numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods,
-                                 l_vec = l_vec, M = Mvec[m], alpha = alpha)
+                                 l_vec = l_vec, M = Mvec[m], alpha = alpha, seed = seed)
           tibble::tibble(lb = temp$FLCI[1], ub = temp$FLCI[2],
                          method = "FLCI", Delta = Delta, M = Mvec[m])
         }
@@ -293,7 +294,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
-                                               hybrid_flag = "ARP")
+                                               hybrid_flag = "ARP", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
@@ -306,7 +307,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
-                                               hybrid_flag = "ARP")
+                                               hybrid_flag = "ARP", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "Conditional",
@@ -321,7 +322,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
-                                               hybrid_flag = "FLCI")
+                                               hybrid_flag = "FLCI", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
@@ -335,7 +336,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
-                                               hybrid_flag = "FLCI")
+                                               hybrid_flag = "FLCI", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-F",
@@ -351,7 +352,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
-                                               hybrid_flag = "LF")
+                                               hybrid_flag = "LF", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
@@ -364,7 +365,7 @@ createSensitivityResults <- function(betahat, sigma,
                                                numPostPeriods = numPostPeriods,
                                                l_vec = l_vec, alpha = alpha, M = Mvec[m],
                                                monotonicityDirection = monotonicityDirection,
-                                               hybrid_flag = "LF")
+                                               hybrid_flag = "LF", seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = "C-LF",
@@ -418,7 +419,8 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                         gridPoints = 10^3,
                                                         grid.ub = NA,
                                                         grid.lb = NA,
-                                                        parallel = FALSE) {
+                                                        parallel = FALSE,
+                                                        seed = 0) {
 
   .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
@@ -463,7 +465,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                               hybrid_flag = hybrid_flag,
-                                              gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                              gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -476,7 +478,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                               numPostPeriods = numPostPeriods,
                                               l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                               hybrid_flag = hybrid_flag,
-                                              gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                              gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -500,7 +502,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = hybrid_flag,
-                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -514,7 +516,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                monotonicityDirection = monotonicityDirection,
                                                hybrid_flag = hybrid_flag,
-                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -538,7 +540,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = hybrid_flag,
-                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -552,7 +554,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                biasDirection = biasDirection,
                                                hybrid_flag = hybrid_flag,
-                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                               gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -580,7 +582,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                 numPostPeriods = numPostPeriods,
                                                 l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                 hybrid_flag = hybrid_flag,
-                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -593,7 +595,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                 numPostPeriods = numPostPeriods,
                                                 l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                 hybrid_flag = hybrid_flag,
-                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -617,7 +619,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                  l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                  monotonicityDirection = monotonicityDirection,
                                                  hybrid_flag = hybrid_flag,
-                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -631,7 +633,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                  l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                  monotonicityDirection = monotonicityDirection,
                                                  hybrid_flag = hybrid_flag,
-                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -655,7 +657,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                  l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                  biasDirection = biasDirection,
                                                  hybrid_flag = hybrid_flag,
-                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
@@ -669,7 +671,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                  l_vec = l_vec, alpha = alpha, Mbar = Mbarvec[m],
                                                  biasDirection = biasDirection,
                                                  hybrid_flag = hybrid_flag,
-                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb)
+                                                 gridPoints = gridPoints, grid.ub = grid.ub, grid.lb = grid.lb, seed = seed)
           tibble::tibble(lb = base::min(temp$grid[temp$accept == 1]),
                          ub = base::max(temp$grid[temp$accept == 1]),
                          method = method_named,
