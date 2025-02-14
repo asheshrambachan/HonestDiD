@@ -48,13 +48,19 @@ basisVector <- function(index = 1, size = 1){
 
 .warnIfNotSymmPSD <- function (sigma) {
   # Check that sigma is PSD
-  if ( base::isSymmetric(sigma) ) {
-    if ( base::any(base::eigen(sigma, TRUE, only.values=TRUE)$values < 0) ) {
-      base::warning("sigma is not numerically positive semi-definite")
-    }
-  } else {
-    base::warning("sigma is not a symmetric matrix")
+  if ( !base::isSymmetric(sigma, check.attributes=FALSE) ) {
+    # sigma <- (sigma + t(sigma)) / 2
+    base::warning(base::sprintf("matrix sigma not exactly symmetric (largest asymmetry was %g)",
+                                base::max(base::abs(sigma - t(sigma)))))
   }
+
+  lambda <- base::eigen(sigma, TRUE, only.values=TRUE)$values
+  if ( base::any(lambda < 0) ) {
+    base::warning(base::sprintf("matrix sigma not numerically positive semi-definite (smallest eigenvalue was %g)",
+                                base::min(lambda)))
+  }
+
+  # return(sigma)
 }
 
 .stopIfNotConformable <- function (betahat, sigma, numPrePeriods, numPostPeriods, l_vec) {
@@ -87,4 +93,16 @@ basisVector <- function(index = 1, size = 1){
       base::stop(base::sprintf("l_vec (length %d) and post periods (%d) were non-conformable",
                  base::length(l_vec), numPostPeriods))
   }
+}
+
+# Custom error messages
+.CustomErrorHandling <- function(code, custom) {
+  base::tryCatch({
+    code
+  }, error = function(e) {
+    base::message(custom)
+    base::message("\tcall:  ", base::paste0(rlang::expr_deparse(e$call), collapse='\n\t'))
+    base::message("\terror: ", e$message)
+    base::message("Traceback:"); traceback()
+  })
 }
