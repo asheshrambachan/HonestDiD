@@ -163,7 +163,7 @@
                             optimal.x = optimal.x,
                             optimal.w = optimal.w,
                             optimal.l = optimal.l))
-  } else{
+  } else {
     temp = base::list(status = biasResult$status,
                       value = biasResult$value,
                       optimal.x = base::I(base::list(base::unlist(optimal.x))),
@@ -191,9 +191,7 @@
 
   if ( varFailed ) {
     iscale <- 0
-    base::warning("Error in optimization for h0")
     if ( !is.nan(sigmascale) ) {
-      base::message("Retrying h0 with scaling")
       while ((iscale < maxscale) & varFailed) {
         iscale <- iscale + 1
         objectiveVariance <- .createObjectiveObject_MinimizeSD(sigma          = (sigmascale^iscale) * sigma,
@@ -207,8 +205,10 @@
         varResult$value <- varResult$value / (sigmascale^iscale)
       }
       if (varFailed) {
-        base::warning("Unable to estimate h0 even with scaling")
+        base::warning("Error in optimization for h0 (tried rescaling)")
       }
+    } else {
+        base::warning("Error in optimization for h0")
     }
   }
 
