@@ -174,7 +174,7 @@
   }
 }
 
-.findLowestH <- function(sigma, numPrePeriods, numPostPeriods, l_vec, sigmascale=10, maxscale=6){
+.findLowestH <- function(sigma, numPrePeriods, numPostPeriods, l_vec, sigmascale=10, maxscale=10){
   # Finds the minimum variance affine estimator.
   UstackW           <- CVXR::Variable(numPrePeriods + numPrePeriods)
   abs_constraint    <- .createConstraints_AbsoluteValue(numPrePeriods = numPrePeriods, UstackW = UstackW)
@@ -194,7 +194,8 @@
     if ( !is.nan(sigmascale) ) {
       while ((iscale < maxscale) & varFailed) {
         iscale <- iscale + 1
-        objectiveVariance <- .createObjectiveObject_MinimizeSD(sigma          = (sigmascale^iscale) * sigma,
+        scaled <- if (iscale > base::ceiling(maxscale/2)) sigmascale^(base::ceiling(maxscale/2)-iscale) else sigmascale^iscale
+        objectiveVariance <- .createObjectiveObject_MinimizeSD(sigma          = scaled * sigma,
                                                                numPrePeriods  = numPrePeriods,
                                                                numPostPeriods = numPostPeriods,
                                                                UstackW        = UstackW,
