@@ -9,7 +9,7 @@
 #  the FLCI for a general choice of vector l and Delta = Delta^{SD}(M)
 
 # FLCI HELPER FUNCTIONS -----------------------------------------------
-.createConstraints_AbsoluteValue <- function(sigma, numPrePeriods, UstackW){
+.createConstraints_AbsoluteValue <- function(numPrePeriods, UstackW){
   # This function creates linear constraints that help to minimize worst-case bias
   # over w using the optiSolve package, where we cast maximization of the absolute values
   # as a linear problem.
@@ -141,7 +141,7 @@
   UstackW <- CVXR::Variable(numPrePeriods + numPrePeriods)
   objectiveBias <- .createObjectiveObjectForBias(numPrePeriods = numPrePeriods, UstackW = UstackW, numPostPeriods = numPostPeriods, l_vec = l_vec)
 
-  abs_constraint <- .createConstraints_AbsoluteValue(sigma = sigma, numPrePeriods = numPrePeriods, UstackW = UstackW)
+  abs_constraint <- .createConstraints_AbsoluteValue(numPrePeriods = numPrePeriods, UstackW = UstackW)
   sum_constraint <- .createConstraints_SumWeights(numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW)
   quad_constraint <- .createConstraintsObject_SDLessThanH(sigma = sigma, numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW, h = h)
 
@@ -163,7 +163,7 @@
                             optimal.x = optimal.x,
                             optimal.w = optimal.w,
                             optimal.l = optimal.l))
-  } else{
+  } else {
     temp = base::list(status = biasResult$status,
                       value = biasResult$value,
                       optimal.x = base::I(base::list(base::unlist(optimal.x))),
@@ -174,21 +174,48 @@
   }
 }
 
-.findLowestH <- function(sigma, numPrePeriods, numPostPeriods, l_vec){
+.findLowestH <- function(sigma, numPrePeriods, numPostPeriods, l_vec, sigmascale=10, maxscale=10){
   # Finds the minimum variance affine estimator.
-  UstackW <- CVXR::Variable(numPrePeriods + numPrePeriods)
-  abs_constraint <- .createConstraints_AbsoluteValue(sigma = sigma, numPrePeriods = numPrePeriods, UstackW = UstackW)
-  sum_constraint <- .createConstraints_SumWeights(numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW)
-  objectiveVariance = .createObjectiveObject_MinimizeSD(sigma = sigma, numPrePeriods = numPrePeriods, numPostPeriods = numPostPeriods, UstackW = UstackW, l_vec = l_vec)
-  varProblem = CVXR::Problem(objectiveVariance, constraints = base::list(abs_constraint, sum_constraint))
-  varResult <- CVXR::psolve(varProblem)
+  UstackW           <- CVXR::Variable(numPrePeriods + numPrePeriods)
+  abs_constraint    <- .createConstraints_AbsoluteValue(numPrePeriods = numPrePeriods, UstackW = UstackW)
+  sum_constraint    <- .createConstraints_SumWeights(numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW)
+  objectiveVariance <- .createObjectiveObject_MinimizeSD(sigma          = sigma,
+                                                         numPrePeriods  = numPrePeriods,
+                                                         numPostPeriods = numPostPeriods,
+                                                         UstackW        = UstackW,
+                                                         l_vec          = l_vec)
 
-  if(varResult$status != "optimal" & varResult$status != "optimal_inaccurate"){
-    base::warning("Error in optimization for h0")
+  varProblem <- CVXR::Problem(objectiveVariance, constraints = base::list(abs_constraint, sum_constraint))
+  varResult  <- CVXR::psolve(varProblem)
+  varFailed  <- (varResult$status != "optimal" & varResult$status != "optimal_inaccurate")
+
+  if ( varFailed ) {
+    iscale <- 0
+    if ( !is.nan(sigmascale) ) {
+      while ((iscale < maxscale) & varFailed) {
+        iscale <- iscale + 1
+        scaled <- if (iscale > base::ceiling(maxscale/2)) sigmascale^(base::ceiling(maxscale/2)-iscale) else sigmascale^iscale
+        objectiveVariance <- .createObjectiveObject_MinimizeSD(sigma          = scaled * sigma,
+                                                               numPrePeriods  = numPrePeriods,
+                                                               numPostPeriods = numPostPeriods,
+                                                               UstackW        = UstackW,
+                                                               l_vec          = l_vec)
+        varProblem <- CVXR::Problem(objectiveVariance, constraints = base::list(abs_constraint, sum_constraint))
+        varResult  <- CVXR::psolve(varProblem)
+        varFailed  <- (varResult$status != "optimal" & varResult$status != "optimal_inaccurate")
+        varResult$value <- varResult$value / (sigmascale^iscale)
+      }
+      if (varFailed) {
+        base::warning("Error in optimization for h0 (tried rescaling)")
+      }
+    } else {
+        base::warning("Error in optimization for h0")
+    }
   }
 
   minimalVariance <- varResult$value
   minimalH <- base::sqrt(minimalVariance)
+
   base::return(minimalH)
 }
 

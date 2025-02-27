@@ -20,6 +20,7 @@ createSensitivityResults <- function(betahat, sigma,
                                      parallel = FALSE,
                                      seed = 0) {
 
+  .CustomErrorHandling({
   .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
   m <- NULL
@@ -377,6 +378,7 @@ createSensitivityResults <- function(betahat, sigma,
     }
   }
   base::return(Results)
+  }, "Error in computing main results")
 }
 
 createSensitivityPlot <- function(robustResults, originalResults, rescaleFactor = 1, maxM = Inf, add_xAxis = TRUE) {
@@ -422,6 +424,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
                                                         parallel = FALSE,
                                                         seed = 0) {
 
+  .CustomErrorHandling({
   .stopIfNotConformable(betahat, sigma, numPrePeriods, numPostPeriods, l_vec)
   .warnIfNotSymmPSD(sigma)
   m <- NULL
@@ -682,6 +685,7 @@ createSensitivityResults_relativeMagnitudes <- function(betahat, sigma,
   }
   # Return tibble of results
   base::return(Results)
+  }, "Error in computing main results")
 }
 
 createSensitivityPlot_relativeMagnitudes <- function(robustResults, originalResults,
