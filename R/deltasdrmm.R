@@ -301,9 +301,17 @@ computeConditionalCS_DeltaSDRMM <- function(betahat, sigma, numPrePeriods, numPo
 
   # Construct theta grid by computing id set under parallel trends.
   # The default sets the grid to be equal to [-20*sdTheta, 20*sdTheta]
-  sdTheta <- base::c(base::sqrt(base::t(l_vec) %*% sigma[(numPrePeriods+1):(numPrePeriods+numPostPeriods), (numPrePeriods+1):(numPrePeriods+numPostPeriods)] %*% l_vec))
-  if (base::is.na(grid.ub)) { grid.ub = 20*sdTheta }
-  if (base::is.na(grid.lb)) { grid.lb = -20*sdTheta }
+  sel <- (numPrePeriods+1):(numPrePeriods+numPostPeriods)
+  sdTheta <- base::c(base::sqrt(base::t(l_vec) %*% sigma[sel, sel] %*% l_vec))
+  if ( numPrePeriods > 1 ) {
+      maxpre <- base::max(base::abs(base::diff(base::c(betahat[1:numPrePeriods], 0))))
+  } else {
+      maxpre <- base::abs(betahat[1])
+  }
+  gridoff  <- betahat[sel] %*% l_vec
+  gridhalf <- (Mbar * (1:numPostPeriods) %*% base::abs(l_vec) * maxpre) + (20 * sdTheta)
+  if (base::is.na(grid.ub)) { grid.ub <- gridoff[1] + gridhalf[1] }
+  if (base::is.na(grid.lb)) { grid.lb <- gridoff[1] - gridhalf[1] }
 
   # Loop over s values for (+), (-), left join the resulting CIs based on the grid
   CIs_SDRMM_plus_allS = base::matrix(0, nrow = gridPoints, ncol = base::length(s_indices))
