@@ -34,9 +34,38 @@ Thus, imposing a smoothness restriction with *M* = 0 implies that the counterfac
 The package may be installed by using the function `install_github()` from the `remotes` package:
 
 ```{r,eval = FALSE}
-## Installation
+install.packages('remotes')
+# install from github
+remotes::install_github("asheshrambachan/HonestDiD")
 
-# Install remotes package if not installed
+```
+
+Your installation may fail if the C++ headers are not configured correctly and you may see something to this effect.
+
+```
+Caused by error: 
+! Could not find tools necessary to compile a package
+Call `pkgbuild::check_build_tools(debug = TRUE)` to diagnose the problem.
+
+``` 
+The underlying issue could look something like this 
+
+
+```
+pkgbuild::check_build_tools(debug = TRUE)
+/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library/RcppEigen/include/Eigen/src/Core/util/Macros.h:679:10: fatal error: 'cmath' file not found
+  679 | #include <cmath>
+      |          ^~~~~~~
+1 error generated.
+make: *** [foo.o] Error 1
+
+```
+To resolve this issue you should consult the [rstan installation page](https://github.com/stan-dev/rstan/wiki/Configuring-C---Toolchain-for-Mac) which will configure the C++ toolchain properly. After modifying the `makevars` file be sure to restart your R session.
+
+If all else fails then you can simply turn off warnings which will install the package without configuring the C++ toolchain. 
+
+```{r eval=FALSE}
+
 install.packages("remotes")
 
 # Turn off warning-error-conversion, because the tiniest warning stops installation
@@ -44,9 +73,7 @@ Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
 
 # install from github
 remotes::install_github("asheshrambachan/HonestDiD")
-
 ```
-
 
 ## Example usage -- Medicaid expansions
 
