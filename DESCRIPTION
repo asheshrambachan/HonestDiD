@@ -1,7 +1,7 @@
 Package: HonestDiD
 Type: Package
 Title: Robust Inference in Difference-in-Differences and Event Study Designs
-Version: 0.2.6
+Version: 0.2.7
 Depends:
     R (>= 3.6.0)
 Imports:
@@ -9,7 +9,7 @@ Imports:
     rlang,
     foreach (>= 1.4.7),
     matrixStats (>= 0.63.0),
-    CVXR (>= 0.99-6),
+    CVXR (>= 1.0),
     latex2exp (>= 0.4.0),
     lpSolveAPI (>= 5.5.2.0-17),
     Matrix (>= 1.2-17),
