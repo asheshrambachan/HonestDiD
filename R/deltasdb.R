@@ -237,7 +237,7 @@ computeConditionalCS_DeltaSDB <- function(betahat, sigma, numPrePeriods, numPost
       obj <- CVXR::Minimize( base::t(flci$optimalVec) %*% flci$optimalVec -
                          2 * base::t(flci$optimalVec) %*% base::t(A_SDB) %*% vbar + CVXR::quad_form(x = vbar, P = A_SDB %*% base::t(A_SDB)) )
       prob = CVXR::Problem(obj)
-      result = CVXR::psolve(prob)
+      result = .psolve(prob)
       hybrid_list$vbar = result$getValue(vbar)
 
       # Add objects to hybrid_list: flci half-length

@@ -95,7 +95,33 @@ basisVector <- function(index = 1, size = 1){
   }
 }
 
-# Custom error messages
+# Wrapper around CVXR::psolve to preserve the pre-1.8 return interface.
+# In CVXR >= 1.8, psolve() returns only the optimal objective value, and
+# status / variable values must be queried via CVXR::status() and
+# CVXR::value() on the problem / variable objects respectively. This wrapper
+# re-packages the new API into the old list form ($value, $status, $getValue)
+# so downstream call sites can stay unchanged.
+#
+# Note: $getValue is a deferred closure that reads CVXR::value(variable) at
+# call time. Because CVXR stores variable solutions on the Variable object
+# itself, a subsequent psolve() on any problem that references the same
+# variable will overwrite its value. Callers must therefore invoke $getValue
+# before issuing another psolve() on an overlapping variable.
+.psolve <- function(problem, ...) {
+  value  <- CVXR::psolve(problem, ...)
+  status <- CVXR::status(problem)
+  base::list(
+    value    = value,
+    status   = status,
+    getValue = function(variable) CVXR::value(variable)
+  )
+}
+
+# Custom error messages. Prints a friendly context header, then re-raises the
+# original condition so upstream handlers (and tests) see a real error rather
+# than a silent NULL. Without the rethrow, errors inside the wrapped block are
+# converted to messages and the caller receives NULL, which causes tests to
+# pass on broken code paths (see issue that motivated test_syntax.R).
 .CustomErrorHandling <- function(code, custom) {
   base::tryCatch({
     code
@@ -104,5 +130,6 @@ basisVector <- function(index = 1, size = 1){
     base::message("\tcall:  ", base::paste0(rlang::expr_deparse(e$call), collapse='\n\t'))
     base::message("\terror: ", e$message)
     base::message("Traceback:"); traceback()
+    base::stop(e)
   })
 }
