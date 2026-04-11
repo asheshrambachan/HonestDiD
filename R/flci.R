@@ -146,7 +146,7 @@
   quad_constraint <- .createConstraintsObject_SDLessThanH(sigma = sigma, numPrePeriods = numPrePeriods, l_vec = l_vec, UstackW = UstackW, h = h)
 
   biasProblem = CVXR::Problem(objectiveBias, constraints = base::list(abs_constraint, sum_constraint, quad_constraint))
-  biasResult <- CVXR::psolve(biasProblem, solver = "ECOS")
+  biasResult <- .psolve(biasProblem, solver = "ECOS")
 
   # Multiply objective by M (note that solution otherwise doesn't depend on M,
   # so no need to run many times with many different Ms)
@@ -186,7 +186,7 @@
                                                          l_vec          = l_vec)
 
   varProblem <- CVXR::Problem(objectiveVariance, constraints = base::list(abs_constraint, sum_constraint))
-  varResult  <- CVXR::psolve(varProblem)
+  varResult  <- .psolve(varProblem)
   varFailed  <- (varResult$status != "optimal" & varResult$status != "optimal_inaccurate")
 
   if ( varFailed ) {
@@ -201,7 +201,7 @@
                                                                UstackW        = UstackW,
                                                                l_vec          = l_vec)
         varProblem <- CVXR::Problem(objectiveVariance, constraints = base::list(abs_constraint, sum_constraint))
-        varResult  <- CVXR::psolve(varProblem)
+        varResult  <- .psolve(varProblem)
         varFailed  <- (varResult$status != "optimal" & varResult$status != "optimal_inaccurate")
         varResult$value <- varResult$value / (sigmascale^iscale)
       }
