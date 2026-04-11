@@ -117,7 +117,11 @@ basisVector <- function(index = 1, size = 1){
   )
 }
 
-# Custom error messages
+# Custom error messages. Prints a friendly context header, then re-raises the
+# original condition so upstream handlers (and tests) see a real error rather
+# than a silent NULL. Without the rethrow, errors inside the wrapped block are
+# converted to messages and the caller receives NULL, which causes tests to
+# pass on broken code paths (see issue that motivated test_syntax.R).
 .CustomErrorHandling <- function(code, custom) {
   base::tryCatch({
     code
@@ -126,5 +130,6 @@ basisVector <- function(index = 1, size = 1){
     base::message("\tcall:  ", base::paste0(rlang::expr_deparse(e$call), collapse='\n\t'))
     base::message("\terror: ", e$message)
     base::message("Traceback:"); traceback()
+    base::stop(e)
   })
 }
