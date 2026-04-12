@@ -1,3 +1,4 @@
+importFrom(ECOSolveR, ECOS_csolve)
 importFrom(dplyr, "%>%")
 importFrom(foreach, "%dopar%")
 importFrom(foreach, "%do%")
