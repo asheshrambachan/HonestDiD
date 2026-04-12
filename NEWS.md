@@ -1,3 +1,7 @@
+# HonestDiD 0.2.9
+
+- Fix remaining `CVXR::psolve()` calls in `.maxBiasFN` and `.minBiasFN` in `arp-nuisance.R` to use `.psolve()` wrapper for CVXR >= 1.8 compatibility
+
 # HonestDiD 0.2.8
 
 - Restore legacy CVXR::psolve interface (`$solve`, `$status`, `$getValue`)
