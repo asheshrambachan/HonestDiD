@@ -422,3 +422,48 @@ if ( Sys.getenv("HONESTDID_RUN_TESTS") == "1" ) {
 } else {
   print("HonestDiD plotting run was skipped")
 }
+
+if ( Sys.getenv("HONESTDID_RUN_TESTS") == "1" ) {
+  test_that(".maxBiasFN, .minBiasFN, and .createConstraintsLinearTrend use .psolve correctly", {
+    # Simple 2D LP: delta in R^2, constrained by A %*% delta <= d.
+    # A = I_2, d = c(1, 1) means delta[1] <= 1 and delta[2] <= 1.
+    # v = c(1, 0) picks out delta[1], so max bias = 1 and min bias = -Inf
+    # (unbounded below). Use v = c(1, 1) so both max and min are finite:
+    # max = 2, min = -2 (with d = c(1,1) and A = rbind(I, -I)).
+    A <- base::rbind(diag(2), -diag(2))
+    d <- base::rep(1, 4)
+    v <- base::c(1, 1)
+
+    maxSoln <- HonestDiD:::.maxBiasFN(v = v, A = A, d = d)
+    expect_true(base::is.list(maxSoln))
+    expect_true(!base::is.null(maxSoln$value))
+    expect_true(!base::is.null(maxSoln$status))
+    expect_equal(maxSoln$status, "optimal")
+    expect_equal(base::as.numeric(maxSoln$value), 2, tolerance = 1e-4)
+
+    minSoln <- HonestDiD:::.minBiasFN(v = v, A = A, d = d)
+    expect_true(base::is.list(minSoln))
+    expect_true(!base::is.null(minSoln$value))
+    expect_true(!base::is.null(minSoln$status))
+    expect_equal(minSoln$status, "optimal")
+    expect_equal(base::as.numeric(minSoln$value), -2, tolerance = 1e-4)
+
+    # .createConstraintsLinearTrend: uses BC data to construct A/d via
+    # the standard pre-period constraint, then checks the returned list
+    # has the right structure and that maxBias >= minBias.
+    tVec   <- base::c(base::seq(-BC_numPrePeriods, -1), base::seq(1, BC_numPostPeriods))
+    lVec   <- BC_l_vec
+    result <- HonestDiD:::.createConstraintsLinearTrend(
+      A              = base::diag(base::length(tVec)),
+      d              = base::rep(1, base::length(tVec)),
+      lVec           = lVec,
+      tVec           = tVec,
+      referencePeriod = 0)
+    expect_true(base::is.list(result))
+    expect_true(base::all(c("A_trend", "d_trend") %in% base::names(result)))
+    expect_equal(base::nrow(result$A_trend), 2)
+    expect_true(result$d_trend[1] >= -result$d_trend[2])
+  })
+} else {
+  print("HonestDiD .maxBiasFN/.minBiasFN run was skipped")
+}
