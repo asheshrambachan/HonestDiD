@@ -12,6 +12,8 @@ jobs:
   tests:
     runs-on: ${{ matrix.config.os }}
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
       matrix:
         config:
